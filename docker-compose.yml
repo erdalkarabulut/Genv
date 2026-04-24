@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: genv-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: gen_v_api_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - genv-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: src/genVApi/WebAPI/Dockerfile
+    container_name: genv-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=gen_v_api_db;Username=postgres;Password=postgres"
+      ConnectionStrings__BaseDb: "Host=postgres;Port=5432;Database=gen_v_api_db;Username=postgres;Password=postgres"
+    ports:
+      - "8080:8080"
+
+volumes:
+  genv-pgdata:

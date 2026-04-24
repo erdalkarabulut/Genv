@@ -1,0 +1,15 @@
+D:\GenVApi\src\corePackages\Core.Mailing.MailKit\bin\Release\net8.0\Core.Mailing.MailKit.deps.json
+D:\GenVApi\src\corePackages\Core.Mailing.MailKit\bin\Release\net8.0\Core.Mailing.MailKit.dll
+D:\GenVApi\src\corePackages\Core.Mailing.MailKit\bin\Release\net8.0\Core.Mailing.MailKit.pdb
+D:\GenVApi\src\corePackages\Core.Mailing.MailKit\bin\Release\net8.0\Core.Mailing.dll
+D:\GenVApi\src\corePackages\Core.Mailing.MailKit\bin\Release\net8.0\Core.Mailing.pdb
+D:\GenVApi\src\corePackages\Core.Mailing.MailKit\obj\Release\net8.0\Core.Mailing.MailKit.csproj.AssemblyReference.cache
+D:\GenVApi\src\corePackages\Core.Mailing.MailKit\obj\Release\net8.0\Core.Mailing.MailKit.GeneratedMSBuildEditorConfig.editorconfig
+D:\GenVApi\src\corePackages\Core.Mailing.MailKit\obj\Release\net8.0\Core.Mailing.MailKit.AssemblyInfoInputs.cache
+D:\GenVApi\src\corePackages\Core.Mailing.MailKit\obj\Release\net8.0\Core.Mailing.MailKit.AssemblyInfo.cs
+D:\GenVApi\src\corePackages\Core.Mailing.MailKit\obj\Release\net8.0\Core.Mailing.MailKit.csproj.CoreCompileInputs.cache
+D:\GenVApi\src\corePackages\Core.Mailing.MailKit\obj\Release\net8.0\Core.Mai.41D3B8B8.Up2Date
+D:\GenVApi\src\corePackages\Core.Mailing.MailKit\obj\Release\net8.0\Core.Mailing.MailKit.dll
+D:\GenVApi\src\corePackages\Core.Mailing.MailKit\obj\Release\net8.0\refint\Core.Mailing.MailKit.dll
+D:\GenVApi\src\corePackages\Core.Mailing.MailKit\obj\Release\net8.0\Core.Mailing.MailKit.pdb
+D:\GenVApi\src\corePackages\Core.Mailing.MailKit\obj\Release\net8.0\ref\Core.Mailing.MailKit.dll

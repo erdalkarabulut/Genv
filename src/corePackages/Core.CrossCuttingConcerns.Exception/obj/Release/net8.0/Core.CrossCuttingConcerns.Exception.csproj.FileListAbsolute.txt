@@ -1,0 +1,11 @@
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Exception\bin\Release\net8.0\Core.CrossCuttingConcerns.Exception.deps.json
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Exception\bin\Release\net8.0\Core.CrossCuttingConcerns.Exception.dll
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Exception\bin\Release\net8.0\Core.CrossCuttingConcerns.Exception.pdb
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Exception\obj\Release\net8.0\Core.CrossCuttingConcerns.Exception.GeneratedMSBuildEditorConfig.editorconfig
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Exception\obj\Release\net8.0\Core.CrossCuttingConcerns.Exception.AssemblyInfoInputs.cache
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Exception\obj\Release\net8.0\Core.CrossCuttingConcerns.Exception.AssemblyInfo.cs
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Exception\obj\Release\net8.0\Core.CrossCuttingConcerns.Exception.csproj.CoreCompileInputs.cache
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Exception\obj\Release\net8.0\Core.CrossCuttingConcerns.Exception.dll
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Exception\obj\Release\net8.0\refint\Core.CrossCuttingConcerns.Exception.dll
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Exception\obj\Release\net8.0\Core.CrossCuttingConcerns.Exception.pdb
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Exception\obj\Release\net8.0\ref\Core.CrossCuttingConcerns.Exception.dll

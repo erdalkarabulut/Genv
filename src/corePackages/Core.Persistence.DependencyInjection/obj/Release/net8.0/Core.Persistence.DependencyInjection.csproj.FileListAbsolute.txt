@@ -1,0 +1,15 @@
+D:\GenVApi\src\corePackages\Core.Persistence.DependencyInjection\bin\Release\net8.0\Core.Persistence.DependencyInjection.deps.json
+D:\GenVApi\src\corePackages\Core.Persistence.DependencyInjection\bin\Release\net8.0\Core.Persistence.DependencyInjection.dll
+D:\GenVApi\src\corePackages\Core.Persistence.DependencyInjection\bin\Release\net8.0\Core.Persistence.DependencyInjection.pdb
+D:\GenVApi\src\corePackages\Core.Persistence.DependencyInjection\bin\Release\net8.0\Core.Persistence.dll
+D:\GenVApi\src\corePackages\Core.Persistence.DependencyInjection\bin\Release\net8.0\Core.Persistence.pdb
+D:\GenVApi\src\corePackages\Core.Persistence.DependencyInjection\obj\Release\net8.0\Core.Persistence.DependencyInjection.csproj.AssemblyReference.cache
+D:\GenVApi\src\corePackages\Core.Persistence.DependencyInjection\obj\Release\net8.0\Core.Persistence.DependencyInjection.GeneratedMSBuildEditorConfig.editorconfig
+D:\GenVApi\src\corePackages\Core.Persistence.DependencyInjection\obj\Release\net8.0\Core.Persistence.DependencyInjection.AssemblyInfoInputs.cache
+D:\GenVApi\src\corePackages\Core.Persistence.DependencyInjection\obj\Release\net8.0\Core.Persistence.DependencyInjection.AssemblyInfo.cs
+D:\GenVApi\src\corePackages\Core.Persistence.DependencyInjection\obj\Release\net8.0\Core.Persistence.DependencyInjection.csproj.CoreCompileInputs.cache
+D:\GenVApi\src\corePackages\Core.Persistence.DependencyInjection\obj\Release\net8.0\Core.Per.D780633D.Up2Date
+D:\GenVApi\src\corePackages\Core.Persistence.DependencyInjection\obj\Release\net8.0\Core.Persistence.DependencyInjection.dll
+D:\GenVApi\src\corePackages\Core.Persistence.DependencyInjection\obj\Release\net8.0\refint\Core.Persistence.DependencyInjection.dll
+D:\GenVApi\src\corePackages\Core.Persistence.DependencyInjection\obj\Release\net8.0\Core.Persistence.DependencyInjection.pdb
+D:\GenVApi\src\corePackages\Core.Persistence.DependencyInjection\obj\Release\net8.0\ref\Core.Persistence.DependencyInjection.dll

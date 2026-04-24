@@ -1,0 +1,17 @@
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.SeriLog\bin\Release\net8.0\Core.CrossCuttingConcerns.Logging.Serilog.deps.json
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.SeriLog\bin\Release\net8.0\Core.CrossCuttingConcerns.Logging.Serilog.dll
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.SeriLog\bin\Release\net8.0\Core.CrossCuttingConcerns.Logging.Serilog.pdb
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.SeriLog\bin\Release\net8.0\Core.CrossCuttingConcerns.Logging.Abstraction.dll
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.SeriLog\bin\Release\net8.0\Core.CrossCuttingConcerns.Logging.dll
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.SeriLog\bin\Release\net8.0\Core.CrossCuttingConcerns.Logging.Abstraction.pdb
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.SeriLog\bin\Release\net8.0\Core.CrossCuttingConcerns.Logging.pdb
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.SeriLog\obj\Release\net8.0\Core.CrossCuttingConcerns.Logging.Serilog.csproj.AssemblyReference.cache
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.SeriLog\obj\Release\net8.0\Core.CrossCuttingConcerns.Logging.Serilog.GeneratedMSBuildEditorConfig.editorconfig
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.SeriLog\obj\Release\net8.0\Core.CrossCuttingConcerns.Logging.Serilog.AssemblyInfoInputs.cache
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.SeriLog\obj\Release\net8.0\Core.CrossCuttingConcerns.Logging.Serilog.AssemblyInfo.cs
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.SeriLog\obj\Release\net8.0\Core.CrossCuttingConcerns.Logging.Serilog.csproj.CoreCompileInputs.cache
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.SeriLog\obj\Release\net8.0\Core.Cro.2B4E2063.Up2Date
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.SeriLog\obj\Release\net8.0\Core.CrossCuttingConcerns.Logging.Serilog.dll
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.SeriLog\obj\Release\net8.0\refint\Core.CrossCuttingConcerns.Logging.Serilog.dll
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.SeriLog\obj\Release\net8.0\Core.CrossCuttingConcerns.Logging.Serilog.pdb
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.SeriLog\obj\Release\net8.0\ref\Core.CrossCuttingConcerns.Logging.Serilog.dll

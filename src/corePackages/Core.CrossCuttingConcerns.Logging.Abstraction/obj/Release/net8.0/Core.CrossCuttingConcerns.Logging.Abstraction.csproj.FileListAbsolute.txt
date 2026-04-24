@@ -1,0 +1,11 @@
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.Abstraction\bin\Release\net8.0\Core.CrossCuttingConcerns.Logging.Abstraction.deps.json
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.Abstraction\bin\Release\net8.0\Core.CrossCuttingConcerns.Logging.Abstraction.dll
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.Abstraction\bin\Release\net8.0\Core.CrossCuttingConcerns.Logging.Abstraction.pdb
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.Abstraction\obj\Release\net8.0\Core.CrossCuttingConcerns.Logging.Abstraction.GeneratedMSBuildEditorConfig.editorconfig
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.Abstraction\obj\Release\net8.0\Core.CrossCuttingConcerns.Logging.Abstraction.AssemblyInfoInputs.cache
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.Abstraction\obj\Release\net8.0\Core.CrossCuttingConcerns.Logging.Abstraction.AssemblyInfo.cs
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.Abstraction\obj\Release\net8.0\Core.CrossCuttingConcerns.Logging.Abstraction.csproj.CoreCompileInputs.cache
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.Abstraction\obj\Release\net8.0\Core.CrossCuttingConcerns.Logging.Abstraction.dll
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.Abstraction\obj\Release\net8.0\refint\Core.CrossCuttingConcerns.Logging.Abstraction.dll
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.Abstraction\obj\Release\net8.0\Core.CrossCuttingConcerns.Logging.Abstraction.pdb
+D:\GenVApi\src\corePackages\Core.CrossCuttingConcerns.Logging.Abstraction\obj\Release\net8.0\ref\Core.CrossCuttingConcerns.Logging.Abstraction.dll

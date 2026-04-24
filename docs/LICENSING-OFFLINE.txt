@@ -1,0 +1,37 @@
+GenVApi — Offline makine bağlı lisans (özet)
+
+1) Anahtar çifti (sadece sizde tutun)
+   openssl genrsa -out rsa_private.pem 3072
+   openssl rsa -in rsa_private.pem -pubout -out rsa_public.pem
+
+2) Müşteri sunucuda parmak izi
+   WebAPI yayın klasöründe:
+   dotnet WebAPI.dll --license-fingerprint
+   Çıkan hex metni size iletir.
+
+3) Lisans dosyası üretimi (geliştirme makinenizde, özel anahtar ile)
+   dotnet run --project tools/LicenseIssuer -- ^
+     --private-key rsa_private.pem ^
+     --fingerprint <hex> ^
+     --out license.genv.lic ^
+     --customer "Kurum Adı"
+
+4) Müşteri paketi
+   - Publish çıktısı (kaynak kod YOK)
+   - license.genv.lic dosyasını API içerik köküne kopyalayın (veya mutlak yol verin)
+   - appsettings / ortamda:
+     "OfflineLicense": {
+       "Enabled": true,
+       "PublicKeyPem": "<rsa_public.pem içeriği tek satır veya \\n ile>",
+       "LicenseFilePath": "license.genv.lic",
+       "ExpectedProductId": "GenVApi"
+     }
+
+5) DLL ve tersine mühendislik
+   - .NET DLL her zaman IL içerir; tamamen "decompile edilemez" yapmak mümkün değildir.
+   - Ticari obfuscation (Dotfuscator, ArmDot vb.) + mümkünse Native AOT publish riski düşürür.
+   - Lisans doğrulaması da müşteri bilgisayarında çalıştığı için determinasyonlu bir saldırgan appsettings ile kapatmayı deneyebilir;
+     ek sertleştirme: Release müşteri build'inde sabit bayrak, obfuscation, ortam değişkeninden okuma, müşteri sözleşmesi.
+
+6) Geliştirme
+   appsettings.json içinde OfflineLicense.Enabled = false (varsayılan).

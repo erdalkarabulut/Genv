@@ -1,0 +1,15 @@
+D:\GenVApi\src\corePackages\Core.Security\bin\Release\net8.0\Core.Security.deps.json
+D:\GenVApi\src\corePackages\Core.Security\bin\Release\net8.0\Core.Security.dll
+D:\GenVApi\src\corePackages\Core.Security\bin\Release\net8.0\Core.Security.pdb
+D:\GenVApi\src\corePackages\Core.Security\bin\Release\net8.0\Core.Persistence.dll
+D:\GenVApi\src\corePackages\Core.Security\bin\Release\net8.0\Core.Persistence.pdb
+D:\GenVApi\src\corePackages\Core.Security\obj\Release\net8.0\Core.Security.csproj.AssemblyReference.cache
+D:\GenVApi\src\corePackages\Core.Security\obj\Release\net8.0\Core.Security.GeneratedMSBuildEditorConfig.editorconfig
+D:\GenVApi\src\corePackages\Core.Security\obj\Release\net8.0\Core.Security.AssemblyInfoInputs.cache
+D:\GenVApi\src\corePackages\Core.Security\obj\Release\net8.0\Core.Security.AssemblyInfo.cs
+D:\GenVApi\src\corePackages\Core.Security\obj\Release\net8.0\Core.Security.csproj.CoreCompileInputs.cache
+D:\GenVApi\src\corePackages\Core.Security\obj\Release\net8.0\Core.Sec.BBB94791.Up2Date
+D:\GenVApi\src\corePackages\Core.Security\obj\Release\net8.0\Core.Security.dll
+D:\GenVApi\src\corePackages\Core.Security\obj\Release\net8.0\refint\Core.Security.dll
+D:\GenVApi\src\corePackages\Core.Security\obj\Release\net8.0\Core.Security.pdb
+D:\GenVApi\src\corePackages\Core.Security\obj\Release\net8.0\ref\Core.Security.dll

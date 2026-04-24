@@ -1,0 +1,11 @@
+D:\GenVApi\src\corePackages\Core.Localization.Abstraction\bin\Release\net8.0\Core.Localization.Abstraction.deps.json
+D:\GenVApi\src\corePackages\Core.Localization.Abstraction\bin\Release\net8.0\Core.Localization.Abstraction.dll
+D:\GenVApi\src\corePackages\Core.Localization.Abstraction\bin\Release\net8.0\Core.Localization.Abstraction.pdb
+D:\GenVApi\src\corePackages\Core.Localization.Abstraction\obj\Release\net8.0\Core.Localization.Abstraction.GeneratedMSBuildEditorConfig.editorconfig
+D:\GenVApi\src\corePackages\Core.Localization.Abstraction\obj\Release\net8.0\Core.Localization.Abstraction.AssemblyInfoInputs.cache
+D:\GenVApi\src\corePackages\Core.Localization.Abstraction\obj\Release\net8.0\Core.Localization.Abstraction.AssemblyInfo.cs
+D:\GenVApi\src\corePackages\Core.Localization.Abstraction\obj\Release\net8.0\Core.Localization.Abstraction.csproj.CoreCompileInputs.cache
+D:\GenVApi\src\corePackages\Core.Localization.Abstraction\obj\Release\net8.0\Core.Localization.Abstraction.dll
+D:\GenVApi\src\corePackages\Core.Localization.Abstraction\obj\Release\net8.0\refint\Core.Localization.Abstraction.dll
+D:\GenVApi\src\corePackages\Core.Localization.Abstraction\obj\Release\net8.0\Core.Localization.Abstraction.pdb
+D:\GenVApi\src\corePackages\Core.Localization.Abstraction\obj\Release\net8.0\ref\Core.Localization.Abstraction.dll

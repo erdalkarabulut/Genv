@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Açık tema (html’de .dark yok) */
+  :root {
+    color-scheme: light;
+    --color-bg: 245 246 251;
+    --color-bg-subtle: 234 236 244;
+    --color-bg-card: 255 255 255;
+    --color-bg-elevated: 238 240 247;
+    --color-line: 216 221 235;
+    --color-ink: 15 17 26;
+    --color-ink-muted: 90 97 120;
+    --color-ink-dim: 139 146 168;
+  }
+
+  /* Koyu tema */
+  :root.dark {
+    color-scheme: dark;
+    --color-bg: 10 11 16;
+    --color-bg-subtle: 15 16 24;
+    --color-bg-card: 19 20 29;
+    --color-bg-elevated: 24 25 37;
+    --color-line: 35 37 58;
+    --color-ink: 230 232 243;
+    --color-ink-muted: 154 160 184;
+    --color-ink-dim: 107 113 145;
+  }
+
+  html, body, #root {
+    height: 100%;
+  }
+
+  body {
+    background-color: rgb(var(--color-bg));
+    background-image:
+      radial-gradient(1200px 600px at 20% -10%, rgba(99, 102, 241, 0.14), transparent 60%),
+      radial-gradient(900px 500px at 110% 10%, rgba(94, 234, 212, 0.08), transparent 60%);
+    background-attachment: fixed;
+  }
+
+  :root.dark body {
+    background-image:
+      radial-gradient(1200px 600px at 20% -10%, rgba(99, 102, 241, 0.18), transparent 60%),
+      radial-gradient(900px 500px at 110% 10%, rgba(94, 234, 212, 0.10), transparent 60%);
+  }
+
+  ::selection {
+    background: rgba(99, 102, 241, 0.35);
+  }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--color-line));
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+    opacity: 0.85;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    filter: brightness(0.92);
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-bg-card/70 backdrop-blur-xl border border-line/60;
+  }
+  .card {
+    @apply rounded-2xl glass shadow-soft;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border border-line/80 bg-bg-elevated/60;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-3.5 py-2 text-sm font-medium transition-all
+      disabled:opacity-50 disabled:cursor-not-allowed select-none;
+  }
+  .btn-primary { @apply btn bg-brand-600 text-white hover:bg-brand-500 active:bg-brand-700 shadow-glow; }
+  .btn-ghost   { @apply btn text-ink-muted hover:text-ink hover:bg-bg-elevated; }
+  .btn-soft    { @apply btn bg-bg-elevated text-ink hover:bg-line/60 border border-line/60; }
+  .btn-danger  { @apply btn bg-rose-500/10 text-accent-rose hover:bg-rose-500/20 border border-rose-500/30; }
+  .input {
+    @apply w-full rounded-xl bg-bg-subtle border border-line/80 px-3 py-2 text-sm text-ink placeholder:text-ink-dim
+      focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500/60 transition;
+  }
+  .label { @apply block text-xs font-medium text-ink-muted mb-1.5 uppercase tracking-wide; }
+  .skeleton {
+    @apply rounded-md bg-gradient-to-r from-bg-elevated via-line/40 to-bg-elevated bg-[length:200%_100%] animate-shimmer;
+  }
+
+  :root:not(.dark) .shadow-glow {
+    box-shadow:
+      0 0 0 1px rgba(99, 102, 241, 0.16),
+      0 8px 32px -8px rgba(99, 102, 241, 0.22);
+  }
+}
