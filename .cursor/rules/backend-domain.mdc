@@ -1,0 +1,12 @@
+---
+description: Domain — entity, enum, value object; saf model
+globs: src/genVApi/Domain/**/*.cs
+alwaysApply: false
+---
+
+# Domain
+
+- Entity’ler **persisted model + anlamlı davranış** (ör. `Calculate`, `IsValid`, toplam CD34) için uygundur; EF navigation koleksiyonlarını null-safe düşün.
+- **Yasak:** `IRepository`, `HttpContext`, `IMediator`, mail/SMS, veritabanı erişimi.
+- Yeni alan: migration + configuration + Application DTO/mapping; sadece domain dosyası ile PR kapatma.
+- `ClinicalThresholds` gibi value object’lerde immutability ve net isimlendirme; hasta/otolog-allogeneik ayrımı `Patient` veya ilgili entity üzerinden tek kaynakta kalsın.

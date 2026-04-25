@@ -41,7 +41,5 @@ public class DliProductConfiguration : IEntityTypeConfiguration<DliProduct>
                .WithMany()
                .HasForeignKey(dp => dp.DonorId)
                .OnDelete(DeleteBehavior.SetNull);
-
-        builder.HasQueryFilter(dp => !dp.DeletedDate.HasValue);
     }
 }

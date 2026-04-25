@@ -17,13 +17,11 @@ public class RackConfiguration : IEntityTypeConfiguration<Rack>
         builder.Property(r => r.UpdatedDate).HasColumnName("UpdatedDate");
         builder.Property(r => r.DeletedDate).HasColumnName("DeletedDate");
 
-        builder.HasMany(r => r.Boxes)
-               .WithOne(b => b.Rack)
-               .HasForeignKey(b => b.RackId)
-               .OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(r => r.Slots)
+            .WithOne(s => s.Rack)
+            .HasForeignKey(s => s.RackId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(r => new { r.TankId, r.Name }).IsUnique();
-
-        builder.HasQueryFilter(r => !r.DeletedDate.HasValue);
     }
 }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "hOd4Wk1Sqoc=",
+  "dgSpecHash": "94BjGwonG84=",
   "success": true,
-  "projectFilePath": "D:\\GenVApi\\src\\genVApi\\Persistence\\Persistence.csproj",
+  "projectFilePath": "D:\\GenvAp\\src\\genVApi\\Persistence\\Persistence.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\erdal\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\erdal\\.nuget\\packages\\bouncycastle.cryptography\\2.2.1\\bouncycastle.cryptography.2.2.1.nupkg.sha512",

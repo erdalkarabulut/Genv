@@ -32,7 +32,7 @@ public class CreateBagRangeCommand : IRequest<CreatedBagRangeResponse>, ISecured
         public Domain.Enums.BagStatus Status { get; set; }
         public Domain.Enums.BagPurpose Purpose { get; set; } = Domain.Enums.BagPurpose.Cryo;
         public Guid? SplitBatchId { get; set; }
-        public Guid? SlotId { get; set; }
+        public Guid? BagCellId { get; set; }
     }
 
     public class CreateBagRangeCommandHandler : IRequestHandler<CreateBagRangeCommand, CreatedBagRangeResponse>

@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute(@"The NArchitecture Core.Mailing.MailKit package provides core classes and extensions for sending emails using MailKit in the application layer in both clean and union architectures. It includes support for configuring SMTP servers, defining email templates, sending HTML and plain text emails, and essential utilities for email sending management using MailKit library.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f8eb49a40a3b5974fc36464b82f1ae68d5af1737")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+41d8718520c8525fea9fd9e3109f3da174391d1b")]
 [assembly: System.Reflection.AssemblyProductAttribute("NArchitecture")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Core.Mailing.MailKit")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

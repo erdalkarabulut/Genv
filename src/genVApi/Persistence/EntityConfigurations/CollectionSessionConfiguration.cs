@@ -52,7 +52,5 @@ public class CollectionSessionConfiguration : IEntityTypeConfiguration<Collectio
                .WithOne(p => p.Session)
                .HasForeignKey<Product>(p => p.SessionId)
                .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasQueryFilter(cs => !cs.DeletedDate.HasValue);
     }
 }

@@ -23,29 +23,29 @@ public class CreateSlotCommand : IRequest<CreatedSlotResponse>, ISecuredRequest,
 
     public bool BypassCache { get; }
     public string? CacheKey { get; }
-    public string[]? CacheGroupKey => ["GetSlots"];
+    public string[]? CacheGroupKey => ["GetBagCells"];
 
     public class CreateSlotCommandHandler : IRequestHandler<CreateSlotCommand, CreatedSlotResponse>
     {
         private readonly IMapper _mapper;
-        private readonly ISlotRepository _slotRepository;
-        private readonly SlotBusinessRules _slotBusinessRules;
+        private readonly IBagCellRepository _bagCellRepository;
+        private readonly BagCellBusinessRules _bagCellBusinessRules;
 
-        public CreateSlotCommandHandler(IMapper mapper, ISlotRepository slotRepository,
-                                         SlotBusinessRules slotBusinessRules)
+        public CreateSlotCommandHandler(IMapper mapper, IBagCellRepository bagCellRepository,
+                                         BagCellBusinessRules bagCellBusinessRules)
         {
             _mapper = mapper;
-            _slotRepository = slotRepository;
-            _slotBusinessRules = slotBusinessRules;
+            _bagCellRepository = bagCellRepository;
+            _bagCellBusinessRules = bagCellBusinessRules;
         }
 
         public async Task<CreatedSlotResponse> Handle(CreateSlotCommand request, CancellationToken cancellationToken)
         {
-            Slot slot = _mapper.Map<Slot>(request);
+            BagCell bagCell = _mapper.Map<BagCell>(request);
 
-            await _slotRepository.AddAsync(slot);
+            await _bagCellRepository.AddAsync(bagCell);
 
-            CreatedSlotResponse response = _mapper.Map<CreatedSlotResponse>(slot);
+            CreatedSlotResponse response = _mapper.Map<CreatedSlotResponse>(bagCell);
             return response;
         }
     }

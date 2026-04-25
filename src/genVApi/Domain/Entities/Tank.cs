@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Domain.Enums;
 using NArchitecture.Core.Persistence.Repositories;
+
 namespace Domain.Entities;
+
 public class Tank : Entity<Guid>
 {
-    public string Name { get; set; }
+    public string Name { get; set; } = default!;
 
     public virtual ICollection<Rack> Racks { get; set; }
 
@@ -17,13 +13,13 @@ public class Tank : Entity<Guid>
         Racks = new HashSet<Rack>();
     }
 
-    public int GetTotalSlotCount()
+    public int GetTotalBagCellCount()
     {
-        return Racks?.Sum(r => r.GetTotalSlotCount()) ?? 0;
+        return Racks?.Sum(r => r.GetTotalBagCellCount()) ?? 0;
     }
 
-    public int GetOccupiedSlotCount()
+    public int GetOccupiedBagCellCount()
     {
-        return Racks?.Sum(r => r.GetOccupiedSlotCount()) ?? 0;
+        return Racks?.Sum(r => r.GetOccupiedBagCellCount()) ?? 0;
     }
 }

@@ -83,14 +83,14 @@ public class DonorManager : IDonorService
         return updatedDonors;
     }
 
-    public async Task<Donor> DeleteAsync(Donor donor, bool permanent = false)
+    public async Task<Donor> DeleteAsync(Donor donor, bool permanent = true)
     {
-        Donor deletedDonor = await _donorRepository.DeleteAsync(donor);
+        Donor deletedDonor = await _donorRepository.DeleteAsync(donor, permanent);
 
         return deletedDonor;
     }
 
-    public async Task<ICollection<Donor>> DeleteRangeAsync(ICollection<Donor> donors, bool permanent = false)
+    public async Task<ICollection<Donor>> DeleteRangeAsync(ICollection<Donor> donors, bool permanent = true)
     {
         ICollection<Donor> deletedDonors = await _donorRepository.DeleteRangeAsync(donors, permanent);
 

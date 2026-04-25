@@ -80,7 +80,7 @@ export interface Bag {
   status: BagStatus;
   purpose: BagPurpose;
   splitBatchId?: string | null;
-  slotId?: string | null;
+  bagCellId?: string | null;
   createdDate: string;
 }
 
@@ -88,13 +88,13 @@ export interface Bag {
 export interface BagMovement {
   id: string;
   bagId: string;
-  fromSlotId?: string | null;
-  toSlotId?: string | null;
+  fromBagCellId?: string | null;
+  toBagCellId?: string | null;
   action: string;
   createdDate: string;
 }
 
-/* --------------- Cryo structure (Tank/Rack/Box/Slot) --------- */
+/* --------------- Cryo: Tank → Rack → RackSlot → Box → BagCell --------- */
 export interface Tank {
   id: string;
   name: string;
@@ -108,11 +108,22 @@ export interface Rack {
 }
 export interface Box {
   id: string;
+  /** Raf slotu (RackSlots) id — kutu hangi fiziksel slotta. */
+  slotId: string;
+  name: string;
+  createdDate: string;
+}
+
+/** Raf üzeri fiziksel slot (kutu oturur). */
+export interface RackSlot {
+  id: string;
   rackId: string;
   name: string;
   createdDate: string;
 }
-export interface Slot {
+
+/** Kutu içi torba hücresi (grid hücresi). */
+export interface BagCell {
   id: string;
   boxId: string;
   position: string;
@@ -214,7 +225,7 @@ export interface DashboardResponse {
   riskStatus: string;
 }
 
-export interface CryoSlotDto {
+export interface CryoBagCellDto {
   id: string;
   position: string;
   isOccupied: boolean;
@@ -224,16 +235,23 @@ export interface CryoSlotDto {
   purpose?: BagPurpose | null;
   cd34PerKg?: number | null;
   cd3PerKg?: number | null;
+  locationCode?: string | null;
 }
 export interface CryoBoxDto {
   id: string;
   name: string;
-  slots: CryoSlotDto[];
+  bagCells: CryoBagCellDto[];
+}
+/** Raf slotu — altında kutular. */
+export interface CryoRackSlotDto {
+  id: string;
+  name: string;
+  boxes: CryoBoxDto[];
 }
 export interface CryoRackDto {
   id: string;
   name: string;
-  boxes: CryoBoxDto[];
+  slots: CryoRackSlotDto[];
 }
 export interface CryoTankDto {
   id: string;
@@ -317,7 +335,7 @@ export interface SplitResponse {
   perBagCd34PerKg: number;
   perBagCd3PerKg: number;
   cryoBagId: string;
-  cryoSlotId?: string | null;
+  cryoBagCellId?: string | null;
   bags: Array<{
     bagId: string;
     bagNumber: number;
@@ -326,6 +344,6 @@ export interface SplitResponse {
     cd3PerKg: number;
     purpose: BagPurpose;
     status: BagStatus;
-    slotId?: string | null;
+    bagCellId?: string | null;
   }>;
 }

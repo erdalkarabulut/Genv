@@ -28,5 +28,5 @@ public interface IUserOperationClaimService
 
     Task<UserOperationClaim> AddAsync(UserOperationClaim userOperationClaim);
     Task<UserOperationClaim> UpdateAsync(UserOperationClaim userOperationClaim);
-    Task<UserOperationClaim> DeleteAsync(UserOperationClaim userOperationClaim, bool permanent = false);
+    Task<UserOperationClaim> DeleteAsync(UserOperationClaim userOperationClaim, bool permanent = true);
 }

@@ -6,7 +6,6 @@ import {
   Movements,
   Patients,
   Sessions,
-  Slots,
 } from "@/lib/api";
 import { Card, CardHeader, Stat } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -119,21 +118,21 @@ export default function BagDetailPage() {
         </div>
         {b && (
           <div className="flex items-center gap-2 flex-wrap">
-            {b.status === "Frozen" && !b.slotId && (
+            {b.status === "Frozen" && !b.bagCellId && (
               <Button
                 icon={<Snowflake className="size-4" />}
                 onClick={() => setStoreOpen(true)}
               >
-                Slota yerleştir
+                Hücreye yerleştir
               </Button>
             )}
-            {b.slotId && b.status !== "Used" && b.status !== "Discarded" && (
+            {b.bagCellId && b.status !== "Used" && b.status !== "Discarded" && (
               <Button
                 variant="soft"
                 icon={<ArrowRightLeft className="size-4" />}
                 onClick={() => setMoveOpen(true)}
               >
-                Başka slota taşı
+                Başka hücreye taşı
               </Button>
             )}
             {b.status === "Stored" || b.status === "Reserved" || b.status === "Frozen" ? (
@@ -176,9 +175,9 @@ export default function BagDetailPage() {
           hint={b ? `Kaynak: ${b.sourceVolumeMl} ml` : undefined}
         />
         <Stat
-          label="Slot"
-          value={b?.slotId ? shortId(b.slotId) : "—"}
-          hint={b?.slotId ? "Cryo tankta" : "Yerleştirilmemiş"}
+          label="Torba hücresi"
+          value={b?.bagCellId ? shortId(b.bagCellId) : "—"}
+          hint={b?.bagCellId ? "Cryo gridde" : "Yerleştirilmemiş"}
         />
       </section>
 
@@ -205,9 +204,9 @@ export default function BagDetailPage() {
                     <div>
                       <div className="text-sm font-medium">{m.action}</div>
                       <div className="text-[11px] text-ink-dim flex items-center gap-1 flex-wrap">
-                        {m.fromSlotId ? shortId(m.fromSlotId) : "—"}
+                        {m.fromBagCellId ? shortId(m.fromBagCellId) : "—"}
                         <MoveRight className="size-3" />
-                        {m.toSlotId ? shortId(m.toSlotId) : "—"}
+                        {m.toBagCellId ? shortId(m.toBagCellId) : "—"}
                       </div>
                     </div>
                     <div className="text-[11px] text-ink-dim">
@@ -227,13 +226,13 @@ export default function BagDetailPage() {
       </section>
 
       {b && (
-        <Modal open={storeOpen} onClose={() => setStoreOpen(false)} title="Slota yerleştir">
+        <Modal open={storeOpen} onClose={() => setStoreOpen(false)} title="Hücreye yerleştir">
           <StoreForm bag={b} onCancel={() => setStoreOpen(false)} onDone={() => { setStoreOpen(false); invalidate(); }} />
         </Modal>
       )}
 
       {b && (
-        <Modal open={moveOpen} onClose={() => setMoveOpen(false)} title="Başka slota taşı">
+        <Modal open={moveOpen} onClose={() => setMoveOpen(false)} title="Başka hücreye taşı">
           <MoveForm bag={b} onCancel={() => setMoveOpen(false)} onDone={() => { setMoveOpen(false); invalidate(); }} />
         </Modal>
       )}
@@ -243,7 +242,7 @@ export default function BagDetailPage() {
         onClose={() => setDeleteOpen(false)}
         onConfirm={() => remove.mutate()}
         loading={remove.isPending}
-        description={`Bag #${b?.bagNumber ?? ""} kaydını silmek üzeresiniz. Hareket kayıtları korunur ancak slot serbest bırakılmaz — önce "Kullan" aksiyonu öneririz.`}
+        description={`Bag #${b?.bagNumber ?? ""} kaydını silmek üzeresiniz. Hareket kayıtları korunur ancak hücre serbest bırakılmaz — önce "Kullan" aksiyonu öneririz.`}
       />
     </div>
   );
@@ -309,24 +308,26 @@ function RelatedBlock({ bag }: { bag: Bag }) {
 
 function StoreForm({ bag, onCancel, onDone }: { bag: Bag; onCancel: () => void; onDone: () => void }) {
   const cryo = useQuery({ queryKey: ["cryo-grid"], queryFn: () => Dashboard.cryoGrid() });
-  const emptySlots = (cryo.data?.tanks ?? []).flatMap((t) =>
+  const emptyCells = (cryo.data?.tanks ?? []).flatMap((t) =>
     t.racks.flatMap((r) =>
-      r.boxes.flatMap((b) =>
-        b.slots
-          .filter((s) => !s.isOccupied)
-          .map((s) => ({
-            id: s.id,
-            label: `${t.name}-${r.name}-${b.name}-${s.position}`,
-          })),
+      r.slots.flatMap((rackSlot) =>
+        rackSlot.boxes.flatMap((b) =>
+          b.bagCells
+            .filter((c) => !c.isOccupied)
+            .map((c) => ({
+              id: c.id,
+              label: c.locationCode ?? `${t.name}-${r.name}-${rackSlot.name}-${b.name}-${c.position}`,
+            })),
+        ),
       ),
     ),
   );
 
-  const [slotId, setSlotId] = useState(emptySlots[0]?.id ?? "");
+  const [bagCellId, setBagCellId] = useState(emptyCells[0]?.id ?? "");
   const mut = useMutation({
-    mutationFn: () => Bags.store(bag.id, slotId),
+    mutationFn: () => Bags.store(bag.id, bagCellId),
     onSuccess: () => {
-      toast.success("Slota yerleştirildi");
+      toast.success("Hücreye yerleştirildi");
       onDone();
     },
   });
@@ -334,16 +335,16 @@ function StoreForm({ bag, onCancel, onDone }: { bag: Bag; onCancel: () => void; 
   return (
     <div className="space-y-4">
       <Select
-        label="Hedef slot"
-        value={slotId}
-        onChange={(e) => setSlotId(e.target.value)}
-        options={emptySlots.length === 0
-          ? [{ value: "", label: "Boş slot bulunamadı" }]
-          : emptySlots.map((s) => ({ value: s.id, label: s.label }))}
+        label="Hedef hücre"
+        value={bagCellId}
+        onChange={(e) => setBagCellId(e.target.value)}
+        options={emptyCells.length === 0
+          ? [{ value: "", label: "Boş hücre bulunamadı" }]
+          : emptyCells.map((s) => ({ value: s.id, label: s.label }))}
       />
       <div className="flex justify-end gap-2">
         <Button variant="soft" onClick={onCancel}>İptal</Button>
-        <Button disabled={!slotId} loading={mut.isPending} onClick={() => mut.mutate()}>
+        <Button disabled={!bagCellId} loading={mut.isPending} onClick={() => mut.mutate()}>
           Yerleştir
         </Button>
       </div>
@@ -353,21 +354,23 @@ function StoreForm({ bag, onCancel, onDone }: { bag: Bag; onCancel: () => void; 
 
 function MoveForm({ bag, onCancel, onDone }: { bag: Bag; onCancel: () => void; onDone: () => void }) {
   const cryo = useQuery({ queryKey: ["cryo-grid"], queryFn: () => Dashboard.cryoGrid() });
-  const emptySlots = (cryo.data?.tanks ?? []).flatMap((t) =>
+  const emptyCells = (cryo.data?.tanks ?? []).flatMap((t) =>
     t.racks.flatMap((r) =>
-      r.boxes.flatMap((bx) =>
-        bx.slots
-          .filter((s) => !s.isOccupied && s.id !== bag.slotId)
-          .map((s) => ({
-            id: s.id,
-            label: `${t.name}-${r.name}-${bx.name}-${s.position}`,
-          })),
+      r.slots.flatMap((rackSlot) =>
+        rackSlot.boxes.flatMap((bx) =>
+          bx.bagCells
+            .filter((c) => !c.isOccupied && c.id !== bag.bagCellId)
+            .map((c) => ({
+              id: c.id,
+              label: c.locationCode ?? `${t.name}-${r.name}-${rackSlot.name}-${bx.name}-${c.position}`,
+            })),
+        ),
       ),
     ),
   );
-  const [slotId, setSlotId] = useState(emptySlots[0]?.id ?? "");
+  const [bagCellId, setBagCellId] = useState(emptyCells[0]?.id ?? "");
   const mut = useMutation({
-    mutationFn: () => Bags.move(bag.id, slotId),
+    mutationFn: () => Bags.move(bag.id, bagCellId),
     onSuccess: () => {
       toast.success("Torba taşındı");
       onDone();
@@ -376,16 +379,16 @@ function MoveForm({ bag, onCancel, onDone }: { bag: Bag; onCancel: () => void; o
   return (
     <div className="space-y-4">
       <Select
-        label="Yeni slot"
-        value={slotId}
-        onChange={(e) => setSlotId(e.target.value)}
-        options={emptySlots.length === 0
-          ? [{ value: "", label: "Boş slot bulunamadı" }]
-          : emptySlots.map((s) => ({ value: s.id, label: s.label }))}
+        label="Yeni hücre"
+        value={bagCellId}
+        onChange={(e) => setBagCellId(e.target.value)}
+        options={emptyCells.length === 0
+          ? [{ value: "", label: "Boş hücre bulunamadı" }]
+          : emptyCells.map((s) => ({ value: s.id, label: s.label }))}
       />
       <div className="flex justify-end gap-2">
         <Button variant="soft" onClick={onCancel}>İptal</Button>
-        <Button disabled={!slotId} loading={mut.isPending} onClick={() => mut.mutate()}>
+        <Button disabled={!bagCellId} loading={mut.isPending} onClick={() => mut.mutate()}>
           Taşı
         </Button>
       </div>

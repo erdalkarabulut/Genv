@@ -15,6 +15,7 @@ public class BaseDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<UserOperationClaim> UserOperationClaims { get; set; }
     public DbSet<Bag> Bags { get; set; }
+    public DbSet<BagCell> BagCells { get; set; }
     public DbSet<BagMovement> BagMovements { get; set; }
     public DbSet<Box> Boxes { get; set; }
     public DbSet<CollectionSession> CollectionSessions { get; set; }
@@ -23,7 +24,8 @@ public class BaseDbContext : DbContext
     public DbSet<Patient> Patients { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<Rack> Racks { get; set; }
-    public DbSet<Slot> Slots { get; set; }
+    /// <summary>Raf üzeri slotlar (entity: <see cref="Slot"/>, tablo: RackSlots).</summary>
+    public DbSet<Slot> RackSlots { get; set; }
     public DbSet<Tank> Tanks { get; set; }
     public DbSet<PlcSensorPoint> PlcSensorPoints { get; set; }
     public DbSet<PlcTelemetryReading> PlcTelemetryReadings { get; set; }

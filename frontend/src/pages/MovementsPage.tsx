@@ -144,11 +144,11 @@ export default function MovementsPage() {
                         <Badge tone={actionTone(m.action)} dot>{m.action}</Badge>
                       </td>
                       <td className="px-4 py-3 text-ink-muted">
-                        {m.fromSlotId ? shortId(m.fromSlotId) : "—"}
+                        {m.fromBagCellId ? shortId(m.fromBagCellId) : "—"}
                       </td>
                       <td className="px-4 py-3 text-ink-muted inline-flex items-center gap-1">
                         <MoveRight className="size-3 text-ink-dim" />
-                        {m.toSlotId ? shortId(m.toSlotId) : "—"}
+                        {m.toBagCellId ? shortId(m.toBagCellId) : "—"}
                       </td>
                     </tr>
                   );

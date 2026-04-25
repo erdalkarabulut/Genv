@@ -72,9 +72,9 @@ public class UserManager : IUserService
         return updatedUser;
     }
 
-    public async Task<User> DeleteAsync(User user, bool permanent = false)
+    public async Task<User> DeleteAsync(User user, bool permanent = true)
     {
-        User deletedUser = await _userRepository.DeleteAsync(user);
+        User deletedUser = await _userRepository.DeleteAsync(user, permanent);
 
         return deletedUser;
     }

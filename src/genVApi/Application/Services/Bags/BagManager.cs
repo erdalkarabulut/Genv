@@ -83,14 +83,14 @@ public class BagManager : IBagService
         return updatedBags;
     }
 
-    public async Task<Bag> DeleteAsync(Bag bag, bool permanent = false)
+    public async Task<Bag> DeleteAsync(Bag bag, bool permanent = true)
     {
-        Bag deletedBag = await _bagRepository.DeleteAsync(bag);
+        Bag deletedBag = await _bagRepository.DeleteAsync(bag, permanent);
 
         return deletedBag;
     }
 
-    public async Task<ICollection<Bag>> DeleteRangeAsync(ICollection<Bag> bags, bool permanent = false)
+    public async Task<ICollection<Bag>> DeleteRangeAsync(ICollection<Bag> bags, bool permanent = true)
     {
         ICollection<Bag> deletedBags = await _bagRepository.DeleteRangeAsync(bags, permanent);
 

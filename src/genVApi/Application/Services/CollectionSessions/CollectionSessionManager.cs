@@ -83,14 +83,14 @@ public class CollectionSessionManager : ICollectionSessionService
         return updatedCollectionSessions;
     }
 
-    public async Task<CollectionSession> DeleteAsync(CollectionSession collectionSession, bool permanent = false)
+    public async Task<CollectionSession> DeleteAsync(CollectionSession collectionSession, bool permanent = true)
     {
-        CollectionSession deletedCollectionSession = await _collectionSessionRepository.DeleteAsync(collectionSession);
+        CollectionSession deletedCollectionSession = await _collectionSessionRepository.DeleteAsync(collectionSession, permanent);
 
         return deletedCollectionSession;
     }
 
-    public async Task<ICollection<CollectionSession>> DeleteRangeAsync(ICollection<CollectionSession> collectionSessions, bool permanent = false)
+    public async Task<ICollection<CollectionSession>> DeleteRangeAsync(ICollection<CollectionSession> collectionSessions, bool permanent = true)
     {
         ICollection<CollectionSession> deletedCollectionSessions = await _collectionSessionRepository.DeleteRangeAsync(collectionSessions, permanent);
 

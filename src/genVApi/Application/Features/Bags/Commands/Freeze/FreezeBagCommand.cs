@@ -16,38 +16,38 @@ namespace Application.Features.Bags.Commands.Freeze;
 
 /// <summary>
 /// Mevcut bir torbayı "dondurulmuş" olarak işaretler.
-/// Opsiyonel: SlotId verilirse torba önce o slota yerleştirilir, sonra Frozen yapılır.
+/// Opsiyonel: BagCellId verilirse torba önce o torba hücresine yerleştirilir, sonra Frozen yapılır.
 /// </summary>
 public class FreezeBagCommand : IRequest<FreezeBagResponse>, ISecuredRequest, ICacheRemoverRequest, ILoggableRequest, ITransactionalRequest
 {
     public Guid BagId { get; set; }
 
-    /// <summary>Torba henüz bir slotta değilse verilmeli. Zaten slotta ise boş bırakılır.</summary>
-    public Guid? SlotId { get; set; }
+    /// <summary>Torba henüz bir hücrede değilse verilmeli. Zaten hücrede ise boş bırakılır.</summary>
+    public Guid? BagCellId { get; set; }
 
     public string[] Roles => [Admin, Write];
 
     public bool BypassCache { get; }
     public string? CacheKey { get; }
-    public string[]? CacheGroupKey => ["GetBags", "GetSlots", "Dashboard"];
+    public string[]? CacheGroupKey => ["GetBags", "GetBagCells", "Dashboard"];
 
     public class FreezeBagCommandHandler : IRequestHandler<FreezeBagCommand, FreezeBagResponse>
     {
         private readonly IBagRepository _bagRepository;
-        private readonly ISlotRepository _slotRepository;
+        private readonly IBagCellRepository _bagCellRepository;
         private readonly IBagMovementRepository _movementRepository;
         private readonly BagBusinessRules _bagBusinessRules;
         private readonly IRealTimeNotifier _notifier;
 
         public FreezeBagCommandHandler(
             IBagRepository bagRepository,
-            ISlotRepository slotRepository,
+            IBagCellRepository bagCellRepository,
             IBagMovementRepository movementRepository,
             BagBusinessRules bagBusinessRules,
             IRealTimeNotifier notifier)
         {
             _bagRepository = bagRepository;
-            _slotRepository = slotRepository;
+            _bagCellRepository = bagCellRepository;
             _movementRepository = movementRepository;
             _bagBusinessRules = bagBusinessRules;
             _notifier = notifier;
@@ -61,44 +61,42 @@ public class FreezeBagCommand : IRequest<FreezeBagResponse>, ISecuredRequest, IC
             if (bag!.Status == BagStatus.Used || bag.Status == BagStatus.Discarded)
                 throw new BusinessException("Kullanılmış veya iptal edilmiş torba dondurulamaz.");
 
-            // Eğer torba henüz slotta değilse, slot zorunlu.
-            Slot? targetSlot = null;
-            if (!bag.SlotId.HasValue)
+            BagCell? targetCell = null;
+            if (!bag.BagCellId.HasValue)
             {
-                if (!request.SlotId.HasValue)
-                    throw new BusinessException("Torba henüz slotta değil — dondurmak için bir slot seçin.");
+                if (!request.BagCellId.HasValue)
+                    throw new BusinessException("Torba henüz bir torba hücresinde değil — dondurmak için bir hücre seçin.");
 
-                targetSlot = await _slotRepository.GetAsync(
-                    predicate: s => s.Id == request.SlotId.Value,
+                targetCell = await _bagCellRepository.GetAsync(
+                    predicate: c => c.Id == request.BagCellId.Value,
                     cancellationToken: cancellationToken
                 );
-                if (targetSlot is null)
-                    throw new BusinessException("Seçilen slot bulunamadı.");
-                if (targetSlot.IsOccupied)
-                    throw new BusinessException($"Slot ({targetSlot.Position}) dolu; boş bir slot seçin.");
+                if (targetCell is null)
+                    throw new BusinessException("Seçilen torba hücresi bulunamadı.");
+                if (targetCell.IsOccupied)
+                    throw new BusinessException($"Torba hücresi ({targetCell.Position}) dolu; boş bir hücre seçin.");
 
-                targetSlot.IsOccupied = true;
-                targetSlot.Version += 1;
-                bag.SlotId = targetSlot.Id;
+                targetCell.IsOccupied = true;
+                targetCell.Version += 1;
+                bag.BagCellId = targetCell.Id;
 
-                await _slotRepository.UpdateAsync(targetSlot);
+                await _bagCellRepository.UpdateAsync(targetCell);
 
                 await _movementRepository.AddAsync(new BagMovement
                 {
                     BagId = bag.Id,
-                    FromSlotId = null,
-                    ToSlotId = targetSlot.Id,
+                    FromBagCellId = null,
+                    ToBagCellId = targetCell.Id,
                     Action = "Freeze-Store"
                 });
             }
             else
             {
-                // Zaten slotta — sadece durum değişikliği ve log.
                 await _movementRepository.AddAsync(new BagMovement
                 {
                     BagId = bag.Id,
-                    FromSlotId = bag.SlotId,
-                    ToSlotId = bag.SlotId,
+                    FromBagCellId = bag.BagCellId,
+                    ToBagCellId = bag.BagCellId,
                     Action = "Freeze"
                 });
             }
@@ -106,14 +104,14 @@ public class FreezeBagCommand : IRequest<FreezeBagResponse>, ISecuredRequest, IC
             bag.Status = BagStatus.Frozen;
             await _bagRepository.UpdateAsync(bag);
 
-            if (targetSlot is not null)
-                await _notifier.BagStoredAsync(bag.Id, targetSlot.Id, cancellationToken);
+            if (targetCell is not null)
+                await _notifier.BagStoredAsync(bag.Id, targetCell.Id, cancellationToken);
             await _notifier.DashboardUpdatedAsync(cancellationToken);
 
             return new FreezeBagResponse
             {
                 BagId = bag.Id,
-                SlotId = bag.SlotId,
+                BagCellId = bag.BagCellId,
                 Status = bag.Status
             };
         }
@@ -123,6 +121,6 @@ public class FreezeBagCommand : IRequest<FreezeBagResponse>, ISecuredRequest, IC
 public class FreezeBagResponse
 {
     public Guid BagId { get; set; }
-    public Guid? SlotId { get; set; }
+    public Guid? BagCellId { get; set; }
     public BagStatus Status { get; set; }
 }

@@ -81,9 +81,9 @@ public class OperationClaimManager : IOperationClaimService
         return updatedOperationClaim;
     }
 
-    public async Task<OperationClaim> DeleteAsync(OperationClaim operationClaim, bool permanent = false)
+    public async Task<OperationClaim> DeleteAsync(OperationClaim operationClaim, bool permanent = true)
     {
-        OperationClaim deletedOperationClaim = await _operationClaimRepository.DeleteAsync(operationClaim);
+        OperationClaim deletedOperationClaim = await _operationClaimRepository.DeleteAsync(operationClaim, permanent);
 
         return deletedOperationClaim;
     }

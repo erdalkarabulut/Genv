@@ -14,7 +14,5 @@ public class PlcAlarmContactConfiguration : IEntityTypeConfiguration<PlcAlarmCon
         builder.Property(x => x.DisplayName).HasMaxLength(200).IsRequired();
         builder.Property(x => x.Phone).HasMaxLength(32).IsRequired();
         builder.Property(x => x.Email).HasMaxLength(256);
-
-        builder.HasQueryFilter(x => !x.DeletedDate.HasValue);
     }
 }

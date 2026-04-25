@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\GenVApi\\src\\corePackages\\Core.Security.DependencyInjection\\Core.Security.DependencyInjection.csproj": {}
+    "D:\\GenvAp\\src\\corePackages\\Core.Security.DependencyInjection\\Core.Security.DependencyInjection.csproj": {}
   },
   "projects": {
-    "D:\\GenVApi\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj": {
+    "D:\\GenvAp\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GenVApi\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj",
+        "projectUniqueName": "D:\\GenvAp\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj",
         "projectName": "NArchitecture.Core.Persistence",
-        "projectPath": "D:\\GenVApi\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj",
+        "projectPath": "D:\\GenvAp\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj",
         "packagesPath": "C:\\Users\\erdal\\.nuget\\packages\\",
-        "outputPath": "D:\\GenVApi\\src\\corePackages\\Core.Persistence\\obj\\",
+        "outputPath": "D:\\GenvAp\\src\\corePackages\\Core.Persistence\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\DevExpress 20.2\\Components\\Offline Packages",
@@ -94,14 +94,14 @@
         }
       }
     },
-    "D:\\GenVApi\\src\\corePackages\\Core.Security.DependencyInjection\\Core.Security.DependencyInjection.csproj": {
+    "D:\\GenvAp\\src\\corePackages\\Core.Security.DependencyInjection\\Core.Security.DependencyInjection.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GenVApi\\src\\corePackages\\Core.Security.DependencyInjection\\Core.Security.DependencyInjection.csproj",
+        "projectUniqueName": "D:\\GenvAp\\src\\corePackages\\Core.Security.DependencyInjection\\Core.Security.DependencyInjection.csproj",
         "projectName": "NArchitecture.Core.Security.DependencyInjection",
-        "projectPath": "D:\\GenVApi\\src\\corePackages\\Core.Security.DependencyInjection\\Core.Security.DependencyInjection.csproj",
+        "projectPath": "D:\\GenvAp\\src\\corePackages\\Core.Security.DependencyInjection\\Core.Security.DependencyInjection.csproj",
         "packagesPath": "C:\\Users\\erdal\\.nuget\\packages\\",
-        "outputPath": "D:\\GenVApi\\src\\corePackages\\Core.Security.DependencyInjection\\obj\\",
+        "outputPath": "D:\\GenvAp\\src\\corePackages\\Core.Security.DependencyInjection\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\DevExpress 20.2\\Components\\Offline Packages",
@@ -125,8 +125,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\GenVApi\\src\\corePackages\\Core.Security\\Core.Security.csproj": {
-                "projectPath": "D:\\GenVApi\\src\\corePackages\\Core.Security\\Core.Security.csproj"
+              "D:\\GenvAp\\src\\corePackages\\Core.Security\\Core.Security.csproj": {
+                "projectPath": "D:\\GenvAp\\src\\corePackages\\Core.Security\\Core.Security.csproj"
               }
             }
           }
@@ -166,14 +166,14 @@
         }
       }
     },
-    "D:\\GenVApi\\src\\corePackages\\Core.Security\\Core.Security.csproj": {
+    "D:\\GenvAp\\src\\corePackages\\Core.Security\\Core.Security.csproj": {
       "version": "1.1.1",
       "restore": {
-        "projectUniqueName": "D:\\GenVApi\\src\\corePackages\\Core.Security\\Core.Security.csproj",
+        "projectUniqueName": "D:\\GenvAp\\src\\corePackages\\Core.Security\\Core.Security.csproj",
         "projectName": "NArchitecture.Core.Security",
-        "projectPath": "D:\\GenVApi\\src\\corePackages\\Core.Security\\Core.Security.csproj",
+        "projectPath": "D:\\GenvAp\\src\\corePackages\\Core.Security\\Core.Security.csproj",
         "packagesPath": "C:\\Users\\erdal\\.nuget\\packages\\",
-        "outputPath": "D:\\GenVApi\\src\\corePackages\\Core.Security\\obj\\",
+        "outputPath": "D:\\GenvAp\\src\\corePackages\\Core.Security\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\DevExpress 20.2\\Components\\Offline Packages",
@@ -197,8 +197,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\GenVApi\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj": {
-                "projectPath": "D:\\GenVApi\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj"
+              "D:\\GenvAp\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj": {
+                "projectPath": "D:\\GenvAp\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj"
               }
             }
           }

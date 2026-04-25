@@ -29,6 +29,6 @@ public interface IDliProductService
     Task<ICollection<DliProduct>> AddRangeAsync(ICollection<DliProduct> dliProducts);
     Task<DliProduct> UpdateAsync(DliProduct dliProduct);
     Task<ICollection<DliProduct>> UpdateRangeAsync(ICollection<DliProduct> dliProducts);
-    Task<DliProduct> DeleteAsync(DliProduct dliProduct, bool permanent = false);
-    Task<ICollection<DliProduct>> DeleteRangeAsync(ICollection<DliProduct> dliProducts, bool permanent = false);
+    Task<DliProduct> DeleteAsync(DliProduct dliProduct, bool permanent = true);
+    Task<ICollection<DliProduct>> DeleteRangeAsync(ICollection<DliProduct> dliProducts, bool permanent = true);
 }

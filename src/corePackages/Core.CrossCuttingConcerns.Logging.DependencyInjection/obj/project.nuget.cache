@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "hmoMDe2aRBk=",
+  "dgSpecHash": "T8aLxeM8yfs=",
   "success": true,
-  "projectFilePath": "D:\\GenVApi\\src\\corePackages\\Core.CrossCuttingConcerns.Logging.DependencyInjection\\Core.CrossCuttingConcerns.Logging.DependencyInjection.csproj",
+  "projectFilePath": "D:\\GenvAp\\src\\corePackages\\Core.CrossCuttingConcerns.Logging.DependencyInjection\\Core.CrossCuttingConcerns.Logging.DependencyInjection.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\erdal\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
     "C:\\Users\\erdal\\.nuget\\packages\\narchitecture.core.crosscuttingconcerns.logging.abstraction\\1.0.0\\narchitecture.core.crosscuttingconcerns.logging.abstraction.1.0.0.nupkg.sha512"

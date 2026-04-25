@@ -34,7 +34,7 @@ public class UpdateBagRangeCommand : IRequest<UpdatedBagRangeResponse>, ISecured
         public Domain.Enums.BagStatus Status { get; set; }
         public Domain.Enums.BagPurpose Purpose { get; set; }
         public Guid? SplitBatchId { get; set; }
-        public Guid? SlotId { get; set; }
+        public Guid? BagCellId { get; set; }
     }
 
     public class UpdateBagRangeCommandHandler : IRequestHandler<UpdateBagRangeCommand, UpdatedBagRangeResponse>

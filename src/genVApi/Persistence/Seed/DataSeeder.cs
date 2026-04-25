@@ -69,18 +69,19 @@ public static class DataSeeder
         var now = DateTime.UtcNow;
 
         // =========================================================
-        // 1) Tank hierarchy: TankA (2 rack × 2 box × 9 slot = 36 slot)
-        //                    TankB (1 rack × 1 box × 9 slot  =  9 slot)
+        // 1) Tank → Rack → Slot (raf) → Box → BagCell (3×3 = 9 hücre/kutu)
+        //    TankA: 2 rack × 2 raf-slot × 9 bagcell = 36 hücre
+        //    TankB: 1 rack × 1 raf-slot × 9 bagcell = 9 hücre
         // =========================================================
         CreateTank(ctx, "TankA", racks: new[] { "R1", "R2" }, boxesPerRack: new[] { "B1", "B2" });
         CreateTank(ctx, "TankB", racks: new[] { "R1" }, boxesPerRack: new[] { "B1" });
 
-        // Tüm slotları pozisyona göre bir kuyruğa al — demo bagleri sırayla yerleştireceğiz.
-        var slotQueue = new Queue<Slot>(
-            ctx.ChangeTracker.Entries<Slot>()
+        // Torba hücrelerini pozisyona göre kuyruk — demo torbalar sırayla yerleşsin.
+        var bagCellQueue = new Queue<BagCell>(
+            ctx.ChangeTracker.Entries<BagCell>()
                 .Select(e => e.Entity)
-                .OrderBy(s => s.BoxId)
-                .ThenBy(s => s.Position));
+                .OrderBy(c => c.BoxId)
+                .ThenBy(c => c.Position));
 
         // =========================================================
         // 2) Donors (farklı yakınlık dereceleri)
@@ -128,7 +129,7 @@ public static class DataSeeder
             volumeMl: 260, wbc: 220,
             cd34Pct: 1.6, cd45Pct: 82, cd3Pct: 25, lymphoPct: 30, mhs: 1.05,
             cd34PerKg: 5.8, cd3PerKg: 5.1);
-        SplitIntoBags(ctx, p1s1, slotQueue, moveCryoToNewSlot: false, markInfusionUsed: false);
+        SplitIntoBags(ctx, p1s1, bagCellQueue, moveCryoToNewSlot: false, markInfusionUsed: false);
 
         // =========================================================
         // 4) P2 · Otolog · 2 gün sınırda (≥ target, &lt; ideal)
@@ -194,7 +195,7 @@ public static class DataSeeder
             volumeMl: 280, wbc: 250,
             cd34Pct: 1.8, cd45Pct: 85, cd3Pct: 40, lymphoPct: 55, mhs: 1.2,
             cd34PerKg: 6.2, cd3PerKg: 12.5);
-        SplitIntoBags(ctx, p4s1, slotQueue, moveCryoToNewSlot: false, markInfusionUsed: false);
+        SplitIntoBags(ctx, p4s1, bagCellQueue, moveCryoToNewSlot: false, markInfusionUsed: false);
 
         // =========================================================
         // 7) P5 · Allogeneik · 2 gün optimal + split + move + use
@@ -220,7 +221,7 @@ public static class DataSeeder
             volumeMl: 260, wbc: 200,
             cd34Pct: 1.1, cd45Pct: 80, cd3Pct: 22, lymphoPct: 30, mhs: 1.0,
             cd34PerKg: 2.6, cd3PerKg: 2.7);
-        SplitIntoBags(ctx, p5s2, slotQueue, moveCryoToNewSlot: true, markInfusionUsed: true);
+        SplitIntoBags(ctx, p5s2, bagCellQueue, moveCryoToNewSlot: true, markInfusionUsed: true);
 
         // =========================================================
         // 8) P6 · Allogeneik · 2 gün · Düşük bağışıklık
@@ -266,13 +267,18 @@ public static class DataSeeder
 
             foreach (var boxName in boxesPerRack)
             {
-                var box = new Box { Id = Guid.NewGuid(), RackId = rack.Id, Name = boxName };
+                var rackSlot = new Slot { Id = Guid.NewGuid(), RackId = rack.Id, Name = boxName };
+                ctx.RackSlots.Add(rackSlot);
+
+                var box = new Box { Id = Guid.NewGuid(), SlotId = rackSlot.Id, Name = boxName };
                 ctx.Boxes.Add(box);
 
-                // 3×3 = 9 slot: A1..A3, B1..B3, C1..C3
+                // 3×3 = 9 torba hücresi: A1..A3, B1..B3, C1..C3
                 foreach (var row in new[] { 'A', 'B', 'C' })
+                {
                     for (int col = 1; col <= 3; col++)
-                        ctx.Slots.Add(new Slot
+                    {
+                        ctx.BagCells.Add(new BagCell
                         {
                             Id = Guid.NewGuid(),
                             BoxId = box.Id,
@@ -280,6 +286,8 @@ public static class DataSeeder
                             IsOccupied = false,
                             Version = 0
                         });
+                    }
+                }
             }
         }
     }
@@ -340,7 +348,7 @@ public static class DataSeeder
     /// Aferez ürününü 4 torbaya böler, Cryo torbasını kuyruktan ilk boş slota store eder
     /// ve gerekirse bir kez taşıma (Move) ve bir Infusion torbası kullanma (Use) akışını da loglar.
     /// </summary>
-    private static void SplitIntoBags(BaseDbContext ctx, CollectionSession session, Queue<Slot> slotQueue,
+    private static void SplitIntoBags(BaseDbContext ctx, CollectionSession session, Queue<BagCell> bagCellQueue,
         bool moveCryoToNewSlot, bool markInfusionUsed)
     {
         var splitBatchId = Guid.NewGuid();
@@ -378,45 +386,44 @@ public static class DataSeeder
             bags.Add(bag);
         }
 
-        // Cryo → store to next empty slot
+        // Cryo → store to next empty bag cell
         var cryo = bags.First(b => b.Purpose == BagPurpose.Cryo);
-        if (slotQueue.Count > 0)
+        if (bagCellQueue.Count > 0)
         {
-            var slot = slotQueue.Dequeue();
-            slot.IsOccupied = true;
-            slot.Version += 1;
+            var cell = bagCellQueue.Dequeue();
+            cell.IsOccupied = true;
+            cell.Version += 1;
 
-            cryo.SlotId = slot.Id;
+            cryo.BagCellId = cell.Id;
             cryo.Status = BagStatus.Stored;
 
             ctx.BagMovements.Add(new BagMovement
             {
                 Id = Guid.NewGuid(),
                 BagId = cryo.Id,
-                FromSlotId = null,
-                ToSlotId = slot.Id,
+                FromBagCellId = null,
+                ToBagCellId = cell.Id,
                 Action = "Split-Store (Cryo)"
             });
 
-            if (moveCryoToNewSlot && slotQueue.Count > 0)
+            if (moveCryoToNewSlot && bagCellQueue.Count > 0)
             {
-                // Demo: Cryo torbası bir kez başka slota taşındı (örn. tank reorganizasyonu)
-                var newSlot = slotQueue.Dequeue();
+                var newCell = bagCellQueue.Dequeue();
 
-                slot.IsOccupied = false;
-                slot.Version += 1;
+                cell.IsOccupied = false;
+                cell.Version += 1;
 
-                newSlot.IsOccupied = true;
-                newSlot.Version += 1;
+                newCell.IsOccupied = true;
+                newCell.Version += 1;
 
-                cryo.SlotId = newSlot.Id;
+                cryo.BagCellId = newCell.Id;
 
                 ctx.BagMovements.Add(new BagMovement
                 {
                     Id = Guid.NewGuid(),
                     BagId = cryo.Id,
-                    FromSlotId = slot.Id,
-                    ToSlotId = newSlot.Id,
+                    FromBagCellId = cell.Id,
+                    ToBagCellId = newCell.Id,
                     Action = "Move"
                 });
             }
@@ -424,7 +431,6 @@ public static class DataSeeder
 
         if (markInfusionUsed)
         {
-            // Demo: Infüzyon torbası daha önce kullanılmış (Reserved → Used)
             var infusion = bags.First(b => b.Purpose == BagPurpose.Infusion);
             infusion.Status = BagStatus.Used;
 
@@ -432,8 +438,8 @@ public static class DataSeeder
             {
                 Id = Guid.NewGuid(),
                 BagId = infusion.Id,
-                FromSlotId = null,
-                ToSlotId = null,
+                FromBagCellId = null,
+                ToBagCellId = null,
                 Action = "Use"
             });
         }

@@ -83,14 +83,14 @@ public class TankManager : ITankService
         return updatedTanks;
     }
 
-    public async Task<Tank> DeleteAsync(Tank tank, bool permanent = false)
+    public async Task<Tank> DeleteAsync(Tank tank, bool permanent = true)
     {
-        Tank deletedTank = await _tankRepository.DeleteAsync(tank);
+        Tank deletedTank = await _tankRepository.DeleteAsync(tank, permanent);
 
         return deletedTank;
     }
 
-    public async Task<ICollection<Tank>> DeleteRangeAsync(ICollection<Tank> tanks, bool permanent = false)
+    public async Task<ICollection<Tank>> DeleteRangeAsync(ICollection<Tank> tanks, bool permanent = true)
     {
         ICollection<Tank> deletedTanks = await _tankRepository.DeleteRangeAsync(tanks, permanent);
 

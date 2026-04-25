@@ -46,8 +46,6 @@ public class OperationClaimConfiguration : IEntityTypeConfiguration<OperationCla
         builder.Property(oc => oc.UpdatedDate).HasColumnName("UpdatedDate");
         builder.Property(oc => oc.DeletedDate).HasColumnName("DeletedDate");
 
-        builder.HasQueryFilter(oc => !oc.DeletedDate.HasValue);
-
         builder.HasData(_seeds);
 
         builder.HasBaseType((string)null!);

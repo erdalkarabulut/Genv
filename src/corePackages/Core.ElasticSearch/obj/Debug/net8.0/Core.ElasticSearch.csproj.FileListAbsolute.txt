@@ -22,3 +22,16 @@ D:\GenVApi\src\corePackages\Core.ElasticSearch\obj\Debug\net8.0\Core.ElasticSear
 D:\GenVApi\src\corePackages\Core.ElasticSearch\obj\Debug\net8.0\refint\Core.ElasticSearch.dll
 D:\GenVApi\src\corePackages\Core.ElasticSearch\obj\Debug\net8.0\Core.ElasticSearch.pdb
 D:\GenVApi\src\corePackages\Core.ElasticSearch\obj\Debug\net8.0\ref\Core.ElasticSearch.dll
+D:\GenvAp\src\corePackages\Core.ElasticSearch\bin\Debug\net8.0\Core.ElasticSearch.deps.json
+D:\GenvAp\src\corePackages\Core.ElasticSearch\bin\Debug\net8.0\Core.ElasticSearch.dll
+D:\GenvAp\src\corePackages\Core.ElasticSearch\bin\Debug\net8.0\Core.ElasticSearch.pdb
+D:\GenvAp\src\corePackages\Core.ElasticSearch\obj\Debug\net8.0\Core.ElasticSearch.csproj.AssemblyReference.cache
+D:\GenvAp\src\corePackages\Core.ElasticSearch\obj\Debug\net8.0\Core.ElasticSearch.GeneratedMSBuildEditorConfig.editorconfig
+D:\GenvAp\src\corePackages\Core.ElasticSearch\obj\Debug\net8.0\Core.ElasticSearch.AssemblyInfoInputs.cache
+D:\GenvAp\src\corePackages\Core.ElasticSearch\obj\Debug\net8.0\Core.ElasticSearch.AssemblyInfo.cs
+D:\GenvAp\src\corePackages\Core.ElasticSearch\obj\Debug\net8.0\Core.ElasticSearch.csproj.CoreCompileInputs.cache
+D:\GenvAp\src\corePackages\Core.ElasticSearch\obj\Debug\net8.0\Core.ElasticSearch.sourcelink.json
+D:\GenvAp\src\corePackages\Core.ElasticSearch\obj\Debug\net8.0\Core.ElasticSearch.dll
+D:\GenvAp\src\corePackages\Core.ElasticSearch\obj\Debug\net8.0\refint\Core.ElasticSearch.dll
+D:\GenvAp\src\corePackages\Core.ElasticSearch\obj\Debug\net8.0\Core.ElasticSearch.pdb
+D:\GenvAp\src\corePackages\Core.ElasticSearch\obj\Debug\net8.0\ref\Core.ElasticSearch.dll

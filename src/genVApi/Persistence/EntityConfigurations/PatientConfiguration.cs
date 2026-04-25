@@ -37,7 +37,5 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
                .WithOne(d => d.Patient)
                .HasForeignKey(d => d.PatientId)
                .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasQueryFilter(p => !p.DeletedDate.HasValue);
     }
 }

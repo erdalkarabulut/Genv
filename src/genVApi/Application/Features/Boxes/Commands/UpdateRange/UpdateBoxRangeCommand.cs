@@ -25,7 +25,7 @@ public class UpdateBoxRangeCommand : IRequest<UpdatedBoxRangeResponse>, ISecured
     public class UpdateBoxRangeItem
     {
         public Guid Id { get; set; }
-        public Guid RackId { get; set; }
+        public Guid SlotId { get; set; }
         public string Name { get; set; }
     }
 

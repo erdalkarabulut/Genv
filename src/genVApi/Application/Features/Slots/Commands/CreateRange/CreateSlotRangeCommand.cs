@@ -19,7 +19,7 @@ public class CreateSlotRangeCommand : IRequest<CreatedSlotRangeResponse>, ISecur
 
     public bool BypassCache { get; }
     public string? CacheKey { get; }
-    public string[]? CacheGroupKey => ["GetSlots"];
+    public string[]? CacheGroupKey => ["GetBagCells"];
 
     public class CreateSlotRangeItem
     {
@@ -32,19 +32,19 @@ public class CreateSlotRangeCommand : IRequest<CreatedSlotRangeResponse>, ISecur
     public class CreateSlotRangeCommandHandler : IRequestHandler<CreateSlotRangeCommand, CreatedSlotRangeResponse>
     {
         private readonly IMapper _mapper;
-        private readonly ISlotRepository _slotRepository;
+        private readonly IBagCellRepository _bagCellRepository;
 
-        public CreateSlotRangeCommandHandler(IMapper mapper, ISlotRepository slotRepository)
+        public CreateSlotRangeCommandHandler(IMapper mapper, IBagCellRepository bagCellRepository)
         {
             _mapper = mapper;
-            _slotRepository = slotRepository;
+            _bagCellRepository = bagCellRepository;
         }
 
         public async Task<CreatedSlotRangeResponse> Handle(CreateSlotRangeCommand request, CancellationToken cancellationToken)
         {
-            List<Slot> slots = request.Items.Select(item => _mapper.Map<Slot>(item)).ToList();
+            List<BagCell> slots = request.Items.Select(item => _mapper.Map<BagCell>(item)).ToList();
 
-            ICollection<Slot> addedSlots = await _slotRepository.AddRangeAsync(slots);
+            ICollection<BagCell> addedSlots = await _bagCellRepository.AddRangeAsync(slots);
 
             return new CreatedSlotRangeResponse { Ids = addedSlots.Select(e => e.Id).ToList() };
         }

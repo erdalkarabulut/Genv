@@ -90,10 +90,10 @@ public class UserUserOperationClaimManager : IUserOperationClaimService
         return updatedUserOperationClaim;
     }
 
-    public async Task<UserOperationClaim> DeleteAsync(UserOperationClaim userUserOperationClaim, bool permanent = false)
+    public async Task<UserOperationClaim> DeleteAsync(UserOperationClaim userUserOperationClaim, bool permanent = true)
     {
         UserOperationClaim deletedUserOperationClaim = await _userUserOperationClaimRepository.DeleteAsync(
-            userUserOperationClaim
+            userUserOperationClaim, permanent
         );
 
         return deletedUserOperationClaim;

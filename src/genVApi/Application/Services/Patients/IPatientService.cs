@@ -29,6 +29,6 @@ public interface IPatientService
     Task<ICollection<Patient>> AddRangeAsync(ICollection<Patient> patients);
     Task<Patient> UpdateAsync(Patient patient);
     Task<ICollection<Patient>> UpdateRangeAsync(ICollection<Patient> patients);
-    Task<Patient> DeleteAsync(Patient patient, bool permanent = false);
-    Task<ICollection<Patient>> DeleteRangeAsync(ICollection<Patient> patients, bool permanent = false);
+    Task<Patient> DeleteAsync(Patient patient, bool permanent = true);
+    Task<ICollection<Patient>> DeleteRangeAsync(ICollection<Patient> patients, bool permanent = true);
 }

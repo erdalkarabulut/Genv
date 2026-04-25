@@ -29,6 +29,10 @@ namespace Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("Id");
 
+                    b.Property<Guid?>("BagCellId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("BagCellId");
+
                     b.Property<int>("BagNumber")
                         .HasColumnType("integer")
                         .HasColumnName("BagNumber");
@@ -76,10 +80,6 @@ namespace Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("SessionId");
 
-                    b.Property<Guid?>("SlotId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("SlotId");
-
                     b.Property<double>("SourceVolumeMl")
                         .HasColumnType("double precision")
                         .HasColumnName("SourceVolumeMl");
@@ -108,13 +108,61 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BagCellId")
+                        .IsUnique()
+                        .HasFilter("\"BagCellId\" IS NOT NULL");
+
                     b.HasIndex("SessionId");
 
-                    b.HasIndex("SlotId")
-                        .IsUnique()
-                        .HasFilter("\"SlotId\" IS NOT NULL");
-
                     b.ToTable("Bags", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.BagCell", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("BoxId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("BoxId");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CreatedDate");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("DeletedDate");
+
+                    b.Property<bool>("IsOccupied")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsOccupied");
+
+                    b.Property<string>("Position")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("Position");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UpdatedDate");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("Version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BoxId", "Position")
+                        .IsUnique();
+
+                    b.ToTable("BagCells", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.BagMovement", b =>
@@ -142,13 +190,13 @@ namespace Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("DeletedDate");
 
-                    b.Property<Guid?>("FromSlotId")
+                    b.Property<Guid?>("FromBagCellId")
                         .HasColumnType("uuid")
-                        .HasColumnName("FromSlotId");
+                        .HasColumnName("FromBagCellId");
 
-                    b.Property<Guid?>("ToSlotId")
+                    b.Property<Guid?>("ToBagCellId")
                         .HasColumnType("uuid")
-                        .HasColumnName("ToSlotId");
+                        .HasColumnName("ToBagCellId");
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("timestamp with time zone")
@@ -182,9 +230,9 @@ namespace Persistence.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("Name");
 
-                    b.Property<Guid>("RackId")
+                    b.Property<Guid>("SlotId")
                         .HasColumnType("uuid")
-                        .HasColumnName("RackId");
+                        .HasColumnName("SlotId");
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("timestamp with time zone")
@@ -192,7 +240,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RackId", "Name")
+                    b.HasIndex("SlotId", "Name")
                         .IsUnique();
 
                     b.ToTable("Boxes", (string)null);
@@ -1266,10 +1314,6 @@ namespace Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("Id");
 
-                    b.Property<Guid>("BoxId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("BoxId");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("CreatedDate");
@@ -1278,33 +1322,26 @@ namespace Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("DeletedDate");
 
-                    b.Property<bool>("IsOccupied")
-                        .HasColumnType("boolean")
-                        .HasColumnName("IsOccupied");
-
-                    b.Property<string>("Position")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("Position");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("Name");
+
+                    b.Property<Guid>("RackId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("RackId");
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("UpdatedDate");
 
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0)
-                        .HasColumnName("Version");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("BoxId", "Position")
+                    b.HasIndex("RackId", "Name")
                         .IsUnique();
 
-                    b.ToTable("Slots", (string)null);
+                    b.ToTable("RackSlots", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Tank", b =>
@@ -1385,12 +1422,12 @@ namespace Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8bcfdd9f-640e-45f6-a5a4-c153eadd9718"),
+                            Id = new Guid("eb180b88-f92d-4bc1-a351-59778f738a03"),
                             AuthenticatorType = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "narch@kodlama.io",
-                            PasswordHash = new byte[] { 23, 150, 255, 225, 162, 129, 114, 173, 176, 92, 70, 40, 232, 83, 81, 77, 30, 1, 164, 206, 16, 250, 40, 198, 163, 150, 234, 81, 187, 6, 222, 4, 24, 83, 251, 86, 253, 72, 238, 65, 236, 157, 165, 70, 215, 54, 161, 251, 28, 95, 167, 23, 20, 101, 24, 190, 195, 26, 197, 31, 8, 37, 86, 118 },
-                            PasswordSalt = new byte[] { 125, 95, 10, 20, 178, 168, 112, 216, 242, 241, 221, 112, 154, 81, 110, 104, 66, 136, 111, 224, 201, 111, 184, 67, 9, 148, 12, 217, 149, 34, 199, 10, 99, 153, 67, 128, 169, 94, 0, 79, 196, 204, 166, 29, 13, 110, 196, 49, 138, 147, 135, 16, 26, 250, 115, 45, 193, 172, 148, 25, 218, 215, 79, 152, 59, 81, 209, 219, 111, 114, 184, 15, 249, 239, 71, 67, 48, 76, 94, 32, 135, 194, 108, 244, 68, 253, 167, 47, 151, 175, 101, 125, 235, 28, 130, 96, 41, 242, 106, 42, 194, 237, 135, 121, 168, 185, 118, 96, 238, 144, 203, 72, 209, 242, 93, 57, 250, 67, 123, 37, 194, 134, 49, 151, 35, 157, 195, 22 }
+                            PasswordHash = new byte[] { 236, 194, 243, 138, 13, 62, 59, 181, 83, 6, 213, 222, 65, 250, 112, 165, 134, 91, 94, 126, 160, 159, 145, 42, 203, 144, 251, 73, 166, 200, 206, 97, 2, 175, 233, 197, 237, 7, 92, 106, 154, 134, 161, 205, 168, 1, 246, 28, 13, 4, 188, 34, 204, 172, 93, 237, 66, 219, 237, 200, 204, 163, 105, 180 },
+                            PasswordSalt = new byte[] { 245, 99, 218, 93, 0, 27, 240, 124, 40, 222, 195, 81, 21, 138, 253, 254, 70, 99, 77, 60, 226, 46, 88, 4, 136, 202, 5, 46, 14, 197, 193, 106, 145, 5, 81, 116, 103, 228, 10, 82, 217, 99, 231, 79, 57, 152, 205, 18, 173, 161, 173, 223, 19, 182, 32, 21, 236, 153, 232, 40, 145, 182, 197, 149, 62, 75, 115, 55, 161, 212, 144, 201, 238, 218, 47, 36, 236, 61, 16, 215, 103, 21, 181, 171, 57, 189, 238, 122, 0, 32, 118, 162, 132, 129, 11, 174, 154, 188, 184, 29, 133, 218, 74, 7, 53, 1, 120, 247, 223, 17, 110, 251, 80, 75, 99, 31, 144, 1, 138, 136, 237, 95, 127, 200, 67, 28, 170, 93 }
                         });
                 });
 
@@ -1432,29 +1469,40 @@ namespace Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("1526e8bd-347c-4986-b3de-40cc1da33d83"),
+                            Id = new Guid("b48afbfc-1fe8-4a62-b24a-a66ab29b9cde"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             OperationClaimId = 1,
-                            UserId = new Guid("8bcfdd9f-640e-45f6-a5a4-c153eadd9718")
+                            UserId = new Guid("eb180b88-f92d-4bc1-a351-59778f738a03")
                         });
                 });
 
             modelBuilder.Entity("Domain.Entities.Bag", b =>
                 {
+                    b.HasOne("Domain.Entities.BagCell", "BagCell")
+                        .WithOne("Bag")
+                        .HasForeignKey("Domain.Entities.Bag", "BagCellId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Domain.Entities.CollectionSession", "Session")
                         .WithMany("Bags")
                         .HasForeignKey("SessionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Slot", "Slot")
-                        .WithOne("Bag")
-                        .HasForeignKey("Domain.Entities.Bag", "SlotId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                    b.Navigation("BagCell");
 
                     b.Navigation("Session");
+                });
 
-                    b.Navigation("Slot");
+            modelBuilder.Entity("Domain.Entities.BagCell", b =>
+                {
+                    b.HasOne("Domain.Entities.Box", "Box")
+                        .WithMany("BagCells")
+                        .HasForeignKey("BoxId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Box");
                 });
 
             modelBuilder.Entity("Domain.Entities.BagMovement", b =>
@@ -1470,13 +1518,13 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Box", b =>
                 {
-                    b.HasOne("Domain.Entities.Rack", "Rack")
+                    b.HasOne("Domain.Entities.Slot", "Slot")
                         .WithMany("Boxes")
-                        .HasForeignKey("RackId")
+                        .HasForeignKey("SlotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Rack");
+                    b.Navigation("Slot");
                 });
 
             modelBuilder.Entity("Domain.Entities.CollectionSession", b =>
@@ -1593,13 +1641,13 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Slot", b =>
                 {
-                    b.HasOne("Domain.Entities.Box", "Box")
+                    b.HasOne("Domain.Entities.Rack", "Rack")
                         .WithMany("Slots")
-                        .HasForeignKey("BoxId")
+                        .HasForeignKey("RackId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Box");
+                    b.Navigation("Rack");
                 });
 
             modelBuilder.Entity("Domain.Entities.UserOperationClaim", b =>
@@ -1621,9 +1669,14 @@ namespace Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Entities.BagCell", b =>
+                {
+                    b.Navigation("Bag");
+                });
+
             modelBuilder.Entity("Domain.Entities.Box", b =>
                 {
-                    b.Navigation("Slots");
+                    b.Navigation("BagCells");
                 });
 
             modelBuilder.Entity("Domain.Entities.CollectionSession", b =>
@@ -1648,12 +1701,12 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Rack", b =>
                 {
-                    b.Navigation("Boxes");
+                    b.Navigation("Slots");
                 });
 
             modelBuilder.Entity("Domain.Entities.Slot", b =>
                 {
-                    b.Navigation("Bag");
+                    b.Navigation("Boxes");
                 });
 
             modelBuilder.Entity("Domain.Entities.Tank", b =>

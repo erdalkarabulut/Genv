@@ -24,7 +24,5 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(p => p.DeletedDate).HasColumnName("DeletedDate");
 
         builder.HasIndex(p => p.SessionId).IsUnique();
-
-        builder.HasQueryFilter(p => !p.DeletedDate.HasValue);
     }
 }

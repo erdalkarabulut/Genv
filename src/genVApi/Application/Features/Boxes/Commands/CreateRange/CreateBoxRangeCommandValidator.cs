@@ -10,7 +10,7 @@ public class CreateBoxRangeCommandValidator : AbstractValidator<CreateBoxRangeCo
         RuleForEach(x => x.Items).ChildRules(item =>
         {
             
-                        item.RuleFor(i => i.RackId).NotEmpty();
+                        item.RuleFor(i => i.SlotId).NotEmpty();
         });
     }
 }

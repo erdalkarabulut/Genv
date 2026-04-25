@@ -29,6 +29,6 @@ public interface IBoxService
     Task<ICollection<Box>> AddRangeAsync(ICollection<Box> boxs);
     Task<Box> UpdateAsync(Box box);
     Task<ICollection<Box>> UpdateRangeAsync(ICollection<Box> boxs);
-    Task<Box> DeleteAsync(Box box, bool permanent = false);
-    Task<ICollection<Box>> DeleteRangeAsync(ICollection<Box> boxs, bool permanent = false);
+    Task<Box> DeleteAsync(Box box, bool permanent = true);
+    Task<ICollection<Box>> DeleteRangeAsync(ICollection<Box> boxs, bool permanent = true);
 }

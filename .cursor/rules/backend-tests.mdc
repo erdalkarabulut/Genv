@@ -1,0 +1,11 @@
+---
+description: Test projeleri — xUnit, handler ve entegrasyon
+globs: tests/**/*.cs
+alwaysApply: false
+---
+
+# Testler
+
+- Yeni command/query için mümkünse **handler** veya kritik iş kuralı için unit test ekle (`GenVApi.Application.Tests` vb.).
+- Auth ve güvenlik senaryolarında mevcut test stiline (fixture, mock servisler) uy.
+- Veritabanı bağımlı test: migration/seed varsayımlarını dokümante et; flaky test bırakma.

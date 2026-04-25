@@ -14,14 +14,15 @@ namespace Application.Features.Boxes.Commands.Create;
 
 public class CreateBoxCommand : IRequest<CreatedBoxResponse>, ISecuredRequest, ICacheRemoverRequest, ILoggableRequest, ITransactionalRequest
 {
-    public Guid RackId { get; set; }
+    /// <summary>Raf üzeri slot (Tank → Rack → Slot).</summary>
+    public Guid SlotId { get; set; }
     public string Name { get; set; }
 
     public string[] Roles => [Admin, Write, BoxesOperationClaims.Create];
 
     public bool BypassCache { get; }
     public string? CacheKey { get; }
-    public string[]? CacheGroupKey => ["GetBoxes"];
+    public string[]? CacheGroupKey => ["GetBoxes", "GetCryoGrid", "GetRackSlots"];
 
     public class CreateBoxCommandHandler : IRequestHandler<CreateBoxCommand, CreatedBoxResponse>
     {

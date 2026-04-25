@@ -20,3 +20,15 @@ D:\GenVApi\src\corePackages\Core.Translation.Abstraction\obj\Debug\net8.0\Core.T
 D:\GenVApi\src\corePackages\Core.Translation.Abstraction\obj\Debug\net8.0\refint\Core.Translation.Abstraction.dll
 D:\GenVApi\src\corePackages\Core.Translation.Abstraction\obj\Debug\net8.0\Core.Translation.Abstraction.pdb
 D:\GenVApi\src\corePackages\Core.Translation.Abstraction\obj\Debug\net8.0\ref\Core.Translation.Abstraction.dll
+D:\GenvAp\src\corePackages\Core.Translation.Abstraction\bin\Debug\net8.0\Core.Translation.Abstraction.deps.json
+D:\GenvAp\src\corePackages\Core.Translation.Abstraction\bin\Debug\net8.0\Core.Translation.Abstraction.dll
+D:\GenvAp\src\corePackages\Core.Translation.Abstraction\bin\Debug\net8.0\Core.Translation.Abstraction.pdb
+D:\GenvAp\src\corePackages\Core.Translation.Abstraction\obj\Debug\net8.0\Core.Translation.Abstraction.GeneratedMSBuildEditorConfig.editorconfig
+D:\GenvAp\src\corePackages\Core.Translation.Abstraction\obj\Debug\net8.0\Core.Translation.Abstraction.AssemblyInfoInputs.cache
+D:\GenvAp\src\corePackages\Core.Translation.Abstraction\obj\Debug\net8.0\Core.Translation.Abstraction.AssemblyInfo.cs
+D:\GenvAp\src\corePackages\Core.Translation.Abstraction\obj\Debug\net8.0\Core.Translation.Abstraction.csproj.CoreCompileInputs.cache
+D:\GenvAp\src\corePackages\Core.Translation.Abstraction\obj\Debug\net8.0\Core.Translation.Abstraction.sourcelink.json
+D:\GenvAp\src\corePackages\Core.Translation.Abstraction\obj\Debug\net8.0\Core.Translation.Abstraction.dll
+D:\GenvAp\src\corePackages\Core.Translation.Abstraction\obj\Debug\net8.0\refint\Core.Translation.Abstraction.dll
+D:\GenvAp\src\corePackages\Core.Translation.Abstraction\obj\Debug\net8.0\Core.Translation.Abstraction.pdb
+D:\GenvAp\src\corePackages\Core.Translation.Abstraction\obj\Debug\net8.0\ref\Core.Translation.Abstraction.dll

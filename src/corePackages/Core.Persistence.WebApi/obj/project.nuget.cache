@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "HLD8oqXHGg0=",
+  "dgSpecHash": "w2NzAdSw/G0=",
   "success": true,
-  "projectFilePath": "D:\\GenVApi\\src\\corePackages\\Core.Persistence.WebApi\\Core.Persistence.WebApi.csproj",
+  "projectFilePath": "D:\\GenvAp\\src\\corePackages\\Core.Persistence.WebApi\\Core.Persistence.WebApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\erdal\\.nuget\\packages\\microsoft.aspnetcore.http.abstractions\\2.2.0\\microsoft.aspnetcore.http.abstractions.2.2.0.nupkg.sha512",
     "C:\\Users\\erdal\\.nuget\\packages\\microsoft.aspnetcore.http.extensions\\2.2.0\\microsoft.aspnetcore.http.extensions.2.2.0.nupkg.sha512",

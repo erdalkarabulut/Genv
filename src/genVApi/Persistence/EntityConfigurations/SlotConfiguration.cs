@@ -4,23 +4,25 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Persistence.EntityConfigurations;
 
+/// <summary>Raf üzeri slot — tablo adı <c>RackSlots</c> (eski <c>Slots</c> tablosu torba hücresi için <c>BagCells</c> oldu).</summary>
 public class SlotConfiguration : IEntityTypeConfiguration<Slot>
 {
     public void Configure(EntityTypeBuilder<Slot> builder)
     {
-        builder.ToTable("Slots").HasKey(s => s.Id);
+        builder.ToTable("RackSlots").HasKey(s => s.Id);
 
         builder.Property(s => s.Id).HasColumnName("Id").IsRequired();
-        builder.Property(s => s.BoxId).HasColumnName("BoxId").IsRequired();
-        builder.Property(s => s.Position).HasColumnName("Position").HasMaxLength(20).IsRequired();
-        builder.Property(s => s.IsOccupied).HasColumnName("IsOccupied").IsRequired();
-        builder.Property(s => s.Version).HasColumnName("Version").IsConcurrencyToken().HasDefaultValue(0).IsRequired();
+        builder.Property(s => s.RackId).HasColumnName("RackId").IsRequired();
+        builder.Property(s => s.Name).HasColumnName("Name").HasMaxLength(100).IsRequired();
         builder.Property(s => s.CreatedDate).HasColumnName("CreatedDate").IsRequired();
         builder.Property(s => s.UpdatedDate).HasColumnName("UpdatedDate");
         builder.Property(s => s.DeletedDate).HasColumnName("DeletedDate");
 
-        builder.HasIndex(s => new { s.BoxId, s.Position }).IsUnique();
+        builder.HasMany(s => s.Boxes)
+            .WithOne(b => b.Slot)
+            .HasForeignKey(b => b.SlotId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasQueryFilter(s => !s.DeletedDate.HasValue);
+        builder.HasIndex(s => new { s.RackId, s.Name }).IsUnique();
     }
 }

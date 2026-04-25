@@ -19,24 +19,24 @@ public class GetListSlotQuery : IRequest<GetListResponse<GetListSlotListItemDto>
     public string[] Roles => [Admin, Read];
 
     public bool BypassCache { get; }
-    public string? CacheKey => $"GetListSlots({PageRequest.PageIndex},{PageRequest.PageSize})";
-    public string? CacheGroupKey => "GetSlots";
+    public string? CacheKey => $"GetListBagCells({PageRequest.PageIndex},{PageRequest.PageSize})";
+    public string? CacheGroupKey => "GetBagCells";
     public TimeSpan? SlidingExpiration { get; }
 
     public class GetListSlotQueryHandler : IRequestHandler<GetListSlotQuery, GetListResponse<GetListSlotListItemDto>>
     {
-        private readonly ISlotRepository _slotRepository;
+        private readonly IBagCellRepository _bagCellRepository;
         private readonly IMapper _mapper;
 
-        public GetListSlotQueryHandler(ISlotRepository slotRepository, IMapper mapper)
+        public GetListSlotQueryHandler(IBagCellRepository bagCellRepository, IMapper mapper)
         {
-            _slotRepository = slotRepository;
+            _bagCellRepository = bagCellRepository;
             _mapper = mapper;
         }
 
         public async Task<GetListResponse<GetListSlotListItemDto>> Handle(GetListSlotQuery request, CancellationToken cancellationToken)
         {
-            IPaginate<Slot> slots = await _slotRepository.GetListAsync(
+            IPaginate<BagCell> slots = await _bagCellRepository.GetListAsync(
                 index: request.PageRequest.PageIndex,
                 size: request.PageRequest.PageSize, 
                 cancellationToken: cancellationToken

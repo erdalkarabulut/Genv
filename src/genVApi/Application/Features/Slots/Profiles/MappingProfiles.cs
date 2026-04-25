@@ -16,16 +16,16 @@ public class MappingProfiles : Profile
 {
     public MappingProfiles()
     {
-        CreateMap<Slot, CreateSlotCommand>().ReverseMap();
-        CreateMap<CreateSlotRangeCommand.CreateSlotRangeItem, Slot>();
-        CreateMap<Slot, CreatedSlotResponse>().ReverseMap();
-        CreateMap<Slot, UpdateSlotCommand>().ReverseMap();
-        CreateMap<UpdateSlotRangeCommand.UpdateSlotRangeItem, Slot>();
-        CreateMap<Slot, UpdatedSlotResponse>().ReverseMap();
-        CreateMap<Slot, DeleteSlotCommand>().ReverseMap();
-        CreateMap<Slot, DeletedSlotResponse>().ReverseMap();
-        CreateMap<Slot, GetByIdSlotResponse>().ReverseMap();
-        CreateMap<Slot, GetListSlotListItemDto>().ReverseMap();
-        CreateMap<IPaginate<Slot>, GetListResponse<GetListSlotListItemDto>>().ReverseMap();
+        CreateMap<BagCell, CreateSlotCommand>().ReverseMap();
+        CreateMap<CreateSlotRangeCommand.CreateSlotRangeItem, BagCell>();
+        CreateMap<BagCell, CreatedSlotResponse>().ReverseMap();
+        CreateMap<BagCell, UpdateSlotCommand>().ReverseMap();
+        CreateMap<UpdateSlotRangeCommand.UpdateSlotRangeItem, BagCell>();
+        CreateMap<BagCell, UpdatedSlotResponse>().ReverseMap();
+        CreateMap<BagCell, DeleteSlotCommand>().ReverseMap();
+        CreateMap<BagCell, DeletedSlotResponse>().ReverseMap();
+        CreateMap<BagCell, GetByIdSlotResponse>().ReverseMap();
+        CreateMap<BagCell, GetListSlotListItemDto>().ReverseMap();
+        CreateMap<IPaginate<BagCell>, GetListResponse<GetListSlotListItemDto>>().ReverseMap();
     }
 }

@@ -23,9 +23,10 @@ public class GetCryoGridQuery : IRequest<CryoGridResponse>
             var query = await _tankRepository.GetListAsync(
                 predicate: request.TankId.HasValue ? (t => t.Id == request.TankId.Value) : null,
                 include: q => q.Include(t => t.Racks)
-                               .ThenInclude(r => r.Boxes)
-                               .ThenInclude(b => b.Slots)
-                               .ThenInclude(s => s.Bag),
+                    .ThenInclude(r => r.Slots)
+                    .ThenInclude(s => s.Boxes)
+                    .ThenInclude(b => b.BagCells)
+                    .ThenInclude(c => c.Bag!),
                 size: int.MaxValue,
                 enableTracking: false,
                 cancellationToken: cancellationToken
@@ -41,22 +42,28 @@ public class GetCryoGridQuery : IRequest<CryoGridResponse>
                     {
                         Id = r.Id,
                         Name = r.Name,
-                        Boxes = r.Boxes.OrderBy(b => b.Name).Select(b => new CryoBoxDto
+                        Slots = r.Slots.OrderBy(s => s.Name).Select(s => new CryoRackSlotDto
                         {
-                            Id = b.Id,
-                            Name = b.Name,
-                            Slots = b.Slots.OrderBy(s => s.Position).Select(s => new CryoSlotDto
+                            Id = s.Id,
+                            Name = s.Name,
+                            Boxes = s.Boxes.OrderBy(b => b.Name).Select(b => new CryoBoxDto
                             {
-                                Id = s.Id,
-                                Position = s.Position,
-                                IsOccupied = s.IsOccupied,
-                                BagId = s.Bag?.Id,
-                                BagNumber = s.Bag?.BagNumber,
-                                Status = s.Bag != null ? s.Bag.Status.ToString() : null,
-                                Purpose = s.Bag != null ? s.Bag.Purpose.ToString() : null,
-                                Cd34PerKg = s.Bag?.Cd34PerKg,
-                                Cd3PerKg = s.Bag?.Cd3PerKg,
-                                LocationCode = $"{t.Name}-{r.Name}-{b.Name}-{s.Position}"
+                                Id = b.Id,
+                                Name = b.Name,
+                                BagCells = b.BagCells.OrderBy(c => c.Position).Select(c => new CryoBagCellDto
+                                {
+                                    Id = c.Id,
+                                    Position = c.Position,
+                                    IsOccupied = c.IsOccupied,
+                                    BagId = c.Bag?.Id,
+                                    BagNumber = c.Bag?.BagNumber,
+                                    Status = c.Bag != null ? c.Bag.Status.ToString() : null,
+                                    Purpose = c.Bag != null ? c.Bag.Purpose.ToString() : null,
+                                    Cd34PerKg = c.Bag?.Cd34PerKg,
+                                    Cd3PerKg = c.Bag?.Cd3PerKg,
+                                    LocationCode =
+                                        $"{t.Name}-{r.Name}-{s.Name}-{b.Name}-{c.Position}"
+                                }).ToList()
                             }).ToList()
                         }).ToList()
                     }).ToList()
@@ -84,6 +91,14 @@ public class CryoRackDto
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = default!;
+    /// <summary>Raf slotları (Tank → Rack → Slot).</summary>
+    public List<CryoRackSlotDto> Slots { get; set; } = new();
+}
+
+public class CryoRackSlotDto
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; } = default!;
     public List<CryoBoxDto> Boxes { get; set; } = new();
 }
 
@@ -91,10 +106,10 @@ public class CryoBoxDto
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = default!;
-    public List<CryoSlotDto> Slots { get; set; } = new();
+    public List<CryoBagCellDto> BagCells { get; set; } = new();
 }
 
-public class CryoSlotDto
+public class CryoBagCellDto
 {
     public Guid Id { get; set; }
     public string Position { get; set; } = default!;

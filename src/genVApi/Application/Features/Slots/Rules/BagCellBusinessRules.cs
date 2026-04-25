@@ -7,14 +7,14 @@ using Domain.Entities;
 
 namespace Application.Features.Slots.Rules;
 
-public class SlotBusinessRules : BaseBusinessRules
+public class BagCellBusinessRules : BaseBusinessRules
 {
-    private readonly ISlotRepository _slotRepository;
+    private readonly IBagCellRepository _bagCellRepository;
     private readonly ILocalizationService _localizationService;
 
-    public SlotBusinessRules(ISlotRepository slotRepository, ILocalizationService localizationService)
+    public BagCellBusinessRules(IBagCellRepository bagCellRepository, ILocalizationService localizationService)
     {
-        _slotRepository = slotRepository;
+        _bagCellRepository = bagCellRepository;
         _localizationService = localizationService;
     }
 
@@ -24,19 +24,19 @@ public class SlotBusinessRules : BaseBusinessRules
         throw new BusinessException(message);
     }
 
-    public async Task SlotShouldExistWhenSelected(Slot? slot)
+    public async Task BagCellShouldExistWhenSelected(BagCell? bagCell)
     {
-        if (slot == null)
+        if (bagCell == null)
             await throwBusinessException(SlotsBusinessMessages.SlotNotExists);
     }
 
-    public async Task SlotIdShouldExistWhenSelected(Guid id, CancellationToken cancellationToken)
+    public async Task BagCellIdShouldExistWhenSelected(Guid id, CancellationToken cancellationToken)
     {
-        Slot? slot = await _slotRepository.GetAsync(
-            predicate: s => s.Id == id,
+        BagCell? bagCell = await _bagCellRepository.GetAsync(
+            predicate: c => c.Id == id,
             enableTracking: false,
             cancellationToken: cancellationToken
         );
-        await SlotShouldExistWhenSelected(slot);
+        await BagCellShouldExistWhenSelected(bagCell);
     }
 }

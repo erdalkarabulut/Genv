@@ -1146,11 +1146,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\GenVApi\\src\\genVApi\\Domain\\Domain.csproj",
+      "projectUniqueName": "D:\\GenvAp\\src\\genVApi\\Domain\\Domain.csproj",
       "projectName": "Domain",
-      "projectPath": "D:\\GenVApi\\src\\genVApi\\Domain\\Domain.csproj",
+      "projectPath": "D:\\GenvAp\\src\\genVApi\\Domain\\Domain.csproj",
       "packagesPath": "C:\\Users\\erdal\\.nuget\\packages\\",
-      "outputPath": "D:\\GenVApi\\src\\genVApi\\Domain\\obj\\",
+      "outputPath": "D:\\GenvAp\\src\\genVApi\\Domain\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\DevExpress 20.2\\Components\\Offline Packages",
@@ -1174,11 +1174,11 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "D:\\GenVApi\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj": {
-              "projectPath": "D:\\GenVApi\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj"
+            "D:\\GenvAp\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj": {
+              "projectPath": "D:\\GenvAp\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj"
             },
-            "D:\\GenVApi\\src\\corePackages\\Core.Security\\Core.Security.csproj": {
-              "projectPath": "D:\\GenVApi\\src\\corePackages\\Core.Security\\Core.Security.csproj"
+            "D:\\GenvAp\\src\\corePackages\\Core.Security\\Core.Security.csproj": {
+              "projectPath": "D:\\GenvAp\\src\\corePackages\\Core.Security\\Core.Security.csproj"
             }
           }
         }

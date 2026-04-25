@@ -126,6 +126,155 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "WebAPI.Controllers.BagCellsController",
+    "Method": "Add",
+    "RelativePath": "api/BagCells",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "createSlotCommand",
+        "Type": "Application.Features.Slots.Commands.Create.CreateSlotCommand",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.BagCellsController",
+    "Method": "Update",
+    "RelativePath": "api/BagCells",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "updateSlotCommand",
+        "Type": "Application.Features.Slots.Commands.Update.UpdateSlotCommand",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.BagCellsController",
+    "Method": "GetList",
+    "RelativePath": "api/BagCells",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "PageIndex",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.BagCellsController",
+    "Method": "Delete",
+    "RelativePath": "api/BagCells/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.BagCellsController",
+    "Method": "GetById",
+    "RelativePath": "api/BagCells/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.BagCellsController",
+    "Method": "GetListByDynamic",
+    "RelativePath": "api/BagCells/by-dynamic",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "query",
+        "Type": "Application.Features.Slots.Queries.GetListByDynamic.GetListByDynamicSlotQuery",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.BagCellsController",
+    "Method": "DeleteRange",
+    "RelativePath": "api/BagCells/delete-range",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "deleteSlotRangeCommand",
+        "Type": "Application.Features.Slots.Commands.DeleteRange.DeleteSlotRangeCommand",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.BagCellsController",
+    "Method": "AddRange",
+    "RelativePath": "api/BagCells/range",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "createSlotRangeCommand",
+        "Type": "Application.Features.Slots.Commands.CreateRange.CreateSlotRangeCommand",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.BagCellsController",
+    "Method": "UpdateRange",
+    "RelativePath": "api/BagCells/range",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "updateSlotRangeCommand",
+        "Type": "Application.Features.Slots.Commands.UpdateRange.UpdateSlotRangeCommand",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "WebAPI.Controllers.BagMovementsController",
     "Method": "Add",
     "RelativePath": "api/BagMovements",
@@ -1948,6 +2097,96 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "WebAPI.Controllers.RackSlotsController",
+    "Method": "GetList",
+    "RelativePath": "api/RackSlots",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "PageIndex",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "rackId",
+        "Type": "System.Nullable\u00601[[System.Guid, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.RackSlotsController",
+    "Method": "Add",
+    "RelativePath": "api/RackSlots",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "command",
+        "Type": "Application.Features.RackSlots.Commands.Create.CreateRackSlotCommand",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.RackSlotsController",
+    "Method": "Update",
+    "RelativePath": "api/RackSlots",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "command",
+        "Type": "Application.Features.RackSlots.Commands.Update.UpdateRackSlotCommand",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.RackSlotsController",
+    "Method": "GetById",
+    "RelativePath": "api/RackSlots/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.RackSlotsController",
+    "Method": "Delete",
+    "RelativePath": "api/RackSlots/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "WebAPI.Controllers.RefreshTokensController",
     "Method": "GetList",
     "RelativePath": "api/RefreshTokens",
@@ -1979,155 +2218,6 @@
       {
         "Name": "query",
         "Type": "Application.Features.RefreshTokens.Queries.GetListByDynamic.GetListByDynamicRefreshTokenQuery",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "WebAPI.Controllers.SlotsController",
-    "Method": "Add",
-    "RelativePath": "api/Slots",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "createSlotCommand",
-        "Type": "Application.Features.Slots.Commands.Create.CreateSlotCommand",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "WebAPI.Controllers.SlotsController",
-    "Method": "Update",
-    "RelativePath": "api/Slots",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "updateSlotCommand",
-        "Type": "Application.Features.Slots.Commands.Update.UpdateSlotCommand",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "WebAPI.Controllers.SlotsController",
-    "Method": "GetList",
-    "RelativePath": "api/Slots",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "PageIndex",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "PageSize",
-        "Type": "System.Int32",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "WebAPI.Controllers.SlotsController",
-    "Method": "Delete",
-    "RelativePath": "api/Slots/{id}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "WebAPI.Controllers.SlotsController",
-    "Method": "GetById",
-    "RelativePath": "api/Slots/{id}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "WebAPI.Controllers.SlotsController",
-    "Method": "GetListByDynamic",
-    "RelativePath": "api/Slots/by-dynamic",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "query",
-        "Type": "Application.Features.Slots.Queries.GetListByDynamic.GetListByDynamicSlotQuery",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "WebAPI.Controllers.SlotsController",
-    "Method": "DeleteRange",
-    "RelativePath": "api/Slots/delete-range",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "deleteSlotRangeCommand",
-        "Type": "Application.Features.Slots.Commands.DeleteRange.DeleteSlotRangeCommand",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "WebAPI.Controllers.SlotsController",
-    "Method": "AddRange",
-    "RelativePath": "api/Slots/range",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "createSlotRangeCommand",
-        "Type": "Application.Features.Slots.Commands.CreateRange.CreateSlotRangeCommand",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "WebAPI.Controllers.SlotsController",
-    "Method": "UpdateRange",
-    "RelativePath": "api/Slots/range",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "updateSlotRangeCommand",
-        "Type": "Application.Features.Slots.Commands.UpdateRange.UpdateSlotRangeCommand",
         "IsRequired": true
       }
     ],

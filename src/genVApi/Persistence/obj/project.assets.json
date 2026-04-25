@@ -2490,11 +2490,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\GenVApi\\src\\genVApi\\Persistence\\Persistence.csproj",
+      "projectUniqueName": "D:\\GenvAp\\src\\genVApi\\Persistence\\Persistence.csproj",
       "projectName": "Persistence",
-      "projectPath": "D:\\GenVApi\\src\\genVApi\\Persistence\\Persistence.csproj",
+      "projectPath": "D:\\GenvAp\\src\\genVApi\\Persistence\\Persistence.csproj",
       "packagesPath": "C:\\Users\\erdal\\.nuget\\packages\\",
-      "outputPath": "D:\\GenVApi\\src\\genVApi\\Persistence\\obj\\",
+      "outputPath": "D:\\GenvAp\\src\\genVApi\\Persistence\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\DevExpress 20.2\\Components\\Offline Packages",
@@ -2518,14 +2518,14 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "D:\\GenVApi\\src\\corePackages\\Core.Persistence.DependencyInjection\\Core.Persistence.DependencyInjection.csproj": {
-              "projectPath": "D:\\GenVApi\\src\\corePackages\\Core.Persistence.DependencyInjection\\Core.Persistence.DependencyInjection.csproj"
+            "D:\\GenvAp\\src\\corePackages\\Core.Persistence.DependencyInjection\\Core.Persistence.DependencyInjection.csproj": {
+              "projectPath": "D:\\GenvAp\\src\\corePackages\\Core.Persistence.DependencyInjection\\Core.Persistence.DependencyInjection.csproj"
             },
-            "D:\\GenVApi\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj": {
-              "projectPath": "D:\\GenVApi\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj"
+            "D:\\GenvAp\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj": {
+              "projectPath": "D:\\GenvAp\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj"
             },
-            "D:\\GenVApi\\src\\genVApi\\Application\\Application.csproj": {
-              "projectPath": "D:\\GenVApi\\src\\genVApi\\Application\\Application.csproj"
+            "D:\\GenvAp\\src\\genVApi\\Application\\Application.csproj": {
+              "projectPath": "D:\\GenvAp\\src\\genVApi\\Application\\Application.csproj"
             }
           }
         }

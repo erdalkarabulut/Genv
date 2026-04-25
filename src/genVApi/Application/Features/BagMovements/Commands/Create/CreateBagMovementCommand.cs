@@ -15,8 +15,8 @@ namespace Application.Features.BagMovements.Commands.Create;
 public class CreateBagMovementCommand : IRequest<CreatedBagMovementResponse>, ISecuredRequest, ICacheRemoverRequest, ILoggableRequest, ITransactionalRequest
 {
     public Guid BagId { get; set; }
-    public Guid? FromSlotId { get; set; }
-    public Guid? ToSlotId { get; set; }
+    public Guid? FromBagCellId { get; set; }
+    public Guid? ToBagCellId { get; set; }
     public string Action { get; set; }
 
     public string[] Roles => [Admin, Write, BagMovementsOperationClaims.Create];

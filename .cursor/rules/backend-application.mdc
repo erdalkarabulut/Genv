@@ -1,0 +1,20 @@
+---
+description: Application katmanı — CQRS handler, iş kuralları, pipeline
+globs: src/genVApi/Application/**/*.cs
+alwaysApply: false
+---
+
+# Application (Features)
+
+## Yapılacaklar
+
+- Yeni use case: `Features/<Aggregate>/Commands|Queries/<Name>/` altında command/query, handler, validator, gerekirse `Rules/*BusinessRules.cs` ve `Constants/*OperationClaims.cs`.
+- `ISecuredRequest` implemente eden her istek **mutlaka** `Roles` doldurulsun (boş dizi güvensiz).
+- İş kuralı ve orkestrasyon **handler içinde**; birden fazla repository güncellemesi için mevcut `ITransactionalRequest` / transaction pipeline kullanımına uy.
+- Klinik eşikler: dağınık magic number yerine `ClinicalThresholds` / `IClinicalThresholdsAccessor` (veya projedeki eşdeğer) ile oku.
+
+## Yapılmayacaklar
+
+- Handler içinde `HttpContext`, cookie, status code seçimi (WebAPI sorumluluğu).
+- `Create*CommandHandler` içinde enjekte edilen `*BusinessRules` **kullanılmadan** bırakılmasın; kural yoksa DI’dan kaldır veya gerçekten çağır.
+- Aynı iş kuralını sadece controller veya sadece UI’da tekrarlama.

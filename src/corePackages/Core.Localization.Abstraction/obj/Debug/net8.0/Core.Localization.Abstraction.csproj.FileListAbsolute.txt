@@ -20,3 +20,15 @@ D:\GenVApi\src\corePackages\Core.Localization.Abstraction\obj\Debug\net8.0\Core.
 D:\GenVApi\src\corePackages\Core.Localization.Abstraction\obj\Debug\net8.0\refint\Core.Localization.Abstraction.dll
 D:\GenVApi\src\corePackages\Core.Localization.Abstraction\obj\Debug\net8.0\Core.Localization.Abstraction.pdb
 D:\GenVApi\src\corePackages\Core.Localization.Abstraction\obj\Debug\net8.0\ref\Core.Localization.Abstraction.dll
+D:\GenvAp\src\corePackages\Core.Localization.Abstraction\bin\Debug\net8.0\Core.Localization.Abstraction.deps.json
+D:\GenvAp\src\corePackages\Core.Localization.Abstraction\bin\Debug\net8.0\Core.Localization.Abstraction.dll
+D:\GenvAp\src\corePackages\Core.Localization.Abstraction\bin\Debug\net8.0\Core.Localization.Abstraction.pdb
+D:\GenvAp\src\corePackages\Core.Localization.Abstraction\obj\Debug\net8.0\Core.Localization.Abstraction.GeneratedMSBuildEditorConfig.editorconfig
+D:\GenvAp\src\corePackages\Core.Localization.Abstraction\obj\Debug\net8.0\Core.Localization.Abstraction.AssemblyInfoInputs.cache
+D:\GenvAp\src\corePackages\Core.Localization.Abstraction\obj\Debug\net8.0\Core.Localization.Abstraction.AssemblyInfo.cs
+D:\GenvAp\src\corePackages\Core.Localization.Abstraction\obj\Debug\net8.0\Core.Localization.Abstraction.csproj.CoreCompileInputs.cache
+D:\GenvAp\src\corePackages\Core.Localization.Abstraction\obj\Debug\net8.0\Core.Localization.Abstraction.sourcelink.json
+D:\GenvAp\src\corePackages\Core.Localization.Abstraction\obj\Debug\net8.0\Core.Localization.Abstraction.dll
+D:\GenvAp\src\corePackages\Core.Localization.Abstraction\obj\Debug\net8.0\refint\Core.Localization.Abstraction.dll
+D:\GenvAp\src\corePackages\Core.Localization.Abstraction\obj\Debug\net8.0\Core.Localization.Abstraction.pdb
+D:\GenvAp\src\corePackages\Core.Localization.Abstraction\obj\Debug\net8.0\ref\Core.Localization.Abstraction.dll

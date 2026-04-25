@@ -83,14 +83,14 @@ public class BoxManager : IBoxService
         return updatedBoxs;
     }
 
-    public async Task<Box> DeleteAsync(Box box, bool permanent = false)
+    public async Task<Box> DeleteAsync(Box box, bool permanent = true)
     {
-        Box deletedBox = await _boxRepository.DeleteAsync(box);
+        Box deletedBox = await _boxRepository.DeleteAsync(box, permanent);
 
         return deletedBox;
     }
 
-    public async Task<ICollection<Box>> DeleteRangeAsync(ICollection<Box> boxs, bool permanent = false)
+    public async Task<ICollection<Box>> DeleteRangeAsync(ICollection<Box> boxs, bool permanent = true)
     {
         ICollection<Box> deletedBoxs = await _boxRepository.DeleteRangeAsync(boxs, permanent);
 

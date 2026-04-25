@@ -29,6 +29,6 @@ public interface IRackService
     Task<ICollection<Rack>> AddRangeAsync(ICollection<Rack> racks);
     Task<Rack> UpdateAsync(Rack rack);
     Task<ICollection<Rack>> UpdateRangeAsync(ICollection<Rack> racks);
-    Task<Rack> DeleteAsync(Rack rack, bool permanent = false);
-    Task<ICollection<Rack>> DeleteRangeAsync(ICollection<Rack> racks, bool permanent = false);
+    Task<Rack> DeleteAsync(Rack rack, bool permanent = true);
+    Task<ICollection<Rack>> DeleteRangeAsync(ICollection<Rack> racks, bool permanent = true);
 }

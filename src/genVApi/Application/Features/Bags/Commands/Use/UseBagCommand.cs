@@ -22,25 +22,25 @@ public class UseBagCommand : IRequest<UseBagResponse>, ISecuredRequest, ICacheRe
 
     public bool BypassCache { get; }
     public string? CacheKey { get; }
-    public string[]? CacheGroupKey => ["GetBags", "GetSlots", "Dashboard"];
+    public string[]? CacheGroupKey => ["GetBags", "GetBagCells", "Dashboard"];
 
     public class UseBagCommandHandler : IRequestHandler<UseBagCommand, UseBagResponse>
     {
         private readonly IBagRepository _bagRepository;
-        private readonly ISlotRepository _slotRepository;
+        private readonly IBagCellRepository _bagCellRepository;
         private readonly IBagMovementRepository _movementRepository;
         private readonly BagBusinessRules _bagBusinessRules;
         private readonly IRealTimeNotifier _notifier;
 
         public UseBagCommandHandler(
             IBagRepository bagRepository,
-            ISlotRepository slotRepository,
+            IBagCellRepository bagCellRepository,
             IBagMovementRepository movementRepository,
             BagBusinessRules bagBusinessRules,
             IRealTimeNotifier notifier)
         {
             _bagRepository = bagRepository;
-            _slotRepository = slotRepository;
+            _bagCellRepository = bagCellRepository;
             _movementRepository = movementRepository;
             _bagBusinessRules = bagBusinessRules;
             _notifier = notifier;
@@ -54,17 +54,17 @@ public class UseBagCommand : IRequest<UseBagResponse>, ISecuredRequest, ICacheRe
             if (bag!.Status == BagStatus.Used)
                 throw new BusinessException("Bag is already used.");
 
-            Guid? fromSlotId = bag.SlotId;
-            if (fromSlotId.HasValue)
+            Guid? fromCellId = bag.BagCellId;
+            if (fromCellId.HasValue)
             {
-                Slot? slot = await _slotRepository.GetAsync(predicate: s => s.Id == fromSlotId.Value, cancellationToken: cancellationToken);
-                if (slot != null)
+                BagCell? cell = await _bagCellRepository.GetAsync(predicate: c => c.Id == fromCellId.Value, cancellationToken: cancellationToken);
+                if (cell != null)
                 {
-                    slot.IsOccupied = false;
-                    slot.Version += 1;
-                    await _slotRepository.UpdateAsync(slot);
+                    cell.IsOccupied = false;
+                    cell.Version += 1;
+                    await _bagCellRepository.UpdateAsync(cell);
                 }
-                bag.SlotId = null;
+                bag.BagCellId = null;
             }
 
             bag.Status = BagStatus.Used;
@@ -73,15 +73,15 @@ public class UseBagCommand : IRequest<UseBagResponse>, ISecuredRequest, ICacheRe
             await _movementRepository.AddAsync(new BagMovement
             {
                 BagId = bag.Id,
-                FromSlotId = fromSlotId,
-                ToSlotId = null,
+                FromBagCellId = fromCellId,
+                ToBagCellId = null,
                 Action = "Use"
             });
 
-            await _notifier.BagUsedAsync(bag.Id, fromSlotId, cancellationToken);
+            await _notifier.BagUsedAsync(bag.Id, fromCellId, cancellationToken);
             await _notifier.DashboardUpdatedAsync(cancellationToken);
 
-            return new UseBagResponse { BagId = bag.Id, FreedSlotId = fromSlotId };
+            return new UseBagResponse { BagId = bag.Id, FreedBagCellId = fromCellId };
         }
     }
 }
@@ -89,5 +89,5 @@ public class UseBagCommand : IRequest<UseBagResponse>, ISecuredRequest, ICacheRe
 public class UseBagResponse
 {
     public Guid BagId { get; set; }
-    public Guid? FreedSlotId { get; set; }
+    public Guid? FreedBagCellId { get; set; }
 }

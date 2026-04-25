@@ -16,8 +16,8 @@ public class UpdateBagMovementCommand : IRequest<UpdatedBagMovementResponse>, IS
 {
     public Guid Id { get; set; }
     public Guid BagId { get; set; }
-    public Guid? FromSlotId { get; set; }
-    public Guid? ToSlotId { get; set; }
+    public Guid? FromBagCellId { get; set; }
+    public Guid? ToBagCellId { get; set; }
     public string Action { get; set; }
 
     public string[] Roles => [Admin, Write, BagMovementsOperationClaims.Update];

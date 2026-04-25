@@ -83,14 +83,14 @@ public class PatientManager : IPatientService
         return updatedPatients;
     }
 
-    public async Task<Patient> DeleteAsync(Patient patient, bool permanent = false)
+    public async Task<Patient> DeleteAsync(Patient patient, bool permanent = true)
     {
-        Patient deletedPatient = await _patientRepository.DeleteAsync(patient);
+        Patient deletedPatient = await _patientRepository.DeleteAsync(patient, permanent);
 
         return deletedPatient;
     }
 
-    public async Task<ICollection<Patient>> DeleteRangeAsync(ICollection<Patient> patients, bool permanent = false)
+    public async Task<ICollection<Patient>> DeleteRangeAsync(ICollection<Patient> patients, bool permanent = true)
     {
         ICollection<Patient> deletedPatients = await _patientRepository.DeleteRangeAsync(patients, permanent);
 

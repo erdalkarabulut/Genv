@@ -83,14 +83,14 @@ public class ProductManager : IProductService
         return updatedProducts;
     }
 
-    public async Task<Product> DeleteAsync(Product product, bool permanent = false)
+    public async Task<Product> DeleteAsync(Product product, bool permanent = true)
     {
-        Product deletedProduct = await _productRepository.DeleteAsync(product);
+        Product deletedProduct = await _productRepository.DeleteAsync(product, permanent);
 
         return deletedProduct;
     }
 
-    public async Task<ICollection<Product>> DeleteRangeAsync(ICollection<Product> products, bool permanent = false)
+    public async Task<ICollection<Product>> DeleteRangeAsync(ICollection<Product> products, bool permanent = true)
     {
         ICollection<Product> deletedProducts = await _productRepository.DeleteRangeAsync(products, permanent);
 

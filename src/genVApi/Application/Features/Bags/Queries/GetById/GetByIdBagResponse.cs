@@ -19,7 +19,7 @@ public class GetByIdBagResponse : IResponse
     public Domain.Enums.BagStatus Status { get; set; }
     public Domain.Enums.BagPurpose Purpose { get; set; }
     public Guid? SplitBatchId { get; set; }
-    public Guid? SlotId { get; set; }
+    public Guid? BagCellId { get; set; }
     public DateTime CreatedDate { get; set; }
     public DateTime? UpdatedDate { get; set; }
 }

@@ -12,8 +12,8 @@ public class BagMovementConfiguration : IEntityTypeConfiguration<BagMovement>
 
         builder.Property(bm => bm.Id).HasColumnName("Id").IsRequired();
         builder.Property(bm => bm.BagId).HasColumnName("BagId").IsRequired();
-        builder.Property(bm => bm.FromSlotId).HasColumnName("FromSlotId");
-        builder.Property(bm => bm.ToSlotId).HasColumnName("ToSlotId");
+        builder.Property(bm => bm.FromBagCellId).HasColumnName("FromBagCellId");
+        builder.Property(bm => bm.ToBagCellId).HasColumnName("ToBagCellId");
         builder.Property(bm => bm.Action).HasColumnName("Action").HasMaxLength(50).IsRequired();
 
         builder.Property(bm => bm.CreatedDate).HasColumnName("CreatedDate").IsRequired();
@@ -21,10 +21,8 @@ public class BagMovementConfiguration : IEntityTypeConfiguration<BagMovement>
         builder.Property(bm => bm.DeletedDate).HasColumnName("DeletedDate");
 
         builder.HasOne(bm => bm.Bag)
-               .WithMany()
-               .HasForeignKey(bm => bm.BagId)
-               .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasQueryFilter(bm => !bm.DeletedDate.HasValue);
+            .WithMany()
+            .HasForeignKey(bm => bm.BagId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

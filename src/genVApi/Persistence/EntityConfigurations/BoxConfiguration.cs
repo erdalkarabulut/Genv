@@ -11,19 +11,17 @@ public class BoxConfiguration : IEntityTypeConfiguration<Box>
         builder.ToTable("Boxes").HasKey(b => b.Id);
 
         builder.Property(b => b.Id).HasColumnName("Id").IsRequired();
-        builder.Property(b => b.RackId).HasColumnName("RackId").IsRequired();
+        builder.Property(b => b.SlotId).HasColumnName("SlotId").IsRequired();
         builder.Property(b => b.Name).HasColumnName("Name").HasMaxLength(100).IsRequired();
         builder.Property(b => b.CreatedDate).HasColumnName("CreatedDate").IsRequired();
         builder.Property(b => b.UpdatedDate).HasColumnName("UpdatedDate");
         builder.Property(b => b.DeletedDate).HasColumnName("DeletedDate");
 
-        builder.HasMany(b => b.Slots)
-               .WithOne(s => s.Box)
-               .HasForeignKey(s => s.BoxId)
-               .OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(b => b.BagCells)
+            .WithOne(c => c.Box)
+            .HasForeignKey(c => c.BoxId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasIndex(b => new { b.RackId, b.Name }).IsUnique();
-
-        builder.HasQueryFilter(b => !b.DeletedDate.HasValue);
+        builder.HasIndex(b => new { b.SlotId, b.Name }).IsUnique();
     }
 }

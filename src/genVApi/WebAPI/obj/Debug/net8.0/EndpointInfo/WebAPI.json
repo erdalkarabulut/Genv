@@ -254,6 +254,305 @@
         ]
       }
     },
+    "/api/BagCells": {
+      "post": {
+        "tags": [
+          "BagCells"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSlotCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSlotCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSlotCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "BagCells"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSlotCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSlotCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSlotCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "BagCells"
+        ],
+        "parameters": [
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/BagCells/{id}": {
+      "delete": {
+        "tags": [
+          "BagCells"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "BagCells"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/BagCells/range": {
+      "post": {
+        "tags": [
+          "BagCells"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSlotRangeCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSlotRangeCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSlotRangeCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "BagCells"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSlotRangeCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSlotRangeCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSlotRangeCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/BagCells/delete-range": {
+      "post": {
+        "tags": [
+          "BagCells"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteSlotRangeCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteSlotRangeCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteSlotRangeCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/BagCells/by-dynamic": {
+      "post": {
+        "tags": [
+          "BagCells"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetListByDynamicSlotQuery"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetListByDynamicSlotQuery"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetListByDynamicSlotQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
     "/api/BagMovements": {
       "post": {
         "tags": [
@@ -3906,6 +4205,171 @@
         ]
       }
     },
+    "/api/RackSlots": {
+      "get": {
+        "tags": [
+          "RackSlots"
+        ],
+        "parameters": [
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "rackId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "RackSlots"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRackSlotCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRackSlotCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRackSlotCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "RackSlots"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRackSlotCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRackSlotCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRackSlotCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/RackSlots/{id}": {
+      "get": {
+        "tags": [
+          "RackSlots"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "RackSlots"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
     "/api/RefreshTokens": {
       "get": {
         "tags": [
@@ -3961,305 +4425,6 @@
             "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/GetListByDynamicRefreshTokenQuery"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        },
-        "security": [
-          {
-            "Bearer": [ ]
-          }
-        ]
-      }
-    },
-    "/api/Slots": {
-      "post": {
-        "tags": [
-          "Slots"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateSlotCommand"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateSlotCommand"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateSlotCommand"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        },
-        "security": [
-          {
-            "Bearer": [ ]
-          }
-        ]
-      },
-      "put": {
-        "tags": [
-          "Slots"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateSlotCommand"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateSlotCommand"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateSlotCommand"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        },
-        "security": [
-          {
-            "Bearer": [ ]
-          }
-        ]
-      },
-      "get": {
-        "tags": [
-          "Slots"
-        ],
-        "parameters": [
-          {
-            "name": "PageIndex",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "PageSize",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        },
-        "security": [
-          {
-            "Bearer": [ ]
-          }
-        ]
-      }
-    },
-    "/api/Slots/{id}": {
-      "delete": {
-        "tags": [
-          "Slots"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        },
-        "security": [
-          {
-            "Bearer": [ ]
-          }
-        ]
-      },
-      "get": {
-        "tags": [
-          "Slots"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        },
-        "security": [
-          {
-            "Bearer": [ ]
-          }
-        ]
-      }
-    },
-    "/api/Slots/range": {
-      "post": {
-        "tags": [
-          "Slots"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateSlotRangeCommand"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateSlotRangeCommand"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateSlotRangeCommand"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        },
-        "security": [
-          {
-            "Bearer": [ ]
-          }
-        ]
-      },
-      "put": {
-        "tags": [
-          "Slots"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateSlotRangeCommand"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateSlotRangeCommand"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateSlotRangeCommand"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        },
-        "security": [
-          {
-            "Bearer": [ ]
-          }
-        ]
-      }
-    },
-    "/api/Slots/delete-range": {
-      "post": {
-        "tags": [
-          "Slots"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeleteSlotRangeCommand"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeleteSlotRangeCommand"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeleteSlotRangeCommand"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        },
-        "security": [
-          {
-            "Bearer": [ ]
-          }
-        ]
-      }
-    },
-    "/api/Slots/by-dynamic": {
-      "post": {
-        "tags": [
-          "Slots"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/GetListByDynamicSlotQuery"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/GetListByDynamicSlotQuery"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/GetListByDynamicSlotQuery"
               }
             }
           }
@@ -5150,7 +5315,7 @@
             "format": "uuid",
             "nullable": true
           },
-          "slotId": {
+          "bagCellId": {
             "type": "string",
             "format": "uuid",
             "nullable": true
@@ -5190,12 +5355,12 @@
             "type": "string",
             "format": "uuid"
           },
-          "fromSlotId": {
+          "fromBagCellId": {
             "type": "string",
             "format": "uuid",
             "nullable": true
           },
-          "toSlotId": {
+          "toBagCellId": {
             "type": "string",
             "format": "uuid",
             "nullable": true
@@ -5277,12 +5442,12 @@
             "type": "string",
             "format": "uuid"
           },
-          "fromSlotId": {
+          "fromBagCellId": {
             "type": "string",
             "format": "uuid",
             "nullable": true
           },
-          "toSlotId": {
+          "toBagCellId": {
             "type": "string",
             "format": "uuid",
             "nullable": true
@@ -5370,7 +5535,7 @@
             "format": "uuid",
             "nullable": true
           },
-          "slotId": {
+          "bagCellId": {
             "type": "string",
             "format": "uuid",
             "nullable": true
@@ -5381,7 +5546,7 @@
       "CreateBoxCommand": {
         "type": "object",
         "properties": {
-          "rackId": {
+          "slotId": {
             "type": "string",
             "format": "uuid"
           },
@@ -5458,7 +5623,7 @@
       "CreateBoxRangeItem": {
         "type": "object",
         "properties": {
-          "rackId": {
+          "slotId": {
             "type": "string",
             "format": "uuid"
           },
@@ -6460,6 +6625,45 @@
         },
         "additionalProperties": false
       },
+      "CreateRackSlotCommand": {
+        "type": "object",
+        "properties": {
+          "rackId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "bypassCache": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "cacheKey": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "cacheGroupKey": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
       "CreateSlotCommand": {
         "type": "object",
         "properties": {
@@ -6734,7 +6938,7 @@
             "type": "string",
             "nullable": true
           },
-          "freezeIntoSlotId": {
+          "freezeIntoBagCellId": {
             "type": "string",
             "format": "uuid",
             "nullable": true
@@ -7329,7 +7533,7 @@
             "type": "string",
             "format": "uuid"
           },
-          "slotId": {
+          "bagCellId": {
             "type": "string",
             "format": "uuid",
             "nullable": true
@@ -7722,7 +7926,7 @@
             "type": "string",
             "format": "uuid"
           },
-          "targetSlotId": {
+          "targetBagCellId": {
             "type": "string",
             "format": "uuid"
           },
@@ -7838,7 +8042,7 @@
             "type": "integer",
             "format": "int32"
           },
-          "cryoSlotId": {
+          "cryoBagCellId": {
             "type": "string",
             "format": "uuid",
             "nullable": true
@@ -7884,7 +8088,7 @@
             "type": "string",
             "format": "uuid"
           },
-          "slotId": {
+          "bagCellId": {
             "type": "string",
             "format": "uuid"
           },
@@ -7989,7 +8193,7 @@
             "format": "uuid",
             "nullable": true
           },
-          "slotId": {
+          "bagCellId": {
             "type": "string",
             "format": "uuid",
             "nullable": true
@@ -8033,12 +8237,12 @@
             "type": "string",
             "format": "uuid"
           },
-          "fromSlotId": {
+          "fromBagCellId": {
             "type": "string",
             "format": "uuid",
             "nullable": true
           },
-          "toSlotId": {
+          "toBagCellId": {
             "type": "string",
             "format": "uuid",
             "nullable": true
@@ -8124,12 +8328,12 @@
             "type": "string",
             "format": "uuid"
           },
-          "fromSlotId": {
+          "fromBagCellId": {
             "type": "string",
             "format": "uuid",
             "nullable": true
           },
-          "toSlotId": {
+          "toBagCellId": {
             "type": "string",
             "format": "uuid",
             "nullable": true
@@ -8221,7 +8425,7 @@
             "format": "uuid",
             "nullable": true
           },
-          "slotId": {
+          "bagCellId": {
             "type": "string",
             "format": "uuid",
             "nullable": true
@@ -8236,7 +8440,7 @@
             "type": "string",
             "format": "uuid"
           },
-          "rackId": {
+          "slotId": {
             "type": "string",
             "format": "uuid"
           },
@@ -8317,7 +8521,7 @@
             "type": "string",
             "format": "uuid"
           },
-          "rackId": {
+          "slotId": {
             "type": "string",
             "format": "uuid"
           },
@@ -9470,6 +9674,49 @@
           "name": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateRackSlotCommand": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rackId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "bypassCache": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "cacheKey": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "cacheGroupKey": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "readOnly": true
           }
         },
         "additionalProperties": false

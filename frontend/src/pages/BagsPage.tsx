@@ -132,7 +132,7 @@ export default function BagsPage() {
                 <Th>CD34/kg</Th>
                 <Th>CD3/kg</Th>
                 <Th>Hacim</Th>
-                <Th>Slot</Th>
+                <Th>Hücre</Th>
                 <Th>Tarih</Th>
                 <Th>{""}</Th>
               </tr>
@@ -233,7 +233,7 @@ function BagRow({
       <td className="px-4 py-3 text-ink-muted">{formatNumber(b.cd34PerKg, 2)}</td>
       <td className="px-4 py-3 text-ink-muted">{formatNumber(b.cd3PerKg, 2)}</td>
       <td className="px-4 py-3 text-ink-muted">{b.volumeMl} ml</td>
-      <td className="px-4 py-3 text-ink-muted">{b.slotId ? shortId(b.slotId) : "—"}</td>
+      <td className="px-4 py-3 text-ink-muted">{b.bagCellId ? shortId(b.bagCellId) : "—"}</td>
       <td className="px-4 py-3 text-ink-muted">{formatDate(b.createdDate)}</td>
       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-end gap-1">
@@ -311,7 +311,7 @@ function BagEditForm({
       status: v.status,
       purpose: v.purpose,
       splitBatchId: bag.splitBatchId,
-      slotId: bag.slotId,
+      bagCellId: bag.bagCellId,
     });
     toast.success("Bag güncellendi");
     onSaved();

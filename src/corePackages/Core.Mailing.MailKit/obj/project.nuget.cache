@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "HSFL3EyBBd8=",
+  "dgSpecHash": "cjkUFw9SlnE=",
   "success": true,
-  "projectFilePath": "D:\\GenVApi\\src\\corePackages\\Core.Mailing.MailKit\\Core.Mailing.MailKit.csproj",
+  "projectFilePath": "D:\\GenvAp\\src\\corePackages\\Core.Mailing.MailKit\\Core.Mailing.MailKit.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\erdal\\.nuget\\packages\\bouncycastle.cryptography\\2.2.1\\bouncycastle.cryptography.2.2.1.nupkg.sha512",
     "C:\\Users\\erdal\\.nuget\\packages\\mailkit\\4.3.0\\mailkit.4.3.0.nupkg.sha512",
@@ -18,9 +18,9 @@
       "code": "NU1902",
       "level": "Warning",
       "message": "Package 'MailKit' 4.3.0 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-9j88-vvj5-vhgr",
-      "projectPath": "D:\\GenVApi\\src\\corePackages\\Core.Mailing.MailKit\\Core.Mailing.MailKit.csproj",
+      "projectPath": "D:\\GenvAp\\src\\corePackages\\Core.Mailing.MailKit\\Core.Mailing.MailKit.csproj",
       "warningLevel": 1,
-      "filePath": "D:\\GenVApi\\src\\corePackages\\Core.Mailing.MailKit\\Core.Mailing.MailKit.csproj",
+      "filePath": "D:\\GenvAp\\src\\corePackages\\Core.Mailing.MailKit\\Core.Mailing.MailKit.csproj",
       "libraryId": "MailKit",
       "targetGraphs": [
         "net8.0"

@@ -29,6 +29,6 @@ public interface ITankService
     Task<ICollection<Tank>> AddRangeAsync(ICollection<Tank> tanks);
     Task<Tank> UpdateAsync(Tank tank);
     Task<ICollection<Tank>> UpdateRangeAsync(ICollection<Tank> tanks);
-    Task<Tank> DeleteAsync(Tank tank, bool permanent = false);
-    Task<ICollection<Tank>> DeleteRangeAsync(ICollection<Tank> tanks, bool permanent = false);
+    Task<Tank> DeleteAsync(Tank tank, bool permanent = true);
+    Task<ICollection<Tank>> DeleteRangeAsync(ICollection<Tank> tanks, bool permanent = true);
 }

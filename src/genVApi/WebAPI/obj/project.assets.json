@@ -8789,11 +8789,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\GenVApi\\src\\genVApi\\WebAPI\\WebAPI.csproj",
+      "projectUniqueName": "D:\\GenvAp\\src\\genVApi\\WebAPI\\WebAPI.csproj",
       "projectName": "WebAPI",
-      "projectPath": "D:\\GenVApi\\src\\genVApi\\WebAPI\\WebAPI.csproj",
+      "projectPath": "D:\\GenvAp\\src\\genVApi\\WebAPI\\WebAPI.csproj",
       "packagesPath": "C:\\Users\\erdal\\.nuget\\packages\\",
-      "outputPath": "D:\\GenVApi\\src\\genVApi\\WebAPI\\obj\\",
+      "outputPath": "D:\\GenvAp\\src\\genVApi\\WebAPI\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\DevExpress 20.2\\Components\\Offline Packages",
@@ -8817,29 +8817,29 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "D:\\GenVApi\\src\\corePackages\\Core.CrossCuttingConcerns.Exception.WebAPI\\Core.CrossCuttingConcerns.Exception.WebApi.csproj": {
-              "projectPath": "D:\\GenVApi\\src\\corePackages\\Core.CrossCuttingConcerns.Exception.WebAPI\\Core.CrossCuttingConcerns.Exception.WebApi.csproj"
+            "D:\\GenvAp\\src\\corePackages\\Core.CrossCuttingConcerns.Exception.WebAPI\\Core.CrossCuttingConcerns.Exception.WebApi.csproj": {
+              "projectPath": "D:\\GenvAp\\src\\corePackages\\Core.CrossCuttingConcerns.Exception.WebAPI\\Core.CrossCuttingConcerns.Exception.WebApi.csproj"
             },
-            "D:\\GenVApi\\src\\corePackages\\Core.Localization.WebApi\\Core.Localization.WebApi.csproj": {
-              "projectPath": "D:\\GenVApi\\src\\corePackages\\Core.Localization.WebApi\\Core.Localization.WebApi.csproj"
+            "D:\\GenvAp\\src\\corePackages\\Core.Localization.WebApi\\Core.Localization.WebApi.csproj": {
+              "projectPath": "D:\\GenvAp\\src\\corePackages\\Core.Localization.WebApi\\Core.Localization.WebApi.csproj"
             },
-            "D:\\GenVApi\\src\\corePackages\\Core.Persistence.WebApi\\Core.Persistence.WebApi.csproj": {
-              "projectPath": "D:\\GenVApi\\src\\corePackages\\Core.Persistence.WebApi\\Core.Persistence.WebApi.csproj"
+            "D:\\GenvAp\\src\\corePackages\\Core.Persistence.WebApi\\Core.Persistence.WebApi.csproj": {
+              "projectPath": "D:\\GenvAp\\src\\corePackages\\Core.Persistence.WebApi\\Core.Persistence.WebApi.csproj"
             },
-            "D:\\GenVApi\\src\\corePackages\\Core.Security.WebApi.Swagger\\Core.Security.WebApi.Swagger.csproj": {
-              "projectPath": "D:\\GenVApi\\src\\corePackages\\Core.Security.WebApi.Swagger\\Core.Security.WebApi.Swagger.csproj"
+            "D:\\GenvAp\\src\\corePackages\\Core.Security.WebApi.Swagger\\Core.Security.WebApi.Swagger.csproj": {
+              "projectPath": "D:\\GenvAp\\src\\corePackages\\Core.Security.WebApi.Swagger\\Core.Security.WebApi.Swagger.csproj"
             },
-            "D:\\GenVApi\\src\\genVApi\\Application\\Application.csproj": {
-              "projectPath": "D:\\GenVApi\\src\\genVApi\\Application\\Application.csproj"
+            "D:\\GenvAp\\src\\genVApi\\Application\\Application.csproj": {
+              "projectPath": "D:\\GenvAp\\src\\genVApi\\Application\\Application.csproj"
             },
-            "D:\\GenVApi\\src\\genVApi\\Infrastructure\\Infrastructure.csproj": {
-              "projectPath": "D:\\GenVApi\\src\\genVApi\\Infrastructure\\Infrastructure.csproj"
+            "D:\\GenvAp\\src\\genVApi\\Infrastructure\\Infrastructure.csproj": {
+              "projectPath": "D:\\GenvAp\\src\\genVApi\\Infrastructure\\Infrastructure.csproj"
             },
-            "D:\\GenVApi\\src\\genVApi\\Licensing.Shared\\Licensing.Shared.csproj": {
-              "projectPath": "D:\\GenVApi\\src\\genVApi\\Licensing.Shared\\Licensing.Shared.csproj"
+            "D:\\GenvAp\\src\\genVApi\\Licensing.Shared\\Licensing.Shared.csproj": {
+              "projectPath": "D:\\GenvAp\\src\\genVApi\\Licensing.Shared\\Licensing.Shared.csproj"
             },
-            "D:\\GenVApi\\src\\genVApi\\Persistence\\Persistence.csproj": {
-              "projectPath": "D:\\GenVApi\\src\\genVApi\\Persistence\\Persistence.csproj"
+            "D:\\GenvAp\\src\\genVApi\\Persistence\\Persistence.csproj": {
+              "projectPath": "D:\\GenvAp\\src\\genVApi\\Persistence\\Persistence.csproj"
             }
           }
         }

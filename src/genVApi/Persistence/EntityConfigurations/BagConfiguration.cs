@@ -25,19 +25,17 @@ public class BagConfiguration : IEntityTypeConfiguration<Bag>
         builder.Property(b => b.Status).HasColumnName("Status").HasConversion<string>().HasMaxLength(20).IsRequired();
         builder.Property(b => b.Purpose).HasColumnName("Purpose").HasConversion<string>().HasMaxLength(20).IsRequired();
         builder.Property(b => b.SplitBatchId).HasColumnName("SplitBatchId");
-        builder.Property(b => b.SlotId).HasColumnName("SlotId");
+        builder.Property(b => b.BagCellId).HasColumnName("BagCellId");
 
         builder.Property(b => b.CreatedDate).HasColumnName("CreatedDate").IsRequired();
         builder.Property(b => b.UpdatedDate).HasColumnName("UpdatedDate");
         builder.Property(b => b.DeletedDate).HasColumnName("DeletedDate");
 
-        builder.HasOne(b => b.Slot)
-               .WithOne(s => s.Bag!)
-               .HasForeignKey<Bag>(b => b.SlotId)
-               .OnDelete(DeleteBehavior.SetNull);
+        builder.HasOne(b => b.BagCell)
+            .WithOne(c => c.Bag!)
+            .HasForeignKey<Bag>(b => b.BagCellId)
+            .OnDelete(DeleteBehavior.SetNull);
 
-        builder.HasIndex(b => b.SlotId).IsUnique().HasFilter("\"SlotId\" IS NOT NULL");
-
-        builder.HasQueryFilter(b => !b.DeletedDate.HasValue);
+        builder.HasIndex(b => b.BagCellId).IsUnique().HasFilter("\"BagCellId\" IS NOT NULL");
     }
 }

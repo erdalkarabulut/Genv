@@ -1,41 +1,20 @@
-﻿using NArchitecture.Core.Persistence.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using NArchitecture.Core.Persistence.Repositories;
 
 namespace Domain.Entities;
+
+/// <summary>
+/// Raf üzerindeki fiziksel slot (kutu oturur). Hiyerarşi: Tank → Rack → Slot → Box → BagCell.
+/// </summary>
 public class Slot : Entity<Guid>
 {
-    public Guid BoxId { get; set; }
-    public string Position { get; set; }
+    public Guid RackId { get; set; }
+    public string Name { get; set; } = default!;
 
-    public bool IsOccupied { get; set; }
-    public int Version { get; set; }
+    public virtual Rack Rack { get; set; } = default!;
+    public virtual ICollection<Box> Boxes { get; set; }
 
-    public virtual Box Box { get; set; }
-    public virtual Bag? Bag { get; set; }
-
-    public bool CanAssign() => !IsOccupied;
-
-    public void AssignBag(Bag bag)
+    public Slot()
     {
-        if (IsOccupied)
-            throw new Exception("Slot already occupied");
-
-        Bag = bag;
-        IsOccupied = true;
-    }
-
-    public void RemoveBag()
-    {
-        Bag = null;
-        IsOccupied = false;
-    }
-
-    public string GetFullLocation()
-    {
-        return $"{Box?.Rack?.Tank?.Name}-{Box?.Rack?.Name}-{Box?.Name}-{Position}";
+        Boxes = new HashSet<Box>();
     }
 }

@@ -14,14 +14,14 @@ public class SignalRRealTimeNotifier : IRealTimeNotifier
         _hub = hub;
     }
 
-    public Task BagStoredAsync(Guid bagId, Guid slotId, CancellationToken cancellationToken = default) =>
-        _hub.Clients.Group(DefaultTenant).SendAsync("BagStored", new { bagId, slotId }, cancellationToken);
+    public Task BagStoredAsync(Guid bagId, Guid bagCellId, CancellationToken cancellationToken = default) =>
+        _hub.Clients.Group(DefaultTenant).SendAsync("BagStored", new { bagId, bagCellId }, cancellationToken);
 
-    public Task BagMovedAsync(Guid bagId, Guid fromSlotId, Guid toSlotId, CancellationToken cancellationToken = default) =>
-        _hub.Clients.Group(DefaultTenant).SendAsync("BagMoved", new { bagId, fromSlotId, toSlotId }, cancellationToken);
+    public Task BagMovedAsync(Guid bagId, Guid fromBagCellId, Guid toBagCellId, CancellationToken cancellationToken = default) =>
+        _hub.Clients.Group(DefaultTenant).SendAsync("BagMoved", new { bagId, fromBagCellId, toBagCellId }, cancellationToken);
 
-    public Task BagUsedAsync(Guid bagId, Guid? fromSlotId, CancellationToken cancellationToken = default) =>
-        _hub.Clients.Group(DefaultTenant).SendAsync("BagUsed", new { bagId, fromSlotId }, cancellationToken);
+    public Task BagUsedAsync(Guid bagId, Guid? fromBagCellId, CancellationToken cancellationToken = default) =>
+        _hub.Clients.Group(DefaultTenant).SendAsync("BagUsed", new { bagId, fromBagCellId }, cancellationToken);
 
     public Task DashboardUpdatedAsync(CancellationToken cancellationToken = default) =>
         _hub.Clients.Group(DefaultTenant).SendAsync("DashboardUpdated", cancellationToken);

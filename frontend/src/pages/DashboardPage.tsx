@@ -140,9 +140,9 @@ export default function DashboardPage() {
         </Link>
         <Link to="/cryo" className="block transition hover:scale-[1.01]">
           <Stat
-            label="Cryo Slot Doluluk"
+            label="Cryo hücre doluluk"
             value={`${occRate}%`}
-            hint={`${d?.occupiedSlots ?? 0} / ${d?.totalSlots ?? 0} slot · grid'i aç`}
+            hint={`${d?.occupiedSlots ?? 0} / ${d?.totalSlots ?? 0} hücre · grid'i aç`}
             icon={<Snowflake className="size-4" />}
           />
         </Link>

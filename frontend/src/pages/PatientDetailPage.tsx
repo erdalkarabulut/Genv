@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { ApheresisPlans, Bags, Dashboard, Donors, Patients, Sessions, Slots } from "@/lib/api";
+import { ApheresisPlans, BagCells, Bags, Dashboard, Donors, Patients, Sessions } from "@/lib/api";
 import { Card, CardHeader, Stat } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -460,7 +460,7 @@ function PatientBagsCard({
                   <BagMiniCard
                     key={b.id}
                     bag={b}
-                    location={b.slotId ? slotLocations.get(b.slotId) : undefined}
+                    location={b.bagCellId ? slotLocations.get(b.bagCellId) : undefined}
                     isAutologous={isAutologous}
                   />
                 ))}
@@ -525,6 +525,8 @@ function BagMiniCard({
               <span className="mx-1 text-ink-dim">/</span>
               <span className="text-ink-dim">{location.rackName}</span>
               <span className="mx-1 text-ink-dim">/</span>
+              <span className="text-ink-dim">{location.rackSlotName}</span>
+              <span className="mx-1 text-ink-dim">/</span>
               <span className="text-ink-dim">{location.boxName}</span>
               <span className="mx-1 text-ink-dim">·</span>
               <span className="font-semibold text-brand-400">{location.position}</span>
@@ -534,9 +536,9 @@ function BagMiniCard({
           <div className="flex items-center gap-1.5 text-[11px] text-ink-dim">
             <Boxes className="size-3 shrink-0" />
             {bag.status === "Reserved"
-              ? "Henüz slota yerleştirilmedi (Reserved)"
+              ? "Henüz hücreye yerleştirilmedi (Reserved)"
               : bag.status === "Used"
-                ? "Kullanıldı — slot boşaldı"
+                ? "Kullanıldı — hücre boşaldı"
                 : "Konum bilgisi yok"}
           </div>
         )}
@@ -563,6 +565,7 @@ function MiniStat({ label, value }: { label: string; value: string }) {
 type SlotLocation = {
   tankName: string;
   rackName: string;
+  rackSlotName: string;
   boxName: string;
   position: string;
 };
@@ -572,14 +575,17 @@ function buildSlotLocationMap(grid?: CryoGridResponse) {
   if (!grid) return map;
   for (const tank of grid.tanks) {
     for (const rack of tank.racks) {
-      for (const box of rack.boxes) {
-        for (const slot of box.slots) {
-          map.set(slot.id, {
-            tankName: tank.name,
-            rackName: rack.name,
-            boxName: box.name,
-            position: slot.position,
-          });
+      for (const rackSlot of rack.slots) {
+        for (const box of rackSlot.boxes) {
+          for (const cell of box.bagCells) {
+            map.set(cell.id, {
+              tankName: tank.name,
+              rackName: rack.name,
+              rackSlotName: rackSlot.name,
+              boxName: box.name,
+              position: cell.position,
+            });
+          }
         }
       }
     }
@@ -1617,7 +1623,7 @@ function SplitForm({
     onSuccess: (r) => {
       toast.success(
         `${r.bagCount} torba oluşturuldu, Cryo torbası ${
-          r.cryoSlotId ? "slota yerleştirildi" : "frozen olarak hazır"
+          r.cryoBagCellId ? "hücreye yerleştirildi" : "frozen olarak hazır"
         }.`,
       );
       onDone();
@@ -1709,7 +1715,7 @@ interface CustomBagRow {
   cd3Percent: string;
   purpose: number;
   compositionNote: string;
-  freezeIntoSlotId: string;
+  freezeIntoBagCellId: string;
 }
 
 function makeRow(session?: { wbc?: number | null; cd45Percent?: number | null; cd34Percent?: number | null; cd3Percent?: number | null }, purpose = 0): CustomBagRow {
@@ -1722,7 +1728,7 @@ function makeRow(session?: { wbc?: number | null; cd45Percent?: number | null; c
     cd3Percent: session?.cd3Percent != null ? String(session.cd3Percent) : "",
     purpose,
     compositionNote: "",
-    freezeIntoSlotId: "",
+    freezeIntoBagCellId: "",
   };
 }
 
@@ -1765,12 +1771,12 @@ function CustomSplitForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]);
 
-  const slots = useQuery({
-    queryKey: ["slots-free"],
-    queryFn: () => Slots.list(0, 2000),
+  const bagCellsQ = useQuery({
+    queryKey: ["bagCells-free"],
+    queryFn: () => BagCells.list(0, 2000),
     staleTime: 5_000,
   });
-  const freeSlots = (slots.data?.items ?? []).filter((s) => !s.isOccupied);
+  const freeBagCells = (bagCellsQ.data?.items ?? []).filter((s) => !s.isOccupied);
 
   const updateRow = (id: string, patch: Partial<CustomBagRow>) =>
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
@@ -1810,9 +1816,9 @@ function CustomSplitForm({
         const volumeMl = Number(r.volumeMl);
         if (!volumeMl || volumeMl <= 0)
           throw new Error(`${i + 1}. torba için hacim girmelisiniz.`);
-        if (r.freezeIntoSlotId && seenSlot.has(r.freezeIntoSlotId))
-          throw new Error("Aynı slotu birden fazla torbaya atayamazsınız.");
-        if (r.freezeIntoSlotId) seenSlot.add(r.freezeIntoSlotId);
+        if (r.freezeIntoBagCellId && seenSlot.has(r.freezeIntoBagCellId))
+          throw new Error("Aynı hücreyi birden fazla torbaya atayamazsınız.");
+        if (r.freezeIntoBagCellId) seenSlot.add(r.freezeIntoBagCellId);
 
         const num = (s: string) => (s === "" ? undefined : Number(s));
         return {
@@ -1823,15 +1829,15 @@ function CustomSplitForm({
           cd3Percent: num(r.cd3Percent),
           purpose: r.purpose,
           compositionNote: r.compositionNote.trim() || undefined,
-          freezeIntoSlotId: r.freezeIntoSlotId || undefined,
+          freezeIntoBagCellId: r.freezeIntoBagCellId || undefined,
         };
       });
       return Bags.customSplit({ sessionId, bags, validateTotalVolume: validateTotal });
     },
     onSuccess: (r) => {
-      const frozen = r.bags.filter((b) => b.slotId).length;
+      const frozen = r.bags.filter((b) => b.bagCellId).length;
       toast.success(
-        `${r.bagCount} torba oluşturuldu${frozen ? `, ${frozen} torba slota dondurularak yerleştirildi` : ""}.`,
+        `${r.bagCount} torba oluşturuldu${frozen ? `, ${frozen} torba hücreye dondurularak yerleştirildi` : ""}.`,
       );
       onDone();
     },
@@ -1944,13 +1950,13 @@ function CustomSplitForm({
                 </Select>
               </div>
               <div className="col-span-5 md:col-span-2">
-                <div className="label">Dondur → slot (opsiyonel)</div>
+                <div className="label">Dondur → hücre (opsiyonel)</div>
                 <Select
-                  value={r.freezeIntoSlotId}
-                  onChange={(e) => updateRow(r.id, { freezeIntoSlotId: e.target.value })}
+                  value={r.freezeIntoBagCellId}
+                  onChange={(e) => updateRow(r.id, { freezeIntoBagCellId: e.target.value })}
                 >
                   <option value="">— seçilmedi —</option>
-                  {freeSlots.map((s) => (
+                  {freeBagCells.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.position}
                     </option>
@@ -1987,9 +1993,9 @@ function CustomSplitForm({
                     CD3/kg: <span className="text-ink">{formatNumber(c.cd3, 3)}</span>
                   </span>
                 )}
-                {r.freezeIntoSlotId && (
+                {r.freezeIntoBagCellId && (
                   <span className="inline-flex items-center gap-1 text-brand-400">
-                    <Snowflake className="size-3" /> slota dondurularak yerleştirilecek
+                    <Snowflake className="size-3" /> hücreye dondurularak yerleştirilecek
                   </span>
                 )}
               </div>
@@ -2020,7 +2026,7 @@ function CustomSplitForm({
           loading={submit.isPending}
           icon={<Snowflake className="size-4" />}
         >
-          Torbaları oluştur {rows.some((r) => r.freezeIntoSlotId) ? "ve dondur" : ""}
+          Torbaları oluştur {rows.some((r) => r.freezeIntoBagCellId) ? "ve dondur" : ""}
         </Button>
       </div>
     </div>

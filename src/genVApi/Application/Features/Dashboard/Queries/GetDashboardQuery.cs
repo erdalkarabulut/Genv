@@ -12,7 +12,7 @@ public class GetDashboardQuery : IRequest<DashboardResponse>
         private readonly IPatientRepository _patientRepository;
         private readonly ICollectionSessionRepository _sessionRepository;
         private readonly IBagRepository _bagRepository;
-        private readonly ISlotRepository _slotRepository;
+        private readonly IBagCellRepository _bagCellRepository;
         private readonly ITankRepository _tankRepository;
         private readonly IClinicalThresholdsAccessor _clinicalThresholdsAccessor;
 
@@ -20,14 +20,14 @@ public class GetDashboardQuery : IRequest<DashboardResponse>
             IPatientRepository patientRepository,
             ICollectionSessionRepository sessionRepository,
             IBagRepository bagRepository,
-            ISlotRepository slotRepository,
+            IBagCellRepository bagCellRepository,
             ITankRepository tankRepository,
             IClinicalThresholdsAccessor clinicalThresholdsAccessor)
         {
             _patientRepository = patientRepository;
             _sessionRepository = sessionRepository;
             _bagRepository = bagRepository;
-            _slotRepository = slotRepository;
+            _bagCellRepository = bagCellRepository;
             _tankRepository = tankRepository;
             _clinicalThresholdsAccessor = clinicalThresholdsAccessor;
         }
@@ -50,7 +50,7 @@ public class GetDashboardQuery : IRequest<DashboardResponse>
                 enableTracking: false,
                 cancellationToken: cancellationToken
             );
-            var slots = await _slotRepository.GetListAsync(
+            var bagCells = await _bagCellRepository.GetListAsync(
                 size: int.MaxValue,
                 enableTracking: false,
                 cancellationToken: cancellationToken
@@ -71,9 +71,9 @@ public class GetDashboardQuery : IRequest<DashboardResponse>
                 FrozenBags = bags.Items.Count(b => b.Status == BagStatus.Frozen),
                 ReservedBags = bags.Items.Count(b => b.Status == BagStatus.Reserved),
                 DiscardedBags = bags.Items.Count(b => b.Status == BagStatus.Discarded),
-                TotalSlots = slots.Count,
-                OccupiedSlots = slots.Items.Count(s => s.IsOccupied),
-                EmptySlots = slots.Items.Count(s => !s.IsOccupied),
+                TotalSlots = bagCells.Count,
+                OccupiedSlots = bagCells.Items.Count(c => c.IsOccupied),
+                EmptySlots = bagCells.Items.Count(c => !c.IsOccupied),
                 TotalCd34PerKg = totalCd34,
                 TotalCd3PerKg = totalCd3,
                 RiskStatus = risk

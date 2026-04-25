@@ -22,12 +22,12 @@ public class GetListByDynamicSlotQuery : IRequest<GetListResponse<GetListSlotLis
 
     public class GetListByDynamicSlotQueryHandler : IRequestHandler<GetListByDynamicSlotQuery, GetListResponse<GetListSlotListItemDto>>
     {
-        private readonly ISlotRepository _slotRepository;
+        private readonly IBagCellRepository _bagCellRepository;
         private readonly IMapper _mapper;
 
-        public GetListByDynamicSlotQueryHandler(ISlotRepository slotRepository, IMapper mapper)
+        public GetListByDynamicSlotQueryHandler(IBagCellRepository bagCellRepository, IMapper mapper)
         {
-            _slotRepository = slotRepository;
+            _bagCellRepository = bagCellRepository;
             _mapper = mapper;
         }
 
@@ -35,7 +35,7 @@ public class GetListByDynamicSlotQuery : IRequest<GetListResponse<GetListSlotLis
         {
             DynamicQuery dynamicQuery = request.Dynamic ?? new DynamicQuery();
 
-            IPaginate<Slot> slots = await _slotRepository.GetListByDynamicAsync(
+            IPaginate<BagCell> slots = await _bagCellRepository.GetListByDynamicAsync(
                 dynamicQuery,
                 index: request.PageRequest.PageIndex,
                 size: request.PageRequest.PageSize,

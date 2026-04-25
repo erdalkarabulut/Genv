@@ -7,15 +7,15 @@ using Application.Features.Slots.Commands.UpdateRange;
 using Application.Features.Slots.Queries.GetById;
 using Application.Features.Slots.Queries.GetList;
 using Application.Features.Slots.Queries.GetListByDynamic;
+using Microsoft.AspNetCore.Mvc;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
-using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class SlotsController : BaseController
+public class BagCellsController : BaseController
 {
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] CreateSlotCommand createSlotCommand)

@@ -36,14 +36,14 @@ public class CustomSplitSessionIntoBagsCommand : IRequest<CustomSplitSessionInto
 
     public bool BypassCache { get; }
     public string? CacheKey { get; }
-    public string[]? CacheGroupKey => ["GetBags", "GetSlots", "GetCollectionSessions", "GetPatients", "Dashboard"];
+    public string[]? CacheGroupKey => ["GetBags", "GetBagCells", "GetCollectionSessions", "GetPatients", "Dashboard"];
 
     public class CustomSplitSessionIntoBagsCommandHandler : IRequestHandler<CustomSplitSessionIntoBagsCommand, CustomSplitSessionIntoBagsResponse>
     {
         private readonly ICollectionSessionRepository _sessionRepository;
         private readonly IPatientRepository _patientRepository;
         private readonly IBagRepository _bagRepository;
-        private readonly ISlotRepository _slotRepository;
+        private readonly IBagCellRepository _bagCellRepository;
         private readonly IBagMovementRepository _movementRepository;
         private readonly IClinicalThresholdsAccessor _clinicalThresholdsAccessor;
         private readonly IRealTimeNotifier _notifier;
@@ -52,7 +52,7 @@ public class CustomSplitSessionIntoBagsCommand : IRequest<CustomSplitSessionInto
             ICollectionSessionRepository sessionRepository,
             IPatientRepository patientRepository,
             IBagRepository bagRepository,
-            ISlotRepository slotRepository,
+            IBagCellRepository bagCellRepository,
             IBagMovementRepository movementRepository,
             IClinicalThresholdsAccessor clinicalThresholdsAccessor,
             IRealTimeNotifier notifier)
@@ -60,7 +60,7 @@ public class CustomSplitSessionIntoBagsCommand : IRequest<CustomSplitSessionInto
             _sessionRepository = sessionRepository;
             _patientRepository = patientRepository;
             _bagRepository = bagRepository;
-            _slotRepository = slotRepository;
+            _bagCellRepository = bagCellRepository;
             _movementRepository = movementRepository;
             _clinicalThresholdsAccessor = clinicalThresholdsAccessor;
             _notifier = notifier;
@@ -103,7 +103,7 @@ public class CustomSplitSessionIntoBagsCommand : IRequest<CustomSplitSessionInto
                 .MaxAsync(cancellationToken) ?? 0;
 
             // Aynı slota çift yerleştirmeyi önlemek için kullanılan slot id'leri.
-            HashSet<Guid> usedSlotIds = new();
+            HashSet<Guid> usedBagCellIds = new();
 
             List<Bag> created = new();
             List<CustomSplitBagResultDto> results = new();
@@ -150,44 +150,44 @@ public class CustomSplitSessionIntoBagsCommand : IRequest<CustomSplitSessionInto
                 };
 
                 // İsteğe bağlı slot/dondurma.
-                Guid? slotId = null;
-                if (spec.FreezeIntoSlotId.HasValue)
+                Guid? bagCellId = null;
+                if (spec.FreezeIntoBagCellId.HasValue)
                 {
-                    if (!usedSlotIds.Add(spec.FreezeIntoSlotId.Value))
-                        throw new BusinessException("Aynı slot birden fazla torba için seçilemez.");
+                    if (!usedBagCellIds.Add(spec.FreezeIntoBagCellId.Value))
+                        throw new BusinessException("Aynı torba hücresi birden fazla torba için seçilemez.");
 
-                    Slot? slot = await _slotRepository.GetAsync(
-                        predicate: s => s.Id == spec.FreezeIntoSlotId.Value,
+                    BagCell? cell = await _bagCellRepository.GetAsync(
+                        predicate: c => c.Id == spec.FreezeIntoBagCellId.Value,
                         cancellationToken: cancellationToken
                     );
-                    if (slot is null)
-                        throw new BusinessException("Seçilen slot bulunamadı.");
-                    if (slot.IsOccupied)
-                        throw new BusinessException($"Slot ({slot.Position}) dolu; boş bir slot seçin.");
+                    if (cell is null)
+                        throw new BusinessException("Seçilen torba hücresi bulunamadı.");
+                    if (cell.IsOccupied)
+                        throw new BusinessException($"Torba hücresi ({cell.Position}) dolu; boş bir hücre seçin.");
 
-                    slot.IsOccupied = true;
-                    slot.Version += 1;
-                    await _slotRepository.UpdateAsync(slot);
+                    cell.IsOccupied = true;
+                    cell.Version += 1;
+                    await _bagCellRepository.UpdateAsync(cell);
 
-                    bag.SlotId = slot.Id;
+                    bag.BagCellId = cell.Id;
                     bag.Status = BagStatus.Frozen;
-                    slotId = slot.Id;
+                    bagCellId = cell.Id;
                 }
 
                 await _bagRepository.AddAsync(bag);
                 created.Add(bag);
 
-                if (slotId.HasValue)
+                if (bagCellId.HasValue)
                 {
                     await _movementRepository.AddAsync(new BagMovement
                     {
                         BagId = bag.Id,
-                        FromSlotId = null,
-                        ToSlotId = slotId.Value,
+                        FromBagCellId = null,
+                        ToBagCellId = bagCellId.Value,
                         Action = "CustomSplit-Freeze"
                     });
 
-                    await _notifier.BagStoredAsync(bag.Id, slotId.Value, cancellationToken);
+                    await _notifier.BagStoredAsync(bag.Id, bagCellId.Value, cancellationToken);
                 }
 
                 results.Add(new CustomSplitBagResultDto
@@ -199,7 +199,7 @@ public class CustomSplitSessionIntoBagsCommand : IRequest<CustomSplitSessionInto
                     Cd3PerKg = bag.Cd3PerKg,
                     Purpose = bag.Purpose.ToString(),
                     Status = bag.Status.ToString(),
-                    SlotId = bag.SlotId
+                    BagCellId = bag.BagCellId
                 });
             }
 
@@ -231,7 +231,7 @@ public class CustomBagSpec
     public string? CompositionNote { get; set; }
 
     /// <summary>Verilirse torba oluşturulduktan sonra bu slota Frozen olarak yerleştirilir.</summary>
-    public Guid? FreezeIntoSlotId { get; set; }
+    public Guid? FreezeIntoBagCellId { get; set; }
 }
 
 public class CustomSplitSessionIntoBagsResponse
@@ -253,5 +253,5 @@ public class CustomSplitBagResultDto
     public double Cd3PerKg { get; set; }
     public string Purpose { get; set; } = default!;
     public string Status { get; set; } = default!;
-    public Guid? SlotId { get; set; }
+    public Guid? BagCellId { get; set; }
 }

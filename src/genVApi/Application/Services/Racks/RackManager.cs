@@ -83,14 +83,14 @@ public class RackManager : IRackService
         return updatedRacks;
     }
 
-    public async Task<Rack> DeleteAsync(Rack rack, bool permanent = false)
+    public async Task<Rack> DeleteAsync(Rack rack, bool permanent = true)
     {
-        Rack deletedRack = await _rackRepository.DeleteAsync(rack);
+        Rack deletedRack = await _rackRepository.DeleteAsync(rack, permanent);
 
         return deletedRack;
     }
 
-    public async Task<ICollection<Rack>> DeleteRangeAsync(ICollection<Rack> racks, bool permanent = false)
+    public async Task<ICollection<Rack>> DeleteRangeAsync(ICollection<Rack> racks, bool permanent = true)
     {
         ICollection<Rack> deletedRacks = await _rackRepository.DeleteRangeAsync(racks, permanent);
 

@@ -19,34 +19,34 @@ public class DeleteSlotRangeCommand : IRequest<DeletedSlotRangeResponse>, ISecur
 
     public bool BypassCache { get; }
     public string? CacheKey { get; }
-    public string[]? CacheGroupKey => ["GetSlots"];
+    public string[]? CacheGroupKey => ["GetBagCells"];
 
     public class DeleteSlotRangeCommandHandler : IRequestHandler<DeleteSlotRangeCommand, DeletedSlotRangeResponse>
     {
-        private readonly ISlotRepository _slotRepository;
-        private readonly SlotBusinessRules _slotBusinessRules;
+        private readonly IBagCellRepository _bagCellRepository;
+        private readonly BagCellBusinessRules _bagCellBusinessRules;
 
-        public DeleteSlotRangeCommandHandler(ISlotRepository slotRepository, SlotBusinessRules slotBusinessRules)
+        public DeleteSlotRangeCommandHandler(IBagCellRepository bagCellRepository, BagCellBusinessRules bagCellBusinessRules)
         {
-            _slotRepository = slotRepository;
-            _slotBusinessRules = slotBusinessRules;
+            _bagCellRepository = bagCellRepository;
+            _bagCellBusinessRules = bagCellBusinessRules;
         }
 
         public async Task<DeletedSlotRangeResponse> Handle(DeleteSlotRangeCommand request, CancellationToken cancellationToken)
         {
-            List<Slot> slots = new List<Slot>();
+            List<BagCell> slots = new List<BagCell>();
 
             foreach (Guid id in request.Ids)
             {
-                Slot? slot = await _slotRepository.GetAsync(
+                BagCell? slot = await _bagCellRepository.GetAsync(
                     predicate: s => s.Id == id,
                     cancellationToken: cancellationToken
                 );
-                await _slotBusinessRules.SlotShouldExistWhenSelected(slot);
+                await _bagCellBusinessRules.BagCellShouldExistWhenSelected(slot);
                 slots.Add(slot!);
             }
 
-            await _slotRepository.DeleteRangeAsync(slots);
+            await _bagCellRepository.DeleteRangeAsync(slots);
 
             return new DeletedSlotRangeResponse { DeletedCount = request.Ids.Count };
         }

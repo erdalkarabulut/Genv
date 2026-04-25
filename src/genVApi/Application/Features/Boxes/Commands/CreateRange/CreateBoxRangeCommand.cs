@@ -23,7 +23,7 @@ public class CreateBoxRangeCommand : IRequest<CreatedBoxRangeResponse>, ISecured
 
     public class CreateBoxRangeItem
     {
-        public Guid RackId { get; set; }
+        public Guid SlotId { get; set; }
         public string Name { get; set; }
     }
 

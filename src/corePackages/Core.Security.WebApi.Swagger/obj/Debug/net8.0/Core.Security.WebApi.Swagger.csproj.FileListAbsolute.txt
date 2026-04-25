@@ -22,3 +22,16 @@ D:\GenVApi\src\corePackages\Core.Security.WebApi.Swagger\obj\Debug\net8.0\Core.S
 D:\GenVApi\src\corePackages\Core.Security.WebApi.Swagger\obj\Debug\net8.0\refint\Core.Security.WebApi.Swagger.dll
 D:\GenVApi\src\corePackages\Core.Security.WebApi.Swagger\obj\Debug\net8.0\Core.Security.WebApi.Swagger.pdb
 D:\GenVApi\src\corePackages\Core.Security.WebApi.Swagger\obj\Debug\net8.0\ref\Core.Security.WebApi.Swagger.dll
+D:\GenvAp\src\corePackages\Core.Security.WebApi.Swagger\bin\Debug\net8.0\Core.Security.WebApi.Swagger.deps.json
+D:\GenvAp\src\corePackages\Core.Security.WebApi.Swagger\bin\Debug\net8.0\Core.Security.WebApi.Swagger.dll
+D:\GenvAp\src\corePackages\Core.Security.WebApi.Swagger\bin\Debug\net8.0\Core.Security.WebApi.Swagger.pdb
+D:\GenvAp\src\corePackages\Core.Security.WebApi.Swagger\obj\Debug\net8.0\Core.Security.WebApi.Swagger.csproj.AssemblyReference.cache
+D:\GenvAp\src\corePackages\Core.Security.WebApi.Swagger\obj\Debug\net8.0\Core.Security.WebApi.Swagger.GeneratedMSBuildEditorConfig.editorconfig
+D:\GenvAp\src\corePackages\Core.Security.WebApi.Swagger\obj\Debug\net8.0\Core.Security.WebApi.Swagger.AssemblyInfoInputs.cache
+D:\GenvAp\src\corePackages\Core.Security.WebApi.Swagger\obj\Debug\net8.0\Core.Security.WebApi.Swagger.AssemblyInfo.cs
+D:\GenvAp\src\corePackages\Core.Security.WebApi.Swagger\obj\Debug\net8.0\Core.Security.WebApi.Swagger.csproj.CoreCompileInputs.cache
+D:\GenvAp\src\corePackages\Core.Security.WebApi.Swagger\obj\Debug\net8.0\Core.Security.WebApi.Swagger.sourcelink.json
+D:\GenvAp\src\corePackages\Core.Security.WebApi.Swagger\obj\Debug\net8.0\Core.Security.WebApi.Swagger.dll
+D:\GenvAp\src\corePackages\Core.Security.WebApi.Swagger\obj\Debug\net8.0\refint\Core.Security.WebApi.Swagger.dll
+D:\GenvAp\src\corePackages\Core.Security.WebApi.Swagger\obj\Debug\net8.0\Core.Security.WebApi.Swagger.pdb
+D:\GenvAp\src\corePackages\Core.Security.WebApi.Swagger\obj\Debug\net8.0\ref\Core.Security.WebApi.Swagger.dll

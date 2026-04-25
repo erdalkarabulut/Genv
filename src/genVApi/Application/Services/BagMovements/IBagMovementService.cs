@@ -29,6 +29,6 @@ public interface IBagMovementService
     Task<ICollection<BagMovement>> AddRangeAsync(ICollection<BagMovement> bagMovements);
     Task<BagMovement> UpdateAsync(BagMovement bagMovement);
     Task<ICollection<BagMovement>> UpdateRangeAsync(ICollection<BagMovement> bagMovements);
-    Task<BagMovement> DeleteAsync(BagMovement bagMovement, bool permanent = false);
-    Task<ICollection<BagMovement>> DeleteRangeAsync(ICollection<BagMovement> bagMovements, bool permanent = false);
+    Task<BagMovement> DeleteAsync(BagMovement bagMovement, bool permanent = true);
+    Task<ICollection<BagMovement>> DeleteRangeAsync(ICollection<BagMovement> bagMovements, bool permanent = true);
 }

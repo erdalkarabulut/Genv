@@ -83,14 +83,14 @@ public class DliProductManager : IDliProductService
         return updatedDliProducts;
     }
 
-    public async Task<DliProduct> DeleteAsync(DliProduct dliProduct, bool permanent = false)
+    public async Task<DliProduct> DeleteAsync(DliProduct dliProduct, bool permanent = true)
     {
-        DliProduct deletedDliProduct = await _dliProductRepository.DeleteAsync(dliProduct);
+        DliProduct deletedDliProduct = await _dliProductRepository.DeleteAsync(dliProduct, permanent);
 
         return deletedDliProduct;
     }
 
-    public async Task<ICollection<DliProduct>> DeleteRangeAsync(ICollection<DliProduct> dliProducts, bool permanent = false)
+    public async Task<ICollection<DliProduct>> DeleteRangeAsync(ICollection<DliProduct> dliProducts, bool permanent = true)
     {
         ICollection<DliProduct> deletedDliProducts = await _dliProductRepository.DeleteRangeAsync(dliProducts, permanent);
 

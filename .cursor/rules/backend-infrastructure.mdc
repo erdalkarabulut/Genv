@@ -1,0 +1,12 @@
+---
+description: Infrastructure — SMS sağlayıcıları, dış adaptörler, DI kaydı
+globs: src/genVApi/Infrastructure/Sms/**/*.cs,src/genVApi/Infrastructure/Adapters/**/*.cs,src/genVApi/Infrastructure/InfrastructureServiceRegistration.cs
+alwaysApply: false
+---
+
+# Infrastructure
+
+- **SMS:** Yeni sağlayıcı `ISmsSender` (veya projedeki arayüz) ile uyumlu olsun; `SmsInfrastructureRegistration` içinde koşullu kayıt desenini koru. Telefon normalizasyonu `SmsPhoneNormalizer` ile tutarlı kalsın.
+- **Gizli bilgi:** API anahtarları ve şablonlar yalnızca configuration/appsettings — kaynakta secret commit etme.
+- **Test / dev:** `NullSmsSender` veya `LocalSmsSender` kullanımını production build’den ayırt et; yanlışlıkla prod’da null sender bırakma.
+- **Image (Cloudinary):** Domain/Application’a iş mantığı sızdırma; saf I/O ve konfigürasyon katmanı olarak kal.

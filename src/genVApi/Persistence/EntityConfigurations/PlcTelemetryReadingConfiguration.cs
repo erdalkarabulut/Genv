@@ -14,7 +14,5 @@ public class PlcTelemetryReadingConfiguration : IEntityTypeConfiguration<PlcTele
         builder.Property(x => x.ReadAtUtc).IsRequired();
 
         builder.HasIndex(x => new { x.SensorPointId, x.ReadAtUtc });
-
-        builder.HasQueryFilter(x => !x.DeletedDate.HasValue);
     }
 }

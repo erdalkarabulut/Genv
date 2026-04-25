@@ -1,4 +1,4 @@
-﻿using Domain.Enums;
+using Domain.Enums;
 using NArchitecture.Core.Persistence.Repositories;
 using System;
 using System.Collections.Generic;
@@ -45,10 +45,10 @@ public class Bag : Entity<Guid>
     /// </summary>
     public Guid? SplitBatchId { get; set; }
 
-    public Guid? SlotId { get; set; }
+    public Guid? BagCellId { get; set; }
 
     public virtual CollectionSession Session { get; set; }
-    public virtual Slot? Slot { get; set; }
+    public virtual BagCell? BagCell { get; set; }
 
     public bool IsOptimal()
         => Cd34PerKg >= 4 && Cd3PerKg >= 3 && Cd3PerKg <= 8;

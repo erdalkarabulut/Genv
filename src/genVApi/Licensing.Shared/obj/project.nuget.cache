@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "4/3SOdj2LtY=",
+  "dgSpecHash": "ikpBMCOhPUI=",
   "success": true,
-  "projectFilePath": "D:\\GenVApi\\src\\genVApi\\Licensing.Shared\\Licensing.Shared.csproj",
+  "projectFilePath": "D:\\GenvAp\\src\\genVApi\\Licensing.Shared\\Licensing.Shared.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\erdal\\.nuget\\packages\\microsoft.netcore.platforms\\5.0.0\\microsoft.netcore.platforms.5.0.0.nupkg.sha512",
     "C:\\Users\\erdal\\.nuget\\packages\\microsoft.win32.registry\\5.0.0\\microsoft.win32.registry.5.0.0.nupkg.sha512",

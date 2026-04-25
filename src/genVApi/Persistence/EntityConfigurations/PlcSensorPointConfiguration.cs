@@ -26,7 +26,5 @@ public class PlcSensorPointConfiguration : IEntityTypeConfiguration<PlcSensorPoi
 
         builder.HasMany(x => x.Readings).WithOne(r => r.SensorPoint).HasForeignKey(r => r.SensorPointId)
             .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasQueryFilter(x => !x.DeletedDate.HasValue);
     }
 }

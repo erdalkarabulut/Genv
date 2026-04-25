@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute(@"The NArchitecture Core.CrossCuttingConcerns.Exception.WebApi package provides core classes for handling exceptions in ASP.NET Web API projects. It includes support for exception filters, exception handling middleware, and essential utilities for exception management in Web API applications.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f8eb49a40a3b5974fc36464b82f1ae68d5af1737")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+41d8718520c8525fea9fd9e3109f3da174391d1b")]
 [assembly: System.Reflection.AssemblyProductAttribute("NArchitecture")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Core.CrossCuttingConcerns.Exception.WebApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

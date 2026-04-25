@@ -19,19 +19,19 @@ namespace Application.Features.Bags.Commands.Split;
 /// <summary>
 /// Aferez ürünü kümülatif olarak yeterli hale geldiğinde session'ın ürününü
 /// N torbaya böler (varsayılan 4) ve 1 tanesini Cryo amacıyla işaretler.
-/// İsteğe bağlı <see cref="CryoSlotId"/> verilirse Cryo torbası otomatik olarak
-/// o slota yerleştirilir (Store işlemi + BagMovement logu + SignalR).
+/// İsteğe bağlı <see cref="CryoBagCellId"/> verilirse Cryo torbası otomatik olarak
+/// o torba hücresine yerleştirilir (Store işlemi + BagMovement logu + SignalR).
 /// </summary>
 public class SplitSessionIntoBagsCommand : IRequest<SplitSessionIntoBagsResponse>, ISecuredRequest, ICacheRemoverRequest, ILoggableRequest, ITransactionalRequest
 {
     public Guid SessionId { get; set; }
     public int BagCount { get; set; } = 4;
 
-    /// <summary>Belirtilirse cryo torbası doğrudan bu slota store edilir.</summary>
-    public Guid? CryoSlotId { get; set; }
+    /// <summary>Belirtilirse cryo torbası doğrudan bu torba hücresine store edilir.</summary>
+    public Guid? CryoBagCellId { get; set; }
 
     /// <summary>
-    /// true ve <see cref="CryoSlotId"/> verilmediyse, sistem ilk boş slotu otomatik olarak seçer (Auto-Place).
+    /// true ve <see cref="CryoBagCellId"/> verilmediyse, sistem ilk boş torba hücresini otomatik seçer (Auto-Place).
     /// </summary>
     public bool AutoPlaceCryo { get; set; } = true;
 
@@ -42,14 +42,14 @@ public class SplitSessionIntoBagsCommand : IRequest<SplitSessionIntoBagsResponse
 
     public bool BypassCache { get; }
     public string? CacheKey { get; }
-    public string[]? CacheGroupKey => ["GetBags", "GetSlots", "GetCollectionSessions", "GetPatients", "Dashboard"];
+    public string[]? CacheGroupKey => ["GetBags", "GetBagCells", "GetCollectionSessions", "GetPatients", "Dashboard"];
 
     public class SplitSessionIntoBagsCommandHandler : IRequestHandler<SplitSessionIntoBagsCommand, SplitSessionIntoBagsResponse>
     {
         private readonly ICollectionSessionRepository _sessionRepository;
         private readonly IPatientRepository _patientRepository;
         private readonly IBagRepository _bagRepository;
-        private readonly ISlotRepository _slotRepository;
+        private readonly IBagCellRepository _bagCellRepository;
         private readonly IBagMovementRepository _movementRepository;
         private readonly IClinicalThresholdsAccessor _clinicalThresholdsAccessor;
         private readonly IRealTimeNotifier _notifier;
@@ -58,7 +58,7 @@ public class SplitSessionIntoBagsCommand : IRequest<SplitSessionIntoBagsResponse
             ICollectionSessionRepository sessionRepository,
             IPatientRepository patientRepository,
             IBagRepository bagRepository,
-            ISlotRepository slotRepository,
+            IBagCellRepository bagCellRepository,
             IBagMovementRepository movementRepository,
             IClinicalThresholdsAccessor clinicalThresholdsAccessor,
             IRealTimeNotifier notifier)
@@ -66,7 +66,7 @@ public class SplitSessionIntoBagsCommand : IRequest<SplitSessionIntoBagsResponse
             _sessionRepository = sessionRepository;
             _patientRepository = patientRepository;
             _bagRepository = bagRepository;
-            _slotRepository = slotRepository;
+            _bagCellRepository = bagCellRepository;
             _movementRepository = movementRepository;
             _clinicalThresholdsAccessor = clinicalThresholdsAccessor;
             _notifier = notifier;
@@ -144,47 +144,47 @@ public class SplitSessionIntoBagsCommand : IRequest<SplitSessionIntoBagsResponse
 
             Bag cryoBag = created.First(b => b.Purpose == BagPurpose.Cryo);
 
-            Slot? slot = null;
-            if (request.CryoSlotId.HasValue)
+            BagCell? cell = null;
+            if (request.CryoBagCellId.HasValue)
             {
-                slot = await _slotRepository.GetAsync(
-                    predicate: s => s.Id == request.CryoSlotId.Value,
+                cell = await _bagCellRepository.GetAsync(
+                    predicate: c => c.Id == request.CryoBagCellId.Value,
                     cancellationToken: cancellationToken
                 );
-                if (slot is null)
-                    throw new BusinessException("Cryo slotu bulunamadı.");
-                if (slot.IsOccupied)
-                    throw new BusinessException("Cryo slotu dolu. Boş bir slot seçin.");
+                if (cell is null)
+                    throw new BusinessException("Cryo torba hücresi bulunamadı.");
+                if (cell.IsOccupied)
+                    throw new BusinessException("Cryo torba hücresi dolu. Boş bir hücre seçin.");
             }
             else if (request.AutoPlaceCryo)
             {
-                slot = await _slotRepository.Query()
-                    .Where(s => !s.IsOccupied)
-                    .OrderBy(s => s.Position)
+                cell = await _bagCellRepository.Query()
+                    .Where(c => !c.IsOccupied)
+                    .OrderBy(c => c.Position)
                     .FirstOrDefaultAsync(cancellationToken);
-                if (slot is null)
-                    throw new BusinessException("Boş slot bulunamadı (Auto-Place başarısız).");
+                if (cell is null)
+                    throw new BusinessException("Boş torba hücresi bulunamadı (Auto-Place başarısız).");
             }
 
-            if (slot is not null)
+            if (cell is not null)
             {
 
-                slot.IsOccupied = true;
-                slot.Version += 1;
-                cryoBag.SlotId = slot.Id;
+                cell.IsOccupied = true;
+                cell.Version += 1;
+                cryoBag.BagCellId = cell.Id;
                 cryoBag.Status = BagStatus.Stored;
 
-                await _slotRepository.UpdateAsync(slot);
+                await _bagCellRepository.UpdateAsync(cell);
                 await _bagRepository.UpdateAsync(cryoBag);
                 await _movementRepository.AddAsync(new BagMovement
                 {
                     BagId = cryoBag.Id,
-                    FromSlotId = null,
-                    ToSlotId = slot.Id,
+                    FromBagCellId = null,
+                    ToBagCellId = cell.Id,
                     Action = "Split-Store (Cryo)"
                 });
 
-                await _notifier.BagStoredAsync(cryoBag.Id, slot.Id, cancellationToken);
+                await _notifier.BagStoredAsync(cryoBag.Id, cell.Id, cancellationToken);
             }
 
             await _notifier.DashboardUpdatedAsync(cancellationToken);
@@ -199,7 +199,7 @@ public class SplitSessionIntoBagsCommand : IRequest<SplitSessionIntoBagsResponse
                 PerBagCd34PerKg = perBagCd34,
                 PerBagCd3PerKg = perBagCd3,
                 CryoBagId = cryoBag.Id,
-                CryoSlotId = cryoBag.SlotId,
+                CryoBagCellId = cryoBag.BagCellId,
                 Bags = created.Select(b => new SplitBagDto
                 {
                     BagId = b.Id,
@@ -209,7 +209,7 @@ public class SplitSessionIntoBagsCommand : IRequest<SplitSessionIntoBagsResponse
                     Cd3PerKg = b.Cd3PerKg,
                     Purpose = b.Purpose.ToString(),
                     Status = b.Status.ToString(),
-                    SlotId = b.SlotId
+                    BagCellId = b.BagCellId
                 }).ToList()
             };
         }
@@ -239,7 +239,7 @@ public class SplitSessionIntoBagsResponse
     public double PerBagCd34PerKg { get; set; }
     public double PerBagCd3PerKg { get; set; }
     public Guid CryoBagId { get; set; }
-    public Guid? CryoSlotId { get; set; }
+    public Guid? CryoBagCellId { get; set; }
     public List<SplitBagDto> Bags { get; set; } = new();
 }
 
@@ -252,5 +252,5 @@ public class SplitBagDto
     public double Cd3PerKg { get; set; }
     public string Purpose { get; set; } = default!;
     public string Status { get; set; } = default!;
-    public Guid? SlotId { get; set; }
+    public Guid? BagCellId { get; set; }
 }

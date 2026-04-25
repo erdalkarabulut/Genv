@@ -1068,11 +1068,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\GenVApi\\src\\corePackages\\Core.Persistence.WebApi\\Core.Persistence.WebApi.csproj",
+      "projectUniqueName": "D:\\GenvAp\\src\\corePackages\\Core.Persistence.WebApi\\Core.Persistence.WebApi.csproj",
       "projectName": "NArchitecture.Core.Persistence.WebApi",
-      "projectPath": "D:\\GenVApi\\src\\corePackages\\Core.Persistence.WebApi\\Core.Persistence.WebApi.csproj",
+      "projectPath": "D:\\GenvAp\\src\\corePackages\\Core.Persistence.WebApi\\Core.Persistence.WebApi.csproj",
       "packagesPath": "C:\\Users\\erdal\\.nuget\\packages\\",
-      "outputPath": "D:\\GenVApi\\src\\corePackages\\Core.Persistence.WebApi\\obj\\",
+      "outputPath": "D:\\GenvAp\\src\\corePackages\\Core.Persistence.WebApi\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\DevExpress 20.2\\Components\\Offline Packages",
@@ -1096,8 +1096,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "D:\\GenVApi\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj": {
-              "projectPath": "D:\\GenVApi\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj"
+            "D:\\GenvAp\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj": {
+              "projectPath": "D:\\GenvAp\\src\\corePackages\\Core.Persistence\\Core.Persistence.csproj"
             }
           }
         }

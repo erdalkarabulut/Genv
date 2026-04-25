@@ -1,26 +1,22 @@
-﻿using NArchitecture.Core.Persistence.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using NArchitecture.Core.Persistence.Repositories;
 
 namespace Domain.Entities;
+
 public class Box : Entity<Guid>
 {
-    public Guid RackId { get; set; }
-    public string Name { get; set; }
+    public Guid SlotId { get; set; }
+    public string Name { get; set; } = default!;
 
-    public virtual Rack Rack { get; set; }
-    public virtual ICollection<Slot> Slots { get; set; }
+    public virtual Slot Slot { get; set; } = default!;
+    public virtual ICollection<BagCell> BagCells { get; set; }
 
     public Box()
     {
-        Slots = new HashSet<Slot>();
+        BagCells = new HashSet<BagCell>();
     }
 
-    public int GetEmptySlotCount()
+    public int GetEmptyBagCellCount()
     {
-        return Slots?.Count(x => !x.IsOccupied) ?? 0;
+        return BagCells?.Count(x => !x.IsOccupied) ?? 0;
     }
 }

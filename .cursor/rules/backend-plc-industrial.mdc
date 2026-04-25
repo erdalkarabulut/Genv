@@ -1,0 +1,11 @@
+---
+description: PLC / endüstriyel entegrasyon — API key, telemetri
+globs: src/genVApi/Application/Features/PlcIntegration/**/*.cs,src/genVApi/WebAPI/Controllers/Plc*.cs
+alwaysApply: false
+---
+
+# PLC ve endüstriyel
+
+- Dış worker çağrıları **`X-Industrial-ApiKey`** ile korunur; controller’daki doğrulama ile handler ayrımını bozmadan önce güvenlik etkisini değerlendir.
+- Telemetri ingestion: idempotency, tekrarlanan ölçüm, saat damgası ve eşik ihlali yan etkileri (SMS) için mevcut handler davranışına uy.
+- `IndustrialIntegrationSettings` bölüm adı ve env değişkenleri dokümantasyonda tutarlı kalsın.

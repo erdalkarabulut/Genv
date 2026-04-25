@@ -32,6 +32,7 @@ public static class PersistenceServiceRegistration
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IRackRepository, RackRepository>();
         services.AddScoped<ISlotRepository, SlotRepository>();
+        services.AddScoped<IBagCellRepository, BagCellRepository>();
         services.AddScoped<ITankRepository, TankRepository>();
         services.AddScoped<IPlcSensorPointRepository, PlcSensorPointRepository>();
         services.AddScoped<IPlcTelemetryReadingRepository, PlcTelemetryReadingRepository>();

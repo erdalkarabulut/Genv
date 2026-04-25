@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "gyHt+qaYrC0=",
+  "dgSpecHash": "pmfvPezsUB8=",
   "success": true,
-  "projectFilePath": "D:\\GenVApi\\src\\corePackages\\Core.Security.DependencyInjection\\Core.Security.DependencyInjection.csproj",
+  "projectFilePath": "D:\\GenvAp\\src\\corePackages\\Core.Security.DependencyInjection\\Core.Security.DependencyInjection.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\erdal\\.nuget\\packages\\microsoft.entityframeworkcore\\8.0.8\\microsoft.entityframeworkcore.8.0.8.nupkg.sha512",
     "C:\\Users\\erdal\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\8.0.8\\microsoft.entityframeworkcore.abstractions.8.0.8.nupkg.sha512",

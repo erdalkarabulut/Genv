@@ -24,29 +24,29 @@ public class UpdateSlotCommand : IRequest<UpdatedSlotResponse>, ISecuredRequest,
 
     public bool BypassCache { get; }
     public string? CacheKey { get; }
-    public string[]? CacheGroupKey => ["GetSlots"];
+    public string[]? CacheGroupKey => ["GetBagCells"];
 
     public class UpdateSlotCommandHandler : IRequestHandler<UpdateSlotCommand, UpdatedSlotResponse>
     {
         private readonly IMapper _mapper;
-        private readonly ISlotRepository _slotRepository;
-        private readonly SlotBusinessRules _slotBusinessRules;
+        private readonly IBagCellRepository _bagCellRepository;
+        private readonly BagCellBusinessRules _bagCellBusinessRules;
 
-        public UpdateSlotCommandHandler(IMapper mapper, ISlotRepository slotRepository,
-                                         SlotBusinessRules slotBusinessRules)
+        public UpdateSlotCommandHandler(IMapper mapper, IBagCellRepository bagCellRepository,
+                                         BagCellBusinessRules bagCellBusinessRules)
         {
             _mapper = mapper;
-            _slotRepository = slotRepository;
-            _slotBusinessRules = slotBusinessRules;
+            _bagCellRepository = bagCellRepository;
+            _bagCellBusinessRules = bagCellBusinessRules;
         }
 
         public async Task<UpdatedSlotResponse> Handle(UpdateSlotCommand request, CancellationToken cancellationToken)
         {
-            Slot? slot = await _slotRepository.GetAsync(predicate: x => x.Id == request.Id, cancellationToken: cancellationToken);
-            await _slotBusinessRules.SlotShouldExistWhenSelected(slot);
+            BagCell? slot = await _bagCellRepository.GetAsync(predicate: x => x.Id == request.Id, cancellationToken: cancellationToken);
+            await _bagCellBusinessRules.BagCellShouldExistWhenSelected(slot);
             slot = _mapper.Map(request, slot);
 
-            await _slotRepository.UpdateAsync(slot!);
+            await _bagCellRepository.UpdateAsync(slot!);
 
             UpdatedSlotResponse response = _mapper.Map<UpdatedSlotResponse>(slot);
             return response;

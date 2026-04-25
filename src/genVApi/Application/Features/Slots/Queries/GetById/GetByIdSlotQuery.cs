@@ -18,20 +18,20 @@ public class GetByIdSlotQuery : IRequest<GetByIdSlotResponse>, ISecuredRequest
     public class GetByIdSlotQueryHandler : IRequestHandler<GetByIdSlotQuery, GetByIdSlotResponse>
     {
         private readonly IMapper _mapper;
-        private readonly ISlotRepository _slotRepository;
-        private readonly SlotBusinessRules _slotBusinessRules;
+        private readonly IBagCellRepository _bagCellRepository;
+        private readonly BagCellBusinessRules _bagCellBusinessRules;
 
-        public GetByIdSlotQueryHandler(IMapper mapper, ISlotRepository slotRepository, SlotBusinessRules slotBusinessRules)
+        public GetByIdSlotQueryHandler(IMapper mapper, IBagCellRepository bagCellRepository, BagCellBusinessRules bagCellBusinessRules)
         {
             _mapper = mapper;
-            _slotRepository = slotRepository;
-            _slotBusinessRules = slotBusinessRules;
+            _bagCellRepository = bagCellRepository;
+            _bagCellBusinessRules = bagCellBusinessRules;
         }
 
         public async Task<GetByIdSlotResponse> Handle(GetByIdSlotQuery request, CancellationToken cancellationToken)
         {
-            Slot? slot = await _slotRepository.GetAsync(predicate: s => s.Id == request.Id, cancellationToken: cancellationToken);
-            await _slotBusinessRules.SlotShouldExistWhenSelected(slot);
+            BagCell? slot = await _bagCellRepository.GetAsync(predicate: s => s.Id == request.Id, cancellationToken: cancellationToken);
+            await _bagCellBusinessRules.BagCellShouldExistWhenSelected(slot);
 
             GetByIdSlotResponse response = _mapper.Map<GetByIdSlotResponse>(slot);
             return response;

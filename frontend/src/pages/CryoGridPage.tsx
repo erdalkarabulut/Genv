@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Drawer } from "@/components/ui/Modal";
 import { useEffect, useMemo, useState } from "react";
-import type { Bag, CryoBoxDto, CryoSlotDto } from "@/lib/types";
+import type { Bag, CryoBoxDto, CryoBagCellDto } from "@/lib/types";
 import {
   Hand,
   Layers,
@@ -32,7 +32,7 @@ const purposeTone: Record<string, string> = {
 };
 
 type PickUp =
-  | { kind: "stored"; bagId: string; fromSlotId: string; label: string }
+  | { kind: "stored"; bagId: string; fromBagCellId: string; label: string }
   | { kind: "reserved"; bagId: string; label: string }
   | null;
 
@@ -41,8 +41,7 @@ export default function CryoGridPage() {
   const grid = useQuery({ queryKey: ["cryo-grid"], queryFn: Dashboard.cryoGrid });
   const bagsQ = useQuery({ queryKey: ["bags", "all"], queryFn: () => Bags.list(0, 500) });
   const [activeTank, setActiveTank] = useState<number>(0);
-  const [activeRack, setActiveRack] = useState<number>(0);
-  const [drawerSlot, setDrawerSlot] = useState<CryoSlotDto | null>(null);
+  const [drawerCell, setDrawerCell] = useState<CryoBagCellDto | null>(null);
   const [pickup, setPickup] = useState<PickUp>(null);
 
   useEffect(() => {
@@ -68,7 +67,8 @@ export default function CryoGridPage() {
   }, []);
 
   const moveMut = useMutation({
-    mutationFn: ({ bagId, slotId }: { bagId: string; slotId: string }) => Bags.move(bagId, slotId),
+    mutationFn: ({ bagId, bagCellId }: { bagId: string; bagCellId: string }) =>
+      Bags.move(bagId, bagCellId),
     onSuccess: () => {
       toast.success("Torba taşındı");
       qc.invalidateQueries({ queryKey: ["cryo-grid"] });
@@ -79,7 +79,8 @@ export default function CryoGridPage() {
   });
 
   const storeMut = useMutation({
-    mutationFn: ({ bagId, slotId }: { bagId: string; slotId: string }) => Bags.store(bagId, slotId),
+    mutationFn: ({ bagId, bagCellId }: { bagId: string; bagCellId: string }) =>
+      Bags.store(bagId, bagCellId),
     onSuccess: () => {
       toast.success("Torba depoya alındı");
       qc.invalidateQueries({ queryKey: ["cryo-grid"] });
@@ -89,22 +90,22 @@ export default function CryoGridPage() {
     },
   });
 
-  const dropOnSlot = async (target: CryoSlotDto, p: PickUp) => {
+  const dropOnCell = async (target: CryoBagCellDto, p: PickUp) => {
     if (!p) return;
     if (target.isOccupied) {
-      toast.error("Bu slot dolu — boş bir slota bırakın.");
+      toast.error("Bu hücre dolu — boş bir hücreye bırakın.");
       return;
     }
-    if (p.kind === "stored" && p.fromSlotId === target.id) {
-      toast.info("Torba zaten bu slotta.");
+    if (p.kind === "stored" && p.fromBagCellId === target.id) {
+      toast.info("Torba zaten bu hücrede.");
       setPickup(null);
       return;
     }
     try {
       if (p.kind === "stored") {
-        await moveMut.mutateAsync({ bagId: p.bagId, slotId: target.id });
+        await moveMut.mutateAsync({ bagId: p.bagId, bagCellId: target.id });
       } else {
-        await storeMut.mutateAsync({ bagId: p.bagId, slotId: target.id });
+        await storeMut.mutateAsync({ bagId: p.bagId, bagCellId: target.id });
       }
       setPickup(null);
     } catch {
@@ -113,12 +114,28 @@ export default function CryoGridPage() {
   };
 
   const tank = grid.data?.tanks?.[activeTank];
-  const rack = tank?.racks?.[activeRack];
+
+  const tankStats = useMemo(() => {
+    if (!tank) return { boxes: 0, occupied: 0, cells: 0 };
+    let boxes = 0;
+    let occupied = 0;
+    let cells = 0;
+    for (const r of tank.racks) {
+      for (const slot of r.slots) {
+        boxes += slot.boxes.length;
+        for (const box of slot.boxes) {
+          cells += box.bagCells.length;
+          occupied += box.bagCells.filter((c) => c.isOccupied).length;
+        }
+      }
+    }
+    return { boxes, occupied, cells };
+  }, [tank]);
 
   const reservedBags: Bag[] = useMemo(
     () =>
       (bagsQ.data?.items ?? []).filter(
-        (b) => b.purpose === "Cryo" && b.status === "Reserved" && !b.slotId,
+        (b) => b.purpose === "Cryo" && b.status === "Reserved" && !b.bagCellId,
       ),
     [bagsQ.data],
   );
@@ -129,7 +146,7 @@ export default function CryoGridPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Cryo Grid</h1>
           <p className="text-sm text-ink-muted mt-1 flex items-center gap-2 flex-wrap">
-            Tank → Rack → Box → Slot hiyerarşisi.
+            Tank seçin: tüm rack, raf slotu, kutu ve hücreler tek ekranda.
             <span className="inline-flex items-center gap-1 text-[11px] text-ink-dim border border-line/60 rounded-md px-1.5 py-0.5">
               <Hand className="size-3" /> sürükle-bırak
             </span>
@@ -154,18 +171,34 @@ export default function CryoGridPage() {
           <div className="space-y-1">
             {grid.data?.tanks?.map((t, i) => {
               const total = t.racks.reduce(
-                (a, r) => a + r.boxes.reduce((b, x) => b + x.slots.length, 0),
+                (a, r) =>
+                  a +
+                  r.slots.reduce(
+                    (b, slot) =>
+                      b +
+                      slot.boxes.reduce((c, box) => c + box.bagCells.length, 0),
+                    0,
+                  ),
                 0,
               );
               const occupied = t.racks.reduce(
                 (a, r) =>
-                  a + r.boxes.reduce((b, x) => b + x.slots.filter((s) => s.isOccupied).length, 0),
+                  a +
+                  r.slots.reduce(
+                    (b, slot) =>
+                      b +
+                      slot.boxes.reduce(
+                        (c, box) => c + box.bagCells.filter((cell) => cell.isOccupied).length,
+                        0,
+                      ),
+                    0,
+                  ),
                 0,
               );
               return (
                 <button
                   key={t.id}
-                  onClick={() => { setActiveTank(i); setActiveRack(0); }}
+                  onClick={() => setActiveTank(i)}
                   className={cn(
                     "w-full text-left rounded-xl px-3 py-2.5 transition border",
                     activeTank === i
@@ -178,7 +211,7 @@ export default function CryoGridPage() {
                     <Snowflake className="size-3.5 text-accent-sky" />
                   </div>
                   <div className="text-[11px] text-ink-dim mt-0.5">
-                    {occupied}/{total} slot dolu · {t.racks.length} rack
+                    {occupied}/{total} hücre dolu · {t.racks.length} rack
                   </div>
                 </button>
               );
@@ -195,7 +228,7 @@ export default function CryoGridPage() {
             </div>
             {reservedBags.length === 0 && (
               <p className="px-2 text-[11px] text-ink-dim">
-                Cryo amaçlı, henüz slota yerleştirilmemiş torba yok.
+                Cryo amaçlı, henüz hücreye yerleştirilmemiş torba yok.
               </p>
             )}
             <div className="space-y-1.5">
@@ -223,7 +256,7 @@ export default function CryoGridPage() {
                         ? "border-sky-500/50 bg-sky-500/10 shadow-glow"
                         : "border-line/60 bg-bg-elevated/40 hover:border-sky-500/30",
                     )}
-                    title="Sürükleyip boş bir slota bırakın"
+                    title="Sürükleyip boş bir hücreye bırakın"
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-medium">Bag #{b.bagNumber}</span>
@@ -240,63 +273,86 @@ export default function CryoGridPage() {
         </Card>
 
         {/* Rack tabs + boxes */}
-        <Card className="col-span-12 lg:col-span-9">
+        <Card className="col-span-12 lg:col-span-9 flex flex-col min-h-0">
           <CardHeader
             title={tank?.name ?? "Seçili tank yok"}
-            subtitle={rack ? `${rack.name} · ${rack.boxes.length} box` : undefined}
+            subtitle={
+              tank
+                ? `${tank.racks.length} rack · ${tankStats.boxes} kutu · ${tankStats.occupied}/${tankStats.cells} hücre dolu`
+                : undefined
+            }
             right={<Badge tone="brand" dot>Live</Badge>}
           />
-          {tank && (
-            <div className="mb-4 flex flex-wrap gap-2">
-              {tank.racks.map((r, i) => (
-                <button
-                  key={r.id}
-                  onClick={() => setActiveRack(i)}
-                  className={cn(
-                    "px-3 py-1.5 rounded-full text-xs border transition",
-                    activeRack === i
-                      ? "border-brand-500/50 bg-brand-500/10 text-brand-400"
-                      : "border-line/70 bg-bg-elevated/40 text-ink-muted hover:text-ink",
-                  )}
-                >
-                  <Layers className="size-3 inline-block mr-1" /> {r.name}
-                </button>
-              ))}
+
+          {!grid.isLoading && tank && tank.racks.length === 0 && (
+            <p className="text-sm text-ink-muted">Bu tankta rack yok.</p>
+          )}
+
+          {!grid.isLoading &&
+            tank &&
+            tank.racks.length > 0 &&
+            tankStats.boxes === 0 && (
+              <p className="text-sm text-ink-muted">
+                Bu tanktaki rack&apos;lerde henüz kutu yok; önce envanterden raf slotu ve kutu ekleyin.
+              </p>
+            )}
+
+          {tank && tankStats.boxes > 0 && (
+            <div className="max-h-[min(72vh,calc(100vh-10rem))] overflow-y-auto pr-1 pb-2 space-y-8 mt-1">
+              {tank.racks.map((rack) => {
+                const rackBoxCount = rack.slots.reduce((n, s) => n + s.boxes.length, 0);
+                return (
+                  <section key={rack.id} className="space-y-3">
+                    <div className="sticky top-0 z-10 -mx-1 px-2 py-2.5 bg-bg-card/95 backdrop-blur-sm border-b border-line/60 flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-ink">
+                        <Layers className="size-4 text-brand-400 shrink-0" />
+                        <span>{rack.name}</span>
+                      </div>
+                      <span className="text-[11px] text-ink-dim">
+                        {rack.slots.length} raf slotu · {rackBoxCount} kutu
+                      </span>
+                    </div>
+                    {rack.slots.length === 0 ? (
+                      <p className="text-xs text-ink-muted pl-1">Bu rack&apos;te raf slotu yok.</p>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                        {rack.slots.flatMap((rackSlot) =>
+                          rackSlot.boxes.map((box) => (
+                            <BoxGrid
+                              key={`${rack.id}-${rackSlot.id}-${box.id}`}
+                              rackName={rack.name}
+                              rackSlotName={rackSlot.name}
+                              box={box}
+                              pickup={pickup}
+                              onCell={(s) => {
+                                if (pickup) {
+                                  dropOnCell(s, pickup);
+                                } else if (s.isOccupied) {
+                                  setDrawerCell(s);
+                                } else {
+                                  toast.info("Önce bir torba seçin (veya sürükleyin).");
+                                }
+                              }}
+                              onDropOnCell={(s, p) => dropOnCell(s, p)}
+                              onPickUpStored={(s) => {
+                                if (!s.bagId) return;
+                                setPickup({
+                                  kind: "stored",
+                                  bagId: s.bagId,
+                                  fromBagCellId: s.id,
+                                  label: `Bag #${s.bagNumber ?? ""} @ ${s.position}`,
+                                });
+                              }}
+                            />
+                          )),
+                        )}
+                      </div>
+                    )}
+                  </section>
+                );
+              })}
             </div>
           )}
-
-          {!grid.isLoading && rack?.boxes?.length === 0 && (
-            <p className="text-sm text-ink-muted">Bu rack'te box yok.</p>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {rack?.boxes?.map((box) => (
-              <BoxGrid
-                key={box.id}
-                box={box}
-                pickup={pickup}
-                onSlot={(s) => {
-                  if (pickup) {
-                    dropOnSlot(s, pickup);
-                  } else if (s.isOccupied) {
-                    setDrawerSlot(s);
-                  } else {
-                    toast.info("Önce bir torba seçin (veya sürükleyin).");
-                  }
-                }}
-                onDropOnSlot={(s, p) => dropOnSlot(s, p)}
-                onPickUpStored={(s) => {
-                  if (!s.bagId) return;
-                  setPickup({
-                    kind: "stored",
-                    bagId: s.bagId,
-                    fromSlotId: s.id,
-                    label: `Bag #${s.bagNumber ?? ""} @ ${s.position}`,
-                  });
-                }}
-              />
-            ))}
-          </div>
         </Card>
       </div>
 
@@ -309,7 +365,7 @@ export default function CryoGridPage() {
               <span className="text-ink-dim">Seçili:</span>{" "}
               <span className="font-medium">{pickup.label}</span>{" "}
               <span className="text-ink-dim">
-                — boş bir slota sürükleyin veya tıklayın
+                — boş bir hücreye sürükleyin veya tıklayın
                 {pickup.kind === "reserved" && " (depoya alınır)"}
                 {pickup.kind === "stored" && " (taşınır)"}
               </span>
@@ -327,22 +383,22 @@ export default function CryoGridPage() {
       )}
 
       <Drawer
-        open={!!drawerSlot}
-        onClose={() => setDrawerSlot(null)}
-        title={`Slot ${drawerSlot?.position ?? ""}`}
+        open={!!drawerCell}
+        onClose={() => setDrawerCell(null)}
+        title={`Hücre ${drawerCell?.position ?? ""}`}
       >
-        {drawerSlot && (
-          <SlotDetail
-            slot={drawerSlot}
-            onAfter={() => setDrawerSlot(null)}
+        {drawerCell && (
+          <BagCellDetail
+            cell={drawerCell}
+            onAfter={() => setDrawerCell(null)}
             onMove={(s) => {
               setPickup({
                 kind: "stored",
                 bagId: s.bagId!,
-                fromSlotId: s.id,
+                fromBagCellId: s.id,
                 label: `Bag #${s.bagNumber ?? ""} @ ${s.position}`,
               });
-              setDrawerSlot(null);
+              setDrawerCell(null);
             }}
           />
         )}
@@ -352,39 +408,48 @@ export default function CryoGridPage() {
 }
 
 function BoxGrid({
+  rackName,
+  rackSlotName,
   box,
   pickup,
-  onSlot,
-  onDropOnSlot,
+  onCell,
+  onDropOnCell,
   onPickUpStored,
 }: {
+  rackName: string;
+  rackSlotName: string;
   box: CryoBoxDto;
   pickup: PickUp;
-  onSlot: (s: CryoSlotDto) => void;
-  onDropOnSlot: (s: CryoSlotDto, p: PickUp) => void;
-  onPickUpStored: (s: CryoSlotDto) => void;
+  onCell: (s: CryoBagCellDto) => void;
+  onDropOnCell: (s: CryoBagCellDto, p: PickUp) => void;
+  onPickUpStored: (s: CryoBagCellDto) => void;
 }) {
   const cols = useMemo(() => {
-    const positions = box.slots.map((s) => s.position);
+    const positions = box.bagCells.map((s) => s.position);
     const letters = new Set(positions.map((p) => p.replace(/[0-9]/g, "")));
     const numbers = new Set(positions.map((p) => Number(p.replace(/[A-Za-z]/g, ""))));
     return { letters: [...letters].sort(), numbers: [...numbers].sort((a, b) => a - b) };
   }, [box]);
 
-  const slotMap = useMemo(() => {
-    const m = new Map<string, CryoSlotDto>();
-    box.slots.forEach((s) => m.set(s.position, s));
+  const cellMap = useMemo(() => {
+    const m = new Map<string, CryoBagCellDto>();
+    box.bagCells.forEach((s) => m.set(s.position, s));
     return m;
   }, [box]);
 
-  const occupied = box.slots.filter((s) => s.isOccupied).length;
+  const occupied = box.bagCells.filter((s) => s.isOccupied).length;
 
   return (
     <div className="rounded-2xl border border-line/60 bg-bg-elevated/30 p-4">
       <div className="flex items-center justify-between mb-3">
-        <div className="font-medium">{box.name}</div>
-        <Badge tone={occupied === box.slots.length ? "rose" : occupied === 0 ? "mint" : "amber"}>
-          {occupied}/{box.slots.length}
+        <div>
+          <div className="font-medium">{box.name}</div>
+          <div className="text-[10px] text-ink-dim">
+            {rackName} · {rackSlotName}
+          </div>
+        </div>
+        <Badge tone={occupied === box.bagCells.length ? "rose" : occupied === 0 ? "mint" : "amber"}>
+          {occupied}/{box.bagCells.length}
         </Badge>
       </div>
       <div
@@ -394,7 +459,7 @@ function BoxGrid({
         {cols.letters.flatMap((L) =>
           cols.numbers.map((N) => {
             const pos = `${L}${N}`;
-            const slot = slotMap.get(pos);
+            const slot = cellMap.get(pos);
             if (!slot)
               return (
                 <div
@@ -403,7 +468,7 @@ function BoxGrid({
                 />
               );
             const isPickupSource =
-              pickup?.kind === "stored" && pickup.fromSlotId === slot.id;
+              pickup?.kind === "stored" && pickup.fromBagCellId === slot.id;
             const isValidTarget = !slot.isOccupied && !!pickup;
             const tone = slot.isOccupied
               ? purposeTone[slot.purpose ?? "Cryo"] ?? "bg-rose-500/30 border-rose-400/60"
@@ -430,9 +495,9 @@ function BoxGrid({
                 onDrop={(e) => {
                   if (!isValidTarget) return;
                   e.preventDefault();
-                  onDropOnSlot(slot, pickup);
+                  onDropOnCell(slot, pickup);
                 }}
-                onClick={() => onSlot(slot)}
+                onClick={() => onCell(slot)}
                 title={`${pos} ${slot.isOccupied ? "· dolu" : "· boş"}`}
                 className={cn(
                   "relative aspect-square rounded-md border text-[10px] font-semibold tracking-wide transition",
@@ -467,21 +532,21 @@ function Legend({ swatch, label }: { swatch: string; label: string }) {
   );
 }
 
-function SlotDetail({
-  slot,
+function BagCellDetail({
+  cell,
   onAfter,
   onMove,
 }: {
-  slot: CryoSlotDto;
+  cell: CryoBagCellDto;
   onAfter: () => void;
-  onMove: (s: CryoSlotDto) => void;
+  onMove: (s: CryoBagCellDto) => void;
 }) {
   const qc = useQueryClient();
 
   const bagQ = useQuery({
-    queryKey: ["bag", slot.bagId],
-    queryFn: () => Bags.byId(slot.bagId!),
-    enabled: !!slot.bagId && slot.isOccupied,
+    queryKey: ["bag", cell.bagId],
+    queryFn: () => Bags.byId(cell.bagId!),
+    enabled: !!cell.bagId && cell.isOccupied,
   });
   const sessionQ = useQuery({
     queryKey: ["session", bagQ.data?.sessionId],
@@ -495,10 +560,10 @@ function SlotDetail({
   });
 
   const useBag = async () => {
-    if (!slot.bagId) return;
+    if (!cell.bagId) return;
     try {
-      await Bags.use(slot.bagId);
-      toast.success("Torba kullanıldı, slot boşaldı");
+      await Bags.use(cell.bagId);
+      toast.success("Torba kullanıldı, hücre boşaldı");
       qc.invalidateQueries({ queryKey: ["cryo-grid"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       qc.invalidateQueries({ queryKey: ["bags"] });
@@ -509,13 +574,13 @@ function SlotDetail({
     }
   };
 
-  if (!slot.isOccupied) {
+  if (!cell.isOccupied) {
     return (
       <div className="space-y-3">
-        <p className="text-sm text-ink-muted">Bu slot boş.</p>
+        <p className="text-sm text-ink-muted">Bu hücre boş.</p>
         <p className="text-xs text-ink-dim">
-          Soldan bir "Depoya alınabilir" torbayı buraya sürükleyebilir ya da tıklayarak seçip boş
-          slota bırakabilirsiniz. Alternatif: aferez seansını "4 torbaya böl + Cryo" ile otomatik
+          Soldan bir &quot;Depoya alınabilir&quot; torbayı buraya sürükleyebilir ya da tıklayarak seçip boş
+          hücreye bırakabilirsiniz. Alternatif: aferez seansını &quot;4 torbaya böl + Cryo&quot; ile otomatik
           yerleştirin.
         </p>
       </div>
@@ -533,14 +598,14 @@ function SlotDetail({
       <div className="rounded-xl bg-gradient-to-br from-brand-500/10 to-transparent border border-brand-500/30 p-3 flex items-center justify-between gap-3">
         <div>
           <div className="text-xs text-ink-dim">Pozisyon</div>
-          <div className="text-lg font-semibold">{slot.position}</div>
+          <div className="text-lg font-semibold">{cell.position}</div>
         </div>
         <div className="flex items-center gap-1.5">
-          <Badge tone={slot.purpose === "Cryo" ? "sky" : "brand"} dot>
-            {purposeLabel(slot.purpose)}
+          <Badge tone={cell.purpose === "Cryo" ? "sky" : "brand"} dot>
+            {purposeLabel(cell.purpose)}
           </Badge>
-          <Badge tone={statusTone(slot.status)} dot>
-            {slot.status ?? "—"}
+          <Badge tone={statusTone(cell.status)} dot>
+            {cell.status ?? "—"}
           </Badge>
         </div>
       </div>
@@ -650,8 +715,8 @@ function SlotDetail({
           )}
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <Field label="Bag #" value={slot.bagNumber?.toString() ?? "—"} />
-          <Field label="Bag ID" value={shortId(slot.bagId)} />
+          <Field label="Bag #" value={cell.bagNumber?.toString() ?? "—"} />
+          <Field label="Bag ID" value={shortId(cell.bagId)} />
           <Field label="Hacim" value={bag ? `${formatNumber(bag.volumeMl, 1)} ml` : "—"} />
           <Field
             label="Kaynak hacim"
@@ -661,8 +726,8 @@ function SlotDetail({
           <Field label="%CD34" value={bag?.cd34Percent ? formatNumber(bag.cd34Percent, 2) : "—"} />
           <Field label="%CD45" value={bag?.cd45Percent ? formatNumber(bag.cd45Percent, 2) : "—"} />
           <Field label="%CD3" value={bag?.cd3Percent ? formatNumber(bag.cd3Percent, 2) : "—"} />
-          <Field label="CD34/kg" value={formatNumber(slot.cd34PerKg ?? 0, 2)} />
-          <Field label="CD3/kg" value={formatNumber(slot.cd3PerKg ?? 0, 2)} />
+          <Field label="CD34/kg" value={formatNumber(cell.cd34PerKg ?? 0, 2)} />
+          <Field label="CD3/kg" value={formatNumber(cell.cd3PerKg ?? 0, 2)} />
         </div>
         {bag?.compositionNote && (
           <div className="mt-1 rounded-lg bg-bg-subtle/60 border border-line/60 px-3 py-2 text-xs flex gap-2">
@@ -678,15 +743,15 @@ function SlotDetail({
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <Button variant="soft" onClick={() => onMove(slot)} icon={<Hand className="size-4" />}>
+        <Button variant="soft" onClick={() => onMove(cell)} icon={<Hand className="size-4" />}>
           Taşımak için seç
         </Button>
         <Button variant="danger" onClick={useBag}>
-          Torbayı kullan (slot boşalt)
+          Torbayı kullan (hücre boşalt)
         </Button>
       </div>
       <p className="text-[11px] text-ink-dim">
-        İpucu: Slotu sürükleyerek başka boş bir slota da doğrudan taşıyabilirsiniz.
+        İpucu: Hücreyi sürükleyerek başka boş bir hücreye de doğrudan taşıyabilirsiniz.
       </p>
     </div>
   );

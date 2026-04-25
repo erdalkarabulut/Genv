@@ -20,7 +20,7 @@ public class UpdateSlotRangeCommand : IRequest<UpdatedSlotRangeResponse>, ISecur
 
     public bool BypassCache { get; }
     public string? CacheKey { get; }
-    public string[]? CacheGroupKey => ["GetSlots"];
+    public string[]? CacheGroupKey => ["GetBagCells"];
 
     public class UpdateSlotRangeItem
     {
@@ -34,32 +34,32 @@ public class UpdateSlotRangeCommand : IRequest<UpdatedSlotRangeResponse>, ISecur
     public class UpdateSlotRangeCommandHandler : IRequestHandler<UpdateSlotRangeCommand, UpdatedSlotRangeResponse>
     {
         private readonly IMapper _mapper;
-        private readonly ISlotRepository _slotRepository;
-        private readonly SlotBusinessRules _slotBusinessRules;
+        private readonly IBagCellRepository _bagCellRepository;
+        private readonly BagCellBusinessRules _bagCellBusinessRules;
 
-        public UpdateSlotRangeCommandHandler(IMapper mapper, ISlotRepository slotRepository, SlotBusinessRules slotBusinessRules)
+        public UpdateSlotRangeCommandHandler(IMapper mapper, IBagCellRepository bagCellRepository, BagCellBusinessRules bagCellBusinessRules)
         {
             _mapper = mapper;
-            _slotRepository = slotRepository;
-            _slotBusinessRules = slotBusinessRules;
+            _bagCellRepository = bagCellRepository;
+            _bagCellBusinessRules = bagCellBusinessRules;
         }
 
         public async Task<UpdatedSlotRangeResponse> Handle(UpdateSlotRangeCommand request, CancellationToken cancellationToken)
         {
-            List<Slot> items = new List<Slot>();
+            List<BagCell> items = new List<BagCell>();
 
             foreach (UpdateSlotRangeItem item in request.Items)
             {
-                Slot? entity = await _slotRepository.GetAsync(
+                BagCell? entity = await _bagCellRepository.GetAsync(
                     predicate: x => x.Id == item.Id,
                     cancellationToken: cancellationToken
                 );
-                await _slotBusinessRules.SlotShouldExistWhenSelected(entity);
+                await _bagCellBusinessRules.BagCellShouldExistWhenSelected(entity);
                 _mapper.Map(source: item, destination: entity!);
                 items.Add(entity!);
             }
 
-            ICollection<Slot> updated = await _slotRepository.UpdateRangeAsync(items);
+            ICollection<BagCell> updated = await _bagCellRepository.UpdateRangeAsync(items);
 
             return new UpdatedSlotRangeResponse { Ids = updated.Select(e => e.Id).ToList() };
         }

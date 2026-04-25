@@ -29,6 +29,6 @@ public interface ICollectionSessionService
     Task<ICollection<CollectionSession>> AddRangeAsync(ICollection<CollectionSession> collectionSessions);
     Task<CollectionSession> UpdateAsync(CollectionSession collectionSession);
     Task<ICollection<CollectionSession>> UpdateRangeAsync(ICollection<CollectionSession> collectionSessions);
-    Task<CollectionSession> DeleteAsync(CollectionSession collectionSession, bool permanent = false);
-    Task<ICollection<CollectionSession>> DeleteRangeAsync(ICollection<CollectionSession> collectionSessions, bool permanent = false);
+    Task<CollectionSession> DeleteAsync(CollectionSession collectionSession, bool permanent = true);
+    Task<ICollection<CollectionSession>> DeleteRangeAsync(ICollection<CollectionSession> collectionSessions, bool permanent = true);
 }

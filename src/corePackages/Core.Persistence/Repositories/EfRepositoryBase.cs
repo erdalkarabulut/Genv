@@ -61,14 +61,14 @@ public class EfRepositoryBase<TEntity, TEntityId, TContext>
         return entities;
     }
 
-    public async Task<TEntity> DeleteAsync(TEntity entity, bool permanent = false)
+    public async Task<TEntity> DeleteAsync(TEntity entity, bool permanent = true)
     {
         await SetEntityAsDeletedAsync(entity, permanent);
         await Context.SaveChangesAsync();
         return entity;
     }
 
-    public async Task<ICollection<TEntity>> DeleteRangeAsync(ICollection<TEntity> entities, bool permanent = false)
+    public async Task<ICollection<TEntity>> DeleteRangeAsync(ICollection<TEntity> entities, bool permanent = true)
     {
         await SetEntityAsDeletedAsync(entities, permanent);
         await Context.SaveChangesAsync();
@@ -192,14 +192,14 @@ public class EfRepositoryBase<TEntity, TEntityId, TContext>
         return entities;
     }
 
-    public TEntity Delete(TEntity entity, bool permanent = false)
+    public TEntity Delete(TEntity entity, bool permanent = true)
     {
         SetEntityAsDeleted(entity, permanent);
         Context.SaveChanges();
         return entity;
     }
 
-    public ICollection<TEntity> DeleteRange(ICollection<TEntity> entities, bool permanent = false)
+    public ICollection<TEntity> DeleteRange(ICollection<TEntity> entities, bool permanent = true)
     {
         SetEntityAsDeleted(entities, permanent);
         Context.SaveChanges();

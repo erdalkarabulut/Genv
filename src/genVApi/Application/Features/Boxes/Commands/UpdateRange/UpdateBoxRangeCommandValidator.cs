@@ -11,7 +11,7 @@ public class UpdateBoxRangeCommandValidator : AbstractValidator<UpdateBoxRangeCo
         {
             item.RuleFor(i => i.Id).NotEmpty();
             
-                        item.RuleFor(i => i.RackId).NotEmpty();
+                        item.RuleFor(i => i.SlotId).NotEmpty();
         });
     }
 }

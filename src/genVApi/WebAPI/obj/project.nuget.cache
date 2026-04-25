@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "HZPo8IWdNPw=",
+  "dgSpecHash": "87ii9Hlj4vQ=",
   "success": true,
-  "projectFilePath": "D:\\GenVApi\\src\\genVApi\\WebAPI\\WebAPI.csproj",
+  "projectFilePath": "D:\\GenvAp\\src\\genVApi\\WebAPI\\WebAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\erdal\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\erdal\\.nuget\\packages\\bouncycastle.cryptography\\2.2.1\\bouncycastle.cryptography.2.2.1.nupkg.sha512",

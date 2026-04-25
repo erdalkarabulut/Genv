@@ -22,7 +22,5 @@ public class TankConfiguration : IEntityTypeConfiguration<Tank>
                .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(t => t.Name).IsUnique();
-
-        builder.HasQueryFilter(t => !t.DeletedDate.HasValue);
     }
 }

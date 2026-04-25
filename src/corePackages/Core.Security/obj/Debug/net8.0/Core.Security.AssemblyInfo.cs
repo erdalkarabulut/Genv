@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute(@"The NArchitecture Core.Security package provides core classes and extensions for implementing security features in the application layer in both clean and union architectures. It includes support for JWT (JSON Web Tokens) authentication, two-factor authentication (2FA), one-time passwords (OTP), e-mail handling for security purposes, hashing algorithms, encryption, and other essential utilities for implementing security measures in applications.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.1.1.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.1.1+f8eb49a40a3b5974fc36464b82f1ae68d5af1737")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.1.1+41d8718520c8525fea9fd9e3109f3da174391d1b")]
 [assembly: System.Reflection.AssemblyProductAttribute("NArchitecture")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Core.Security")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.1.1.0")]

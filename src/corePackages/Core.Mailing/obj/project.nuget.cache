@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "9E7cKHcBUsA=",
+  "dgSpecHash": "qX8aHIcg9jg=",
   "success": true,
-  "projectFilePath": "D:\\GenVApi\\src\\corePackages\\Core.Mailing\\Core.Mailing.csproj",
+  "projectFilePath": "D:\\GenvAp\\src\\corePackages\\Core.Mailing\\Core.Mailing.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\erdal\\.nuget\\packages\\bouncycastle.cryptography\\2.2.1\\bouncycastle.cryptography.2.2.1.nupkg.sha512",
     "C:\\Users\\erdal\\.nuget\\packages\\mimekit\\4.3.0\\mimekit.4.3.0.nupkg.sha512",
@@ -16,9 +16,9 @@
       "code": "NU1902",
       "level": "Warning",
       "message": "Package 'MimeKit' 4.3.0 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-g7hc-96xr-gvvx",
-      "projectPath": "D:\\GenVApi\\src\\corePackages\\Core.Mailing\\Core.Mailing.csproj",
+      "projectPath": "D:\\GenvAp\\src\\corePackages\\Core.Mailing\\Core.Mailing.csproj",
       "warningLevel": 1,
-      "filePath": "D:\\GenVApi\\src\\corePackages\\Core.Mailing\\Core.Mailing.csproj",
+      "filePath": "D:\\GenvAp\\src\\corePackages\\Core.Mailing\\Core.Mailing.csproj",
       "libraryId": "MimeKit",
       "targetGraphs": [
         "net8.0"
@@ -28,9 +28,9 @@
       "code": "NU1903",
       "level": "Warning",
       "message": "Package 'MimeKit' 4.3.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-gmc6-fwg3-75m5",
-      "projectPath": "D:\\GenVApi\\src\\corePackages\\Core.Mailing\\Core.Mailing.csproj",
+      "projectPath": "D:\\GenvAp\\src\\corePackages\\Core.Mailing\\Core.Mailing.csproj",
       "warningLevel": 1,
-      "filePath": "D:\\GenVApi\\src\\corePackages\\Core.Mailing\\Core.Mailing.csproj",
+      "filePath": "D:\\GenvAp\\src\\corePackages\\Core.Mailing\\Core.Mailing.csproj",
       "libraryId": "MimeKit",
       "targetGraphs": [
         "net8.0"

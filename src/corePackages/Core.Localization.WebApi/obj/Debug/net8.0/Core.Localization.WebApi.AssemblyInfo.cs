@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute(@"The NArchitecture Core.Localization.WebApi package provides core classes and extensions for integrating localization into ASP.NET Web API projects. It includes support for attribute-based localization, resource-based localization, culture-specific responses, and essential utilities for localization management in Web API applications.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f8eb49a40a3b5974fc36464b82f1ae68d5af1737")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+41d8718520c8525fea9fd9e3109f3da174391d1b")]
 [assembly: System.Reflection.AssemblyProductAttribute("NArchitecture")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Core.Localization.WebApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

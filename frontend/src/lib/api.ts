@@ -26,7 +26,8 @@ import type {
   ClinicalSettingsSnapshot,
   ClinicalSettingsUpdateBody,
   Rack,
-  Slot,
+  RackSlot,
+  BagCell,
   SplitResponse,
   Tank,
 } from "./types";
@@ -255,17 +256,17 @@ export const Bags = {
   update: (body: Partial<Bag> & { id: string }) =>
     api.put<Bag>("/api/Bags", body).then((r) => r.data),
   remove: (id: string) => api.delete(`/api/Bags/${id}`).then((r) => r.data),
-  store: (bagId: string, slotId: string) =>
-    api.post(`/api/Bags/store`, { bagId, slotId }).then((r) => r.data),
-  move: (bagId: string, toSlotId: string) =>
+  store: (bagId: string, bagCellId: string) =>
+    api.post(`/api/Bags/store`, { bagId, bagCellId }).then((r) => r.data),
+  move: (bagId: string, targetBagCellId: string) =>
     api
-      .post(`/api/Bags/move`, { bagId, targetSlotId: toSlotId })
+      .post(`/api/Bags/move`, { bagId, targetBagCellId })
       .then((r) => r.data),
   use: (bagId: string) => api.post(`/api/Bags/use`, { bagId }).then((r) => r.data),
   split: (body: {
     sessionId: string;
     bagCount?: number;
-    cryoSlotId?: string;
+    cryoBagCellId?: string;
     autoPlaceCryo?: boolean;
     requireCumulativeSufficient?: boolean;
   }) => api.post<SplitResponse>(`/api/Bags/split`, body).then((r) => r.data),
@@ -279,7 +280,7 @@ export const Bags = {
       cd3Percent?: number;
       purpose: number; // BagPurpose: 0 Cryo, 1 Infusion, 2 Backup, 3 QC
       compositionNote?: string;
-      freezeIntoSlotId?: string;
+      freezeIntoBagCellId?: string;
     }>;
     validateTotalVolume?: boolean;
   }) =>
@@ -298,15 +299,15 @@ export const Bags = {
           cd3PerKg: number;
           purpose: string;
           status: string;
-          slotId?: string;
+          bagCellId?: string;
         }>;
       }>(`/api/Bags/custom-split`, body)
       .then((r) => r.data),
-  freeze: (bagId: string, slotId?: string) =>
+  freeze: (bagId: string, bagCellId?: string) =>
     api
-      .post<{ bagId: string; slotId?: string; status: string }>(`/api/Bags/freeze`, {
+      .post<{ bagId: string; bagCellId?: string; status: string }>(`/api/Bags/freeze`, {
         bagId,
-        slotId,
+        bagCellId,
       })
       .then((r) => r.data),
   bySession: (sessionId: string, page = 0, size = 50) =>
@@ -333,7 +334,7 @@ export const Movements = {
 };
 
 /* --------------------------------------------------------------- */
-/*                      Tanks / Racks / Boxes / Slots              */
+/*            Tanks / Racks / RackSlots / Boxes / BagCells         */
 /* --------------------------------------------------------------- */
 export const Tanks = {
   list: (page = 0, size = 100) =>
@@ -363,14 +364,29 @@ export const Boxes = {
   remove: (id: string) => api.delete(`/api/Boxes/${id}`).then((r) => r.data),
 };
 
-export const Slots = {
+export const RackSlots = {
+  list: (page = 0, size = 2000, rackId?: string) => {
+    const q = rackId ? `&rackId=${encodeURIComponent(rackId)}` : "";
+    return api
+      .get<PageResponse<RackSlot>>(`${pageUrl("/api/RackSlots", page, size)}${q}`)
+      .then((r) => r.data);
+  },
+  byId: (id: string) => api.get<RackSlot>(`/api/RackSlots/${id}`).then((r) => r.data),
+  create: (body: { rackId: string; name: string }) =>
+    api.post<RackSlot>("/api/RackSlots", body).then((r) => r.data),
+  update: (body: { id: string; rackId: string; name: string }) =>
+    api.put<RackSlot>("/api/RackSlots", body).then((r) => r.data),
+  remove: (id: string) => api.delete(`/api/RackSlots/${id}`).then((r) => r.data),
+};
+
+export const BagCells = {
   list: (page = 0, size = 2000) =>
-    api.get<PageResponse<Slot>>(pageUrl("/api/Slots", page, size)).then((r) => r.data),
-  byId: (id: string) => api.get<Slot>(`/api/Slots/${id}`).then((r) => r.data),
-  create: (body: Partial<Slot>) => api.post<Slot>("/api/Slots", body).then((r) => r.data),
-  update: (body: Partial<Slot> & { id: string }) =>
-    api.put<Slot>("/api/Slots", body).then((r) => r.data),
-  remove: (id: string) => api.delete(`/api/Slots/${id}`).then((r) => r.data),
+    api.get<PageResponse<BagCell>>(pageUrl("/api/BagCells", page, size)).then((r) => r.data),
+  byId: (id: string) => api.get<BagCell>(`/api/BagCells/${id}`).then((r) => r.data),
+  create: (body: Partial<BagCell>) => api.post<BagCell>("/api/BagCells", body).then((r) => r.data),
+  update: (body: Partial<BagCell> & { id: string }) =>
+    api.put<BagCell>("/api/BagCells", body).then((r) => r.data),
+  remove: (id: string) => api.delete(`/api/BagCells/${id}`).then((r) => r.data),
 };
 
 /* --------------------------------------------------------------- */

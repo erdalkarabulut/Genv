@@ -29,6 +29,6 @@ public interface IProductService
     Task<ICollection<Product>> AddRangeAsync(ICollection<Product> products);
     Task<Product> UpdateAsync(Product product);
     Task<ICollection<Product>> UpdateRangeAsync(ICollection<Product> products);
-    Task<Product> DeleteAsync(Product product, bool permanent = false);
-    Task<ICollection<Product>> DeleteRangeAsync(ICollection<Product> products, bool permanent = false);
+    Task<Product> DeleteAsync(Product product, bool permanent = true);
+    Task<ICollection<Product>> DeleteRangeAsync(ICollection<Product> products, bool permanent = true);
 }

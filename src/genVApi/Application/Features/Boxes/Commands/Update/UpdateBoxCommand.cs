@@ -15,7 +15,7 @@ namespace Application.Features.Boxes.Commands.Update;
 public class UpdateBoxCommand : IRequest<UpdatedBoxResponse>, ISecuredRequest, ICacheRemoverRequest, ILoggableRequest, ITransactionalRequest
 {
     public Guid Id { get; set; }
-    public Guid RackId { get; set; }
+    public Guid SlotId { get; set; }
     public string Name { get; set; }
 
     public string[] Roles => [Admin, Write, BoxesOperationClaims.Update];

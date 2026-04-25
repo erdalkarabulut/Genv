@@ -21,28 +21,28 @@ public class DeleteSlotCommand : IRequest<DeletedSlotResponse>, ISecuredRequest,
 
     public bool BypassCache { get; }
     public string? CacheKey { get; }
-    public string[]? CacheGroupKey => ["GetSlots"];
+    public string[]? CacheGroupKey => ["GetBagCells"];
 
     public class DeleteSlotCommandHandler : IRequestHandler<DeleteSlotCommand, DeletedSlotResponse>
     {
         private readonly IMapper _mapper;
-        private readonly ISlotRepository _slotRepository;
-        private readonly SlotBusinessRules _slotBusinessRules;
+        private readonly IBagCellRepository _bagCellRepository;
+        private readonly BagCellBusinessRules _bagCellBusinessRules;
 
-        public DeleteSlotCommandHandler(IMapper mapper, ISlotRepository slotRepository,
-                                         SlotBusinessRules slotBusinessRules)
+        public DeleteSlotCommandHandler(IMapper mapper, IBagCellRepository bagCellRepository,
+                                         BagCellBusinessRules bagCellBusinessRules)
         {
             _mapper = mapper;
-            _slotRepository = slotRepository;
-            _slotBusinessRules = slotBusinessRules;
+            _bagCellRepository = bagCellRepository;
+            _bagCellBusinessRules = bagCellBusinessRules;
         }
 
         public async Task<DeletedSlotResponse> Handle(DeleteSlotCommand request, CancellationToken cancellationToken)
         {
-            Slot? slot = await _slotRepository.GetAsync(predicate: s => s.Id == request.Id, cancellationToken: cancellationToken);
-            await _slotBusinessRules.SlotShouldExistWhenSelected(slot);
+            BagCell? slot = await _bagCellRepository.GetAsync(predicate: s => s.Id == request.Id, cancellationToken: cancellationToken);
+            await _bagCellBusinessRules.BagCellShouldExistWhenSelected(slot);
 
-            await _slotRepository.DeleteAsync(slot!);
+            await _bagCellRepository.DeleteAsync(slot!);
 
             DeletedSlotResponse response = _mapper.Map<DeletedSlotResponse>(slot);
             return response;

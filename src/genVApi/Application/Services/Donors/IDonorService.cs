@@ -29,6 +29,6 @@ public interface IDonorService
     Task<ICollection<Donor>> AddRangeAsync(ICollection<Donor> donors);
     Task<Donor> UpdateAsync(Donor donor);
     Task<ICollection<Donor>> UpdateRangeAsync(ICollection<Donor> donors);
-    Task<Donor> DeleteAsync(Donor donor, bool permanent = false);
-    Task<ICollection<Donor>> DeleteRangeAsync(ICollection<Donor> donors, bool permanent = false);
+    Task<Donor> DeleteAsync(Donor donor, bool permanent = true);
+    Task<ICollection<Donor>> DeleteRangeAsync(ICollection<Donor> donors, bool permanent = true);
 }

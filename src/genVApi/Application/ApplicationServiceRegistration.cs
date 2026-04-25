@@ -28,7 +28,7 @@ using Application.Services.Donors;
 using Application.Services.Patients;
 using Application.Services.Products;
 using Application.Services.Racks;
-using Application.Services.Slots;
+using Application.Services.BagCells;
 using Application.Services.Tanks;
 using Application.Services.ClinicalConfiguration;
 
@@ -80,7 +80,7 @@ public static class ApplicationServiceRegistration
         services.AddScoped<IPatientService, PatientManager>();
         services.AddScoped<IProductService, ProductManager>();
         services.AddScoped<IRackService, RackManager>();
-        services.AddScoped<ISlotService, SlotManager>();
+        services.AddScoped<IBagCellService, BagCellManager>();
         services.AddScoped<ITankService, TankManager>();
         services.AddScoped<IClinicalThresholdsAccessor, ClinicalThresholdsAccessor>();
         return services;
