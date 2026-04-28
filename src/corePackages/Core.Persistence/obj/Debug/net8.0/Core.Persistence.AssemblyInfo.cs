@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute(@"The NArchitecture Core.Persistence package provides core interfaces and abstractions for data access and persistence in the application layer in both clean and union architectures. It includes support for defining repositories, unit of work pattern, and essential utilities for data access and persistence management using various data storage technologies such as relational databases, NoSQL databases, and file systems.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+41d8718520c8525fea9fd9e3109f3da174391d1b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+abd46312344c3efbd66a3b63d676171e213aeeb1")]
 [assembly: System.Reflection.AssemblyProductAttribute("NArchitecture")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Core.Persistence")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

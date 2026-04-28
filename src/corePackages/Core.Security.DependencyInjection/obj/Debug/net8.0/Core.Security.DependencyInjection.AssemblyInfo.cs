@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute(@"The NArchitecture Core.Security.DependencyInjection package provides core classes and extensions for integrating security services into the dependency injection container in the application layer in both clean and union architectures. It includes support for registering JWT authentication services, 2FA services, OTP services, email handling services, hashing services, encryption services, and other essential utilities for security dependency injection.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+41d8718520c8525fea9fd9e3109f3da174391d1b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+abd46312344c3efbd66a3b63d676171e213aeeb1")]
 [assembly: System.Reflection.AssemblyProductAttribute("NArchitecture")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Core.Security.DependencyInjection")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute(@"The NArchitecture Core.Persistence.DependencyInjection package provides core classes and extensions for integrating data access and persistence services into the dependency injection container in the application layer in both clean and union architectures. It includes support for configuring and registering repositories, unit of work pattern, and essential utilities for data access and persistence dependency injection using various data storage technologies such as relational databases, NoSQL databases, and file systems.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+41d8718520c8525fea9fd9e3109f3da174391d1b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+abd46312344c3efbd66a3b63d676171e213aeeb1")]
 [assembly: System.Reflection.AssemblyProductAttribute("NArchitecture")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Core.Persistence.DependencyInjection")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

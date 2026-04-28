@@ -298,11 +298,11 @@ export default function CryoGridPage() {
             )}
 
           {tank && tankStats.boxes > 0 && (
-            <div className="max-h-[min(72vh,calc(100vh-10rem))] overflow-y-auto pr-1 pb-2 space-y-8 mt-1">
+            <div className="max-h-[min(72vh,calc(100vh-10rem))] overflow-auto pr-1 pb-2 mt-1 grid gap-6 auto-cols-fr grid-flow-col">
               {tank.racks.map((rack) => {
                 const rackBoxCount = rack.slots.reduce((n, s) => n + s.boxes.length, 0);
                 return (
-                  <section key={rack.id} className="space-y-3">
+                  <section key={rack.id} className="space-y-3 min-w-[16rem]">
                     <div className="sticky top-0 z-10 -mx-1 px-2 py-2.5 bg-bg-card/95 backdrop-blur-sm border-b border-line/60 flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2 text-sm font-semibold text-ink">
                         <Layers className="size-4 text-brand-400 shrink-0" />
@@ -315,7 +315,7 @@ export default function CryoGridPage() {
                     {rack.slots.length === 0 ? (
                       <p className="text-xs text-ink-muted pl-1">Bu rack&apos;te raf slotu yok.</p>
                     ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-1 gap-4">
                         {rack.slots.flatMap((rackSlot) =>
                           rackSlot.boxes.map((box) => (
                             <BoxGrid
@@ -440,31 +440,34 @@ function BoxGrid({
   const occupied = box.bagCells.filter((s) => s.isOccupied).length;
 
   return (
-    <div className="rounded-2xl border border-line/60 bg-bg-elevated/30 p-4">
-      <div className="flex items-center justify-between mb-3">
-        <div>
-          <div className="font-medium">{box.name}</div>
-          <div className="text-[10px] text-ink-dim">
-            {rackName} · {rackSlotName}
-          </div>
+    <div className="rounded-2xl border border-line/60 bg-bg-elevated/30 p-3 w-fit">
+      <div className="mb-2">
+        <div className="text-sm font-medium leading-tight">
+          {rackName} · {rackSlotName}
         </div>
-        <Badge tone={occupied === box.bagCells.length ? "rose" : occupied === 0 ? "mint" : "amber"}>
-          {occupied}/{box.bagCells.length}
-        </Badge>
+        <div className="flex items-center gap-2 mt-0.5">
+          <span className="text-[10px] text-ink-dim">{box.name}</span>
+          <Badge
+            tone={occupied === box.bagCells.length ? "rose" : occupied === 0 ? "mint" : "amber"}
+            className="text-[10px]"
+          >
+            {occupied}/{box.bagCells.length}
+          </Badge>
+        </div>
       </div>
       <div
-        className="grid gap-1.5"
-        style={{ gridTemplateColumns: `repeat(${cols.numbers.length || 1}, minmax(0, 1fr))` }}
+        className="grid gap-2 w-fit"
+        style={{ gridTemplateColumns: `repeat(${cols.letters.length || 1}, 4.5rem)` }}
       >
-        {cols.letters.flatMap((L) =>
-          cols.numbers.map((N) => {
+        {cols.numbers.flatMap((N) =>
+          cols.letters.map((L) => {
             const pos = `${L}${N}`;
             const slot = cellMap.get(pos);
             if (!slot)
               return (
                 <div
                   key={pos}
-                  className="aspect-square rounded-md bg-bg-subtle/40 border border-line/40"
+                  className="size-[4.5rem] rounded bg-bg-subtle/40 border border-line/40"
                 />
               );
             const isPickupSource =
@@ -500,7 +503,7 @@ function BoxGrid({
                 onClick={() => onCell(slot)}
                 title={`${pos} ${slot.isOccupied ? "· dolu" : "· boş"}`}
                 className={cn(
-                  "relative aspect-square rounded-md border text-[10px] font-semibold tracking-wide transition",
+                  "relative size-[4.5rem] rounded-md border text-xs font-semibold tracking-tight transition",
                   tone,
                   isValidTarget && "ring-2 ring-brand-400/70 animate-pulseGlow",
                   isPickupSource && "ring-2 ring-amber-400/70",
@@ -513,22 +516,7 @@ function BoxGrid({
           }),
         )}
       </div>
-      <div className="mt-3 flex flex-wrap gap-2 text-[11px] text-ink-dim">
-        <Legend swatch="bg-emerald-500/40" label="Boş" />
-        <Legend swatch="bg-sky-500/50" label="Cryo" />
-        <Legend swatch="bg-emerald-500/60" label="Infusion" />
-        <Legend swatch="bg-amber-500/60" label="Backup" />
-        <Legend swatch="bg-fuchsia-500/60" label="QC" />
-      </div>
     </div>
-  );
-}
-
-function Legend({ swatch, label }: { swatch: string; label: string }) {
-  return (
-    <span className="inline-flex items-center gap-1.5">
-      <span className={`size-2.5 rounded-sm ${swatch}`} /> {label}
-    </span>
   );
 }
 

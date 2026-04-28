@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute(@"The NArchitecture Core.Translation.AmazonTranslate.DependencyInjection package provides core classes and extensions for integrating Amazon Translate service into the dependency injection container in the application layer in both clean and union architectures. It includes support for registering Amazon Translate service and related dependencies, configuring options, and managing translation services using dependency injection in applications.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+41d8718520c8525fea9fd9e3109f3da174391d1b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+abd46312344c3efbd66a3b63d676171e213aeeb1")]
 [assembly: System.Reflection.AssemblyProductAttribute("NArchitecture")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Core.Translation.AmazonTranslate.DependencyInjection")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

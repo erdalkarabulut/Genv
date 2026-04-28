@@ -600,3 +600,4 @@ D:\GenvAp\src\genVApi\WebAPI\obj\Debug\net8.0\refint\WebAPI.dll
 D:\GenvAp\src\genVApi\WebAPI\obj\Debug\net8.0\WebAPI.pdb
 D:\GenvAp\src\genVApi\WebAPI\obj\Debug\net8.0\WebAPI.genruntimeconfig.cache
 D:\GenvAp\src\genVApi\WebAPI\obj\Debug\net8.0\ref\WebAPI.dll
+D:\GenvAp\src\genVApi\WebAPI\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
