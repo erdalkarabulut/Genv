@@ -23,7 +23,7 @@ export default defineConfig({
     alias: { "@": path.resolve(__dirname, "src") },
   },
   server: {
-    port: 5173,
+    port: 5373,
     proxy: {
       "/api": proxyCommon,
       "/hubs": { ...proxyCommon, ws: true },

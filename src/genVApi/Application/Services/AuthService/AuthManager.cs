@@ -55,14 +55,14 @@ public class AuthManager : IAuthService
     {
         List<RefreshToken> expired = await _refreshTokenRepository.GetExpiredTokensForUserAsync(userId);
         if (expired.Count > 0)
-            await _refreshTokenRepository.DeleteRangeAsync(expired);
+            await _refreshTokenRepository.DeleteRangeAsync(expired, permanent: true);
 
         List<RefreshToken> refreshTokens = await _refreshTokenRepository.GetOldRefreshTokensAsync(
             userId,
             _tokenOptions.RefreshTokenTTL
         );
         if (refreshTokens.Count > 0)
-            await _refreshTokenRepository.DeleteRangeAsync(refreshTokens);
+            await _refreshTokenRepository.DeleteRangeAsync(refreshTokens, permanent: true);
     }
 
     public async Task RevokeAllActiveRefreshTokensForUser(Guid userId, string ipAddress, string reason)
