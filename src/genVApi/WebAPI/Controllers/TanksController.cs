@@ -1,4 +1,5 @@
 using Application.Features.Tanks.Commands.Create;
+using Application.Features.Tanks.Commands.CreateBulk;
 using Application.Features.Tanks.Commands.CreateRange;
 using Application.Features.Tanks.Commands.Delete;
 using Application.Features.Tanks.Commands.DeleteRange;
@@ -45,6 +46,14 @@ public class TanksController : BaseController
     public async Task<IActionResult> AddRange([FromBody] CreateTankRangeCommand createTankRangeCommand)
     {
         CreatedTankRangeResponse response = await Mediator.Send(createTankRangeCommand);
+
+        return Created(uri: "", response);
+    }
+
+    [HttpPost("bulk-create")]
+    public async Task<IActionResult> BulkCreate([FromBody] CreateBulkTankCommand command)
+    {
+        CreateBulkTankResponse response = await Mediator.Send(command);
 
         return Created(uri: "", response);
     }

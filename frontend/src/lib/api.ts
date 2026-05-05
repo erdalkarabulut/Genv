@@ -358,6 +358,25 @@ export const Tanks = {
   update: (body: Partial<Tank> & { id: string }) =>
     api.put<Tank>("/api/Tanks", body).then((r) => r.data),
   remove: (id: string) => api.delete(`/api/Tanks/${id}`).then((r) => r.data),
+  bulkCreate: (body: {
+    existingTankId?: string;
+    tankName: string;
+    rackCount: number;
+    slotsPerRack: number;
+    boxesPerSlot: number;
+    cellsPerBox: number;
+    rackPrefix?: string;
+    slotPrefix?: string;
+    boxPrefix?: string;
+    cellPrefix?: string;
+  }) => api.post<{
+    tankId: string;
+    tankName: string;
+    totalRacks: number;
+    totalSlots: number;
+    totalBoxes: number;
+    totalCells: number;
+  }>("/api/Tanks/bulk-create", body).then((r) => r.data),
 };
 
 export const Racks = {

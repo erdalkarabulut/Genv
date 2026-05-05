@@ -27,11 +27,12 @@ import {
   ExternalLink,
   Search,
   StickyNote,
+  Plus,
 } from "lucide-react";
 import { onCryo } from "@/lib/signalr";
 import { cn, formatDate, formatNumber, shortId } from "@/lib/utils";
 import { toast } from "sonner";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 type PickUp =
   | { kind: "stored"; bagId: string; fromBagCellId: string; label: string }
@@ -49,6 +50,7 @@ type HoverHintState = {
 
 export default function CryoGridPage() {
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const grid = useQuery({ queryKey: ["cryo-grid"], queryFn: Dashboard.cryoGrid });
   const bagsQ = useQuery({ queryKey: ["bags", "all"], queryFn: () => Bags.list(0, 500) });
   const sessionsQ = useQuery({ queryKey: ["sessions", "for-cryo"], queryFn: () => Sessions.list(0, 1000) });
@@ -292,7 +294,18 @@ export default function CryoGridPage() {
       <div className="grid grid-cols-12 gap-4 min-h-0 flex-1">
         {/* Tank list */}
         <div className="col-span-12 lg:col-span-3 min-h-0 flex flex-col gap-2">
-          <h1 className="text-2xl font-semibold tracking-tight px-1">Cryo Grid</h1>
+          <div className="flex items-center justify-between px-1">
+            <h1 className="text-2xl font-semibold tracking-tight">Cryo Grid</h1>
+            <Button
+              variant="soft"
+              size="sm"
+              onClick={() => navigate("/cryo-setup")}
+              icon={<Plus className="size-3.5" />}
+              className="text-xs"
+            >
+              Yeni Tank
+            </Button>
+          </div>
           <Card className="p-3 min-h-0 flex-1 overflow-auto">
             <div className="px-2 mb-2 text-xs uppercase tracking-wide text-ink-dim">Tanklar</div>
           {grid.isLoading && (
