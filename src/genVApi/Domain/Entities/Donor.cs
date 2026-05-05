@@ -10,6 +10,7 @@ public class Donor : Entity<Guid>
 
     /// <summary>Hasta ile ilişki açıklaması (ör. "Kardeş", "Anne"). Akraba-dışı donörlerde boş kalabilir.</summary>
     public string? Relation { get; set; }
+    public string? IdentityNumber { get; set; }
 
     /// <summary>Akraba / Akraba-dışı ayrımı. Formdaki Allojenik kısmında açıkça belirtiliyor.</summary>
     public DonorType DonorType { get; set; } = DonorType.Related;

@@ -44,19 +44,22 @@ const apiRefresh = axios.create({
   withCredentials: true,
 });
 
-let refreshPromise: Promise<string | null> | null = null;
+let refreshPromise: Promise<{ token: string; expirationDate: string } | null> | null = null;
 
-function refreshAccessToken(): Promise<string | null> {
+function refreshAccessToken(): Promise<{ token: string; expirationDate: string } | null> {
   if (!refreshPromise) {
     refreshPromise = apiRefresh
       .get<AccessTokenDto>("/api/Auth/RefreshToken")
       .then((r) => {
         const t = r.data?.token;
+        const exp = r.data?.expirationDate ?? "";
         if (t) {
           localStorage.setItem(JWT_STORAGE_KEY, t);
-          window.dispatchEvent(new Event("genv-token-update"));
+          window.dispatchEvent(
+            new CustomEvent("genv-token-update", { detail: { expirationDate: exp } }),
+          );
         }
-        return t ?? null;
+        return t ? { token: t, expirationDate: exp } : null;
       })
       .catch(() => null)
       .finally(() => {
@@ -99,9 +102,9 @@ api.interceptors.response.use(
 
     if (status === 401 && original && !original._retry && !shouldSkipRefreshOn401(url)) {
       original._retry = true;
-      const newToken = await refreshAccessToken();
-      if (newToken) {
-        original.headers.Authorization = `Bearer ${newToken}`;
+      const refreshResult = await refreshAccessToken();
+      if (refreshResult) {
+        original.headers.Authorization = `Bearer ${refreshResult.token}`;
         return api.request(original);
       }
     }
@@ -135,8 +138,8 @@ const pageUrl = (path: string, page = 0, size = 50) =>
   `${path}?PageIndex=${page}&PageSize=${size}`;
 
 export interface DynamicFilter {
-  field: string;
-  operator:
+  field?: string;
+  operator?:
     | "eq"
     | "neq"
     | "lt"
@@ -166,7 +169,10 @@ export interface DynamicQuery {
 
 const dynamic = <T>(path: string, page: number, size: number, q?: DynamicQuery) =>
   api
-    .post<PageResponse<T>>(`${path}/by-dynamic?PageIndex=${page}&PageSize=${size}`, q ?? {})
+    .post<PageResponse<T>>(`${path}/by-dynamic`, {
+      pageRequest: { pageIndex: page, pageSize: size },
+      dynamic: q ?? {},
+    })
     .then((r) => r.data);
 
 /* --------------------------------------------------------------- */
@@ -203,6 +209,8 @@ export const Donors = {
   update: (body: Partial<Donor> & { id: string }) =>
     api.put<Donor>("/api/Donors", body).then((r) => r.data),
   remove: (id: string) => api.delete(`/api/Donors/${id}`).then((r) => r.data),
+  byDynamic: (q: DynamicQuery, page = 0, size = 10) =>
+    dynamic<Donor>("/api/Donors", page, size, q),
 };
 
 /* --------------------------------------------------------------- */
@@ -243,6 +251,8 @@ export const Sessions = {
       filter: { field: "patientId", operator: "eq", value: patientId },
       sort: [{ field: "day", dir: "asc" }],
     }),
+  byDynamic: (q: DynamicQuery, page = 0, size = 10) =>
+    dynamic<CollectionSession>("/api/CollectionSessions", page, size, q),
 };
 
 /* --------------------------------------------------------------- */
@@ -256,6 +266,8 @@ export const Bags = {
   update: (body: Partial<Bag> & { id: string }) =>
     api.put<Bag>("/api/Bags", body).then((r) => r.data),
   remove: (id: string) => api.delete(`/api/Bags/${id}`).then((r) => r.data),
+  byDynamic: (q: DynamicQuery, page = 0, size = 10) =>
+    dynamic<Bag>("/api/Bags", page, size, q),
   store: (bagId: string, bagCellId: string) =>
     api.post(`/api/Bags/store`, { bagId, bagCellId }).then((r) => r.data),
   move: (bagId: string, targetBagCellId: string) =>
@@ -330,6 +342,8 @@ export const Movements = {
       filter: { field: "bagId", operator: "eq", value: bagId },
       sort: [{ field: "createdDate", dir: "desc" }],
     }),
+  byDynamic: (q: DynamicQuery, page = 0, size = 10) =>
+    dynamic<BagMovement>("/api/BagMovements", page, size, q),
   remove: (id: string) => api.delete(`/api/BagMovements/${id}`).then((r) => r.data),
 };
 
@@ -403,6 +417,8 @@ export const DliProducts = {
   update: (body: Partial<DliProduct> & { id: string; cd3PerKgOverride?: number | null }) =>
     api.put<DliProduct>("/api/DliProducts", body).then((r) => r.data),
   remove: (id: string) => api.delete(`/api/DliProducts/${id}`).then((r) => r.data),
+  byDynamic: (q: DynamicQuery, page = 0, size = 10) =>
+    dynamic<DliProduct>("/api/DliProducts", page, size, q),
 };
 
 /* --------------------------------------------------------------- */
@@ -450,4 +466,6 @@ export const Auth = {
       .then((r) => r.data),
   register: (body: { email: string; password: string; firstName: string; lastName: string }) =>
     api.post(`/api/Auth/Register`, { userForRegisterDto: body }).then((r) => r.data),
+  revokeToken: () => api.put("/api/Auth/RevokeToken").then((r) => r.data),
+  refreshToken: () => refreshAccessToken(),
 };

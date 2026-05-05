@@ -9,6 +9,18 @@ import { formatDateTime, shortId } from "@/lib/utils";
 import { onCryo } from "@/lib/signalr";
 import { MoveRight, Search, History } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Pagination } from "@/components/ui/Pagination";
+import { useDebounce } from "@/lib/useDebounce";
+
+const KNOWN_ACTIONS = [
+  "Store",
+  "Freeze",
+  "Freeze-Store",
+  "Move",
+  "Use",
+  "Split-Store (Cryo)",
+  "CustomSplit-Freeze",
+];
 
 const actionTone = (action: string): "sky" | "mint" | "amber" | "neutral" | "rose" | "brand" => {
   const a = action.toLowerCase();
@@ -22,11 +34,32 @@ const actionTone = (action: string): "sky" | "mint" | "amber" | "neutral" | "ros
 
 export default function MovementsPage() {
   const qc = useQueryClient();
-  const movements = useQuery({ queryKey: ["movements"], queryFn: () => Movements.list(0, 500) });
-  const bags = useQuery({ queryKey: ["bags"], queryFn: () => Bags.list(0, 500) });
 
   const [q, setQ] = useState("");
   const [action, setAction] = useState<string>("all");
+  const [page, setPage] = useState(0);
+  const debouncedQ = useDebounce(q, 300);
+
+  useEffect(() => { setPage(0); }, [debouncedQ, action]);
+
+  const PAGE_SIZE = 10;
+
+  const buildQuery = () => {
+    const sort = [{ field: "createdDate", dir: "desc" as const }];
+    if (action !== "all") {
+      return { filter: { field: "action", operator: "eq" as const, value: action }, sort };
+    }
+    if (debouncedQ) {
+      return { filter: { field: "action", operator: "contains" as const, value: debouncedQ }, sort };
+    }
+    return { sort };
+  };
+
+  const movements = useQuery({
+    queryKey: ["movements", page, PAGE_SIZE, debouncedQ, action],
+    queryFn: () => Movements.byDynamic(buildQuery(), page, PAGE_SIZE),
+  });
+  const bags = useQuery({ queryKey: ["bags", "for-movements"], queryFn: () => Bags.list(0, 500) });
 
   useEffect(() => {
     const a = onCryo("BagStored", () => qc.invalidateQueries({ queryKey: ["movements"] }));
@@ -43,27 +76,7 @@ export default function MovementsPage() {
     return m;
   }, [bags.data]);
 
-  const actions = useMemo(() => {
-    const set = new Set<string>();
-    (movements.data?.items ?? []).forEach((m) => set.add(m.action));
-    return Array.from(set).sort();
-  }, [movements.data]);
-
-  const filtered = useMemo(() => {
-    const items = movements.data?.items ?? [];
-    return items
-      .filter((m) => action === "all" || m.action === action)
-      .filter((m) => {
-        if (!q) return true;
-        const ql = q.toLowerCase();
-        return (
-          m.action.toLowerCase().includes(ql) ||
-          m.bagId.toLowerCase().startsWith(ql) ||
-          bagMap.get(m.bagId)?.bagNumber.toString() === q
-        );
-      })
-      .sort((a, b) => (a.createdDate < b.createdDate ? 1 : -1));
-  }, [movements.data, action, q, bagMap]);
+  const paginated = movements.data?.items ?? [];
 
   return (
     <div className="space-y-6">
@@ -90,7 +103,7 @@ export default function MovementsPage() {
             onChange={(e) => setAction(e.target.value)}
             options={[
               { value: "all", label: "Tüm aksiyonlar" },
-              ...actions.map((a) => ({ value: a, label: a })),
+                ...KNOWN_ACTIONS.map((a) => ({ value: a, label: a })),
             ]}
             className="min-w-[220px]"
           />
@@ -99,7 +112,7 @@ export default function MovementsPage() {
 
       {movements.isLoading ? (
         <Card className="h-40 skeleton" />
-      ) : filtered.length === 0 ? (
+      ) : paginated.length === 0 ? (
         <EmptyState
           icon={<History className="size-10" />}
           title="Hareket yok"
@@ -119,7 +132,7 @@ export default function MovementsPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((m) => {
+                {paginated.map((m) => {
                   const bagInfo = bagMap.get(m.bagId);
                   return (
                     <tr
@@ -158,6 +171,14 @@ export default function MovementsPage() {
           </div>
         </Card>
       )}
+
+      <Pagination
+        page={page}
+        totalPages={movements.data?.pages ?? 0}
+        totalItems={movements.data?.count ?? 0}
+        pageSize={PAGE_SIZE}
+        onPageChange={setPage}
+      />
     </div>
   );
 }

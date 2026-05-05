@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Input, Select } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { Plus, Search, UserRound, Pencil, Trash2, HeartHandshake } from "lucide-react";
@@ -15,6 +15,8 @@ import { toast } from "sonner";
 import type { Patient, TransplantType } from "@/lib/types";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { DonorFormView } from "./DonorsPage";
+import { Pagination } from "@/components/ui/Pagination";
+import { useDebounce } from "@/lib/useDebounce";
 
 interface PatientForm {
   fullName: string;
@@ -23,6 +25,7 @@ interface PatientForm {
   transplantType: TransplantType;
   diagnosis?: string;
   protocolNo?: string;
+  identityNumber?: string;
   birthDate?: string;
   donorId?: string;
 }
@@ -34,21 +37,43 @@ export default function PatientsPage() {
   const [deleteTarget, setDeleteTarget] = useState<Patient | null>(null);
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"all" | TransplantType>("all");
+  const [page, setPage] = useState(0);
+  const debouncedQ = useDebounce(q, 300);
 
-  const list = useQuery({ queryKey: ["patients"], queryFn: () => Patients.list(0, 200) });
+  useEffect(() => { setPage(0); }, [debouncedQ, filter]);
+
+  const PAGE_SIZE = 10;
+
+  const buildQuery = () => {
+    const sort = [{ field: "createdDate", dir: "desc" as const }];
+    if (!debouncedQ && filter === "all") return { sort };
+
+    const searchFilter = debouncedQ
+      ? { field: "fullName", operator: "contains" as const, value: debouncedQ,
+          logic: "or" as const,
+          filters: [{ field: "protocolNo", operator: "contains" as const, value: debouncedQ }] }
+      : null;
+
+    const typeFilter = filter !== "all"
+      ? { field: "transplantType", operator: "eq" as const, value: filter }
+      : null;
+
+    let f: any;
+    if (searchFilter && typeFilter) {
+      f = { ...typeFilter, logic: "and" as const, filters: [searchFilter] };
+    } else {
+      f = searchFilter ?? typeFilter;
+    }
+    return { filter: f, sort };
+  };
+
+  const list = useQuery({
+    queryKey: ["patients", page, PAGE_SIZE, debouncedQ, filter],
+    queryFn: () => Patients.byDynamic(buildQuery(), page, PAGE_SIZE),
+  });
   const donors = useQuery({ queryKey: ["donors"], queryFn: () => Donors.list(0, 500) });
 
-  const filtered = useMemo(() => {
-    const items = list.data?.items ?? [];
-    return items.filter((p) => {
-      const matchesQ =
-        !q ||
-        p.fullName.toLowerCase().includes(q.toLowerCase()) ||
-        p.protocolNo?.toLowerCase().includes(q.toLowerCase());
-      const matchesF = filter === "all" || p.transplantType === filter;
-      return matchesQ && matchesF;
-    });
-  }, [list.data, q, filter]);
+  const paginated = list.data?.items ?? [];
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["patients"] });
@@ -108,7 +133,7 @@ export default function PatientsPage() {
             <div key={i} className="card h-32 skeleton" />
           ))}
         </div>
-      ) : filtered.length === 0 ? (
+      ) : paginated.length === 0 ? (
         <EmptyState
           icon={<UserRound className="size-10" />}
           title="Henüz kayıtlı hasta yok"
@@ -121,7 +146,7 @@ export default function PatientsPage() {
         />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((p) => (
+          {paginated.map((p) => (
             <PatientCard
               key={p.id}
               p={p}
@@ -131,6 +156,14 @@ export default function PatientsPage() {
           ))}
         </div>
       )}
+
+      <Pagination
+        page={page}
+        totalPages={list.data?.pages ?? 0}
+        totalItems={list.data?.count ?? 0}
+        pageSize={PAGE_SIZE}
+        onPageChange={setPage}
+      />
 
       <Modal
         open={createOpen}
@@ -294,6 +327,7 @@ export function PatientFormView({
     watch,
     setValue,
     formState: { errors, isSubmitting },
+    reset,
   } = useForm<PatientForm>({
     defaultValues: {
       fullName: initial?.fullName ?? "",
@@ -302,10 +336,25 @@ export function PatientFormView({
       transplantType: initial?.transplantType ?? "Autologous",
       diagnosis: initial?.diagnosis ?? "",
       protocolNo: initial?.protocolNo ?? "",
+      identityNumber: initial?.identityNumber ?? "",
       birthDate: initial?.birthDate ? initial.birthDate.slice(0, 10) : "",
       donorId: initial?.donorId ?? "",
     },
   });
+
+  useEffect(() => {
+    reset({
+      fullName: initial?.fullName ?? "",
+      weightKg: initial?.weightKg ?? 70,
+      bloodGroup: initial?.bloodGroup ?? "",
+      transplantType: initial?.transplantType ?? "Autologous",
+      diagnosis: initial?.diagnosis ?? "",
+      protocolNo: initial?.protocolNo ?? "",
+      identityNumber: initial?.identityNumber ?? "",
+      birthDate: initial?.birthDate ? initial.birthDate.slice(0, 10) : "",
+      donorId: initial?.donorId ?? "",
+    });
+  }, [initial, reset]);
 
   const type = watch("transplantType");
   const donorId = watch("donorId");
@@ -337,6 +386,7 @@ export function PatientFormView({
       />
       <Input label="Kan grubu" placeholder="A+, B-, …" {...register("bloodGroup")} />
       <Input label="Protokol no" {...register("protocolNo")} />
+      <Input label="Kimlik No (opsiyonel)" {...register("identityNumber")} />
       <div className="col-span-2">
         <Input label="Tanı" placeholder="Multipl Miyelom, AML, …" {...register("diagnosis")} />
       </div>

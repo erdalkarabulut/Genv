@@ -61,7 +61,7 @@ public class DeleteRackSlotCommand : IRequest<DeletedRackSlotResponse>, ISecured
                 throw new BusinessException(
                     "Bu raf slotunda kutu bulunuyor. Önce kutuları silin veya başka bir slota taşıyın.");
 
-            await _rackSlotRepository.DeleteAsync(slot!);
+            await _rackSlotRepository.DeleteAsync(slot!, permanent: true);
 
             return _mapper.Map<DeletedRackSlotResponse>(slot!);
         }

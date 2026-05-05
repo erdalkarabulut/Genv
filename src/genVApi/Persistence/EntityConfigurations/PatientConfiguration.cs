@@ -17,6 +17,7 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
         builder.Property(p => p.TransplantType).HasColumnName("TransplantType").HasConversion<string>().HasMaxLength(20).IsRequired();
         builder.Property(p => p.Diagnosis).HasColumnName("Diagnosis").HasMaxLength(500);
         builder.Property(p => p.ProtocolNo).HasColumnName("ProtocolNo").HasMaxLength(100);
+       builder.Property(p => p.IdentityNumber).HasColumnName("IdentityNumber").HasMaxLength(20);
         builder.Property(p => p.BirthDate).HasColumnName("BirthDate");
         builder.Property(p => p.DonorId).HasColumnName("DonorId");
         builder.Property(p => p.CreatedDate).HasColumnName("CreatedDate").IsRequired();

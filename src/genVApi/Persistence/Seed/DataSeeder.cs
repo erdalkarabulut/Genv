@@ -64,7 +64,10 @@ public static class DataSeeder
     private static async Task SeedAsync(BaseDbContext ctx)
     {
         if (await ctx.Tanks.AnyAsync())
+        {
+            await EnsureLargeCryoDemoTankAsync(ctx);
             return;
+        }
 
         var now = DateTime.UtcNow;
 
@@ -249,6 +252,8 @@ public static class DataSeeder
             cd34PerKg: 2.6, cd3PerKg: 0.9);
 
         await ctx.SaveChangesAsync();
+
+        await EnsureLargeCryoDemoTankAsync(ctx);
     }
 
     // -----------------------------------------------------------------
@@ -443,5 +448,57 @@ public static class DataSeeder
                 Action = "Use"
             });
         }
+    }
+
+    private static async Task EnsureLargeCryoDemoTankAsync(BaseDbContext ctx)
+    {
+        const string largeTankName = "Tank-XL-200";
+        bool exists = await ctx.Tanks.AnyAsync(t => t.Name == largeTankName);
+        if (exists)
+            return;
+
+        var tank = new Tank { Id = Guid.NewGuid(), Name = largeTankName };
+        ctx.Tanks.Add(tank);
+
+        for (int rackNo = 1; rackNo <= 200; rackNo++)
+        {
+            var rack = new Rack
+            {
+                Id = Guid.NewGuid(),
+                TankId = tank.Id,
+                Name = $"R{rackNo:000}"
+            };
+            ctx.Racks.Add(rack);
+
+            var slot = new Slot
+            {
+                Id = Guid.NewGuid(),
+                RackId = rack.Id,
+                Name = "S1"
+            };
+            ctx.RackSlots.Add(slot);
+
+            var box = new Box
+            {
+                Id = Guid.NewGuid(),
+                SlotId = slot.Id,
+                Name = "B1"
+            };
+            ctx.Boxes.Add(box);
+
+            for (int i = 1; i <= 4; i++)
+            {
+                ctx.BagCells.Add(new BagCell
+                {
+                    Id = Guid.NewGuid(),
+                    BoxId = box.Id,
+                    Position = $"A{i}",
+                    IsOccupied = false,
+                    Version = 0
+                });
+            }
+        }
+
+        await ctx.SaveChangesAsync();
     }
 }

@@ -16,6 +16,8 @@ import {
   SlidersHorizontal,
   LogOut,
   UserCircle2,
+  Menu,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -59,6 +61,7 @@ export default function Layout() {
   const isAdmin = Boolean(token && hasJwtRole(token, "Admin"));
   const qc = useQueryClient();
   const [connState, setConnState] = useState<HubConnectionState>(HubConnectionState.Disconnected);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -87,6 +90,10 @@ export default function Layout() {
       unsub();
     };
   }, [qc]);
+
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [location.pathname]);
 
   // Global SignalR event handlers — invalidate common caches on any cryo/dashboard change
   // and prevent the "No client method found" warnings by ensuring all events are registered app-wide.
@@ -173,10 +180,104 @@ export default function Layout() {
         </div>
       </aside>
 
+      {mobileNavOpen && (
+        <>
+          <button
+            type="button"
+            aria-label="Menüyü kapat"
+            className="lg:hidden fixed inset-0 z-40 bg-black/40"
+            onClick={() => setMobileNavOpen(false)}
+          />
+          <aside className="lg:hidden fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] flex flex-col border-r border-line/60 bg-bg/95 backdrop-blur-xl">
+            <div className="flex items-center justify-between px-5 py-5 border-b border-line/60">
+              <div className="flex items-center gap-2.5">
+                <Logo />
+                <div>
+                  <div className="text-sm font-semibold tracking-tight">GenV Suite</div>
+                  <div className="text-[11px] text-ink-dim">Cryo & Apheresis</div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMobileNavOpen(false)}
+                className="rounded-lg p-1.5 text-ink-dim hover:text-ink hover:bg-bg-elevated"
+                aria-label="Menüyü kapat"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+            <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
+              {groupedSections(nav).map(([section, items]) => (
+                <div key={section} className="mb-2">
+                  <div className="px-3 pt-2 pb-1 text-[10px] uppercase tracking-wider text-ink-dim">
+                    {section}
+                  </div>
+                  {items.filter((n) => !n.adminOnly || isAdmin).map((n) => {
+                    const active =
+                      n.to === "/"
+                        ? location.pathname === "/"
+                        : location.pathname.startsWith(n.to);
+                    const Icon = n.icon;
+                    return (
+                      <NavLink
+                        key={n.to}
+                        to={n.to}
+                        className={cn(
+                          "group flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition",
+                          active
+                            ? "bg-brand-500/10 text-brand-400 border border-brand-500/20 shadow-glow"
+                            : "text-ink-muted hover:text-ink hover:bg-bg-elevated/70 border border-transparent",
+                        )}
+                        onClick={() => setMobileNavOpen(false)}
+                      >
+                        <Icon className="size-4" />
+                        {n.label}
+                      </NavLink>
+                    );
+                  })}
+                </div>
+              ))}
+            </nav>
+            <div className="border-t border-line/60 p-4 space-y-3">
+              <ConnPill state={connState} />
+              {user && (
+                <div className="flex items-center gap-2.5 rounded-xl border border-line/60 bg-bg-elevated/40 px-2.5 py-2">
+                  <div className="grid place-items-center size-8 rounded-full bg-bg-subtle border border-line/60">
+                    <UserCircle2 className="size-4 text-ink-muted" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[11px] text-ink-dim">Oturum</div>
+                    <div className="text-xs text-ink truncate" title={user.email}>
+                      {user.email}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    title="Çıkış yap"
+                    className="rounded-lg p-1.5 text-ink-dim hover:text-accent-rose hover:bg-rose-500/10"
+                  >
+                    <LogOut className="size-3.5" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </aside>
+        </>
+      )}
+
       <main className="flex-1 min-w-0">
         <header className="sticky top-0 z-30 border-b border-line/60 bg-bg/70 backdrop-blur-xl">
           <div className="flex items-center justify-between px-5 lg:px-8 h-14">
             <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setMobileNavOpen(true)}
+                className="lg:hidden inline-flex items-center justify-center rounded-lg border border-line/60 bg-bg-elevated/50 p-1.5 text-ink-muted hover:text-ink"
+                aria-label="Menüyü aç"
+              >
+                <Menu className="size-4" />
+              </button>
               <span className="lg:hidden flex items-center gap-2">
                 <Logo />
                 <span className="text-sm font-semibold">GenV</span>

@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/Button";
 import { Input, Select } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { onCryo } from "@/lib/signalr";
+import { Pagination } from "@/components/ui/Pagination";
+import { useDebounce } from "@/lib/useDebounce";
 import type { Bag, BagPurpose, BagStatus } from "@/lib/types";
 import { formatDate, formatNumber, shortId } from "@/lib/utils";
 import { Search, Trash2, Pencil, PackageCheck, ChevronRight } from "lucide-react";
@@ -32,13 +34,44 @@ const purposeTone: Record<BagPurpose, "sky" | "mint" | "amber" | "brand"> = {
 
 export default function BagsPage() {
   const qc = useQueryClient();
-  const list = useQuery({ queryKey: ["bags"], queryFn: () => Bags.list(0, 500) });
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<"all" | BagStatus>("all");
   const [purpose, setPurpose] = useState<"all" | BagPurpose>("all");
-
+  const [page, setPage] = useState(0);
   const [editing, setEditing] = useState<Bag | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Bag | null>(null);
+  const debouncedQ = useDebounce(q, 300);
+
+  useEffect(() => { setPage(0); }, [debouncedQ, status, purpose]);
+
+  const PAGE_SIZE = 10;
+
+  const buildQuery = () => {
+    const sort = [{ field: "createdDate", dir: "desc" as const }];
+    // bagNumber is int — only filter by eq if query is a valid number
+    const bagNum = debouncedQ ? parseInt(debouncedQ, 10) : NaN;
+    const searchFilter = !isNaN(bagNum)
+      ? { field: "bagNumber", operator: "eq" as const, value: String(bagNum) }
+      : null;
+    const statusFilter = status !== "all" ? { field: "status", operator: "eq" as const, value: status } : null;
+    const purposeFilter = purpose !== "all" ? { field: "purpose", operator: "eq" as const, value: purpose } : null;
+
+    const active = [searchFilter, statusFilter, purposeFilter].filter(Boolean) as any[];
+    if (active.length === 0) return { sort };
+    // Chain with AND: f1 AND (f2 AND (f3))
+    let f = active[active.length - 1];
+    for (let i = active.length - 2; i >= 0; i--) {
+      f = { ...active[i], logic: "and" as const, filters: [f] };
+    }
+    return { filter: f, sort };
+  };
+
+  const list = useQuery({
+    queryKey: ["bags", page, PAGE_SIZE, debouncedQ, status, purpose],
+    queryFn: () => Bags.byDynamic(buildQuery(), page, PAGE_SIZE),
+  });
+
+  const paginated = list.data?.items ?? [];
 
   useEffect(() => {
     const a = onCryo("BagStored", () => qc.invalidateQueries({ queryKey: ["bags"] }));
@@ -46,16 +79,6 @@ export default function BagsPage() {
     const c = onCryo("BagUsed", () => qc.invalidateQueries({ queryKey: ["bags"] }));
     return () => { a(); b(); c(); };
   }, [qc]);
-
-  const filtered = useMemo(() => {
-    const items = list.data?.items ?? [];
-    return items.filter((b) => {
-      const matchesQ = !q || b.id.startsWith(q) || `${b.bagNumber}`.includes(q);
-      const matchesS = status === "all" || b.status === status;
-      const matchesP = purpose === "all" || b.purpose === purpose;
-      return matchesQ && matchesS && matchesP;
-    });
-  }, [list.data, q, status, purpose]);
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["bags"] });
@@ -146,14 +169,14 @@ export default function BagsPage() {
                     </td>
                   </tr>
                 ))}
-              {!list.isLoading && filtered.length === 0 && (
+              {!list.isLoading && paginated.length === 0 && (
                 <tr>
                   <td colSpan={9} className="px-4 py-12 text-center text-ink-muted text-sm">
                     Sonuç yok.
                   </td>
                 </tr>
               )}
-              {filtered.map((b) => (
+              {paginated.map((b) => (
                 <BagRow
                   key={b.id}
                   b={b}
@@ -166,6 +189,14 @@ export default function BagsPage() {
           </table>
         </div>
       </Card>
+
+      <Pagination
+        page={page}
+        totalPages={list.data?.pages ?? 0}
+        totalItems={list.data?.count ?? 0}
+        pageSize={PAGE_SIZE}
+        onPageChange={setPage}
+      />
 
       <Modal open={!!editing} onClose={() => setEditing(null)} title="Bag'i düzenle" size="lg">
         {editing && (
@@ -287,7 +318,7 @@ function BagEditForm({
   onCancel: () => void;
   onSaved: () => void;
 }) {
-  const { register, handleSubmit, formState: { isSubmitting } } = useForm<BagEditVals>({
+  const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm<BagEditVals>({
     defaultValues: {
       bagNumber: bag.bagNumber,
       volumeMl: bag.volumeMl,
@@ -298,6 +329,20 @@ function BagEditForm({
       purpose: bag.purpose,
     },
   });
+
+  useEffect(() => {
+    reset({
+      bagNumber: bag.bagNumber,
+      volumeMl: bag.volumeMl,
+      sourceVolumeMl: bag.sourceVolumeMl,
+      cd34PerKg: bag.cd34PerKg,
+      cd3PerKg: bag.cd3PerKg,
+      status: bag.status,
+      purpose: bag.purpose,
+    });
+  }, [bag, reset]);
+
+  const qc = useQueryClient();
 
   const onSubmit = async (v: BagEditVals) => {
     await Bags.update({
@@ -314,6 +359,10 @@ function BagEditForm({
       bagCellId: bag.bagCellId,
     });
     toast.success("Bag güncellendi");
+    qc.setQueryData(["bags"], (old: { items: Bag[] } | undefined) => {
+      if (!old) return old;
+      return { ...old, items: old.items.map(i => i.id === bag.id ? { ...i, ...v, bagNumber: Number(v.bagNumber), volumeMl: Number(v.volumeMl), sourceVolumeMl: Number(v.sourceVolumeMl), cd34PerKg: Number(v.cd34PerKg), cd3PerKg: Number(v.cd3PerKg) } : i) };
+    });
     onSaved();
   };
 

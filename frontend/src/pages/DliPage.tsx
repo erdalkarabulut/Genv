@@ -7,12 +7,13 @@ import { Input, Select } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { Plus, Pencil, Trash2, FlaskConical, Calculator, TriangleAlert } from "lucide-react";
 import { toast } from "sonner";
 import { formatDate } from "@/lib/utils";
 import type { DliProduct, Patient } from "@/lib/types";
+import { Pagination } from "@/components/ui/Pagination";
 
 interface DliForm {
   patientId: string;
@@ -29,14 +30,13 @@ interface DliForm {
 
 export default function DliPage() {
   const qc = useQueryClient();
-  const list = useQuery({ queryKey: ["dli-products"], queryFn: () => DliProducts.list(0, 500) });
   const patients = useQuery({ queryKey: ["patients"], queryFn: () => Patients.list(0, 500) });
   const donors = useQuery({ queryKey: ["donors"], queryFn: () => Donors.list(0, 500) });
   const sessions = useQuery({ queryKey: ["sessions"], queryFn: () => Sessions.list(0, 500) });
   const clinical = useQuery({
     queryKey: ["clinical-settings"],
     queryFn: () => ClinicalSettingsApi.get(),
-    staleTime: 60_000,
+    staleTime: 0,
   });
   const dliDivisor = clinical.data?.dliCd3CalculationDivisor ?? 10000;
   const highDoseThreshold = clinical.data?.dliHighDoseCd3PerKgThreshold ?? 10;
@@ -44,12 +44,23 @@ export default function DliPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [editing, setEditing] = useState<DliProduct | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<DliProduct | null>(null);
+  const [page, setPage] = useState(0);
+
+  const PAGE_SIZE = 10;
+
+  const list = useQuery({
+    queryKey: ["dli-products", page],
+    queryFn: () => DliProducts.byDynamic({ sort: [{ field: "date", dir: "desc" }] }, page, PAGE_SIZE),
+  });
 
   const patientById = useMemo(() => {
     const map = new Map<string, Patient>();
     (patients.data?.items ?? []).forEach((p) => map.set(p.id, p));
     return map;
   }, [patients.data]);
+
+  const dliItems = list.data?.items ?? [];
+  const paginated = dliItems;
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["dli-products"] });
@@ -115,7 +126,7 @@ export default function DliPage() {
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {(list.data?.items ?? []).map((d) => (
+          {paginated.map((d) => (
             <DliCard
               key={d.id}
               d={d}
@@ -127,6 +138,14 @@ export default function DliPage() {
           ))}
         </div>
       )}
+
+      <Pagination
+        page={page}
+        totalPages={list.data?.pages ?? 0}
+        totalItems={list.data?.count ?? 0}
+        pageSize={PAGE_SIZE}
+        onPageChange={setPage}
+      />
 
       <Modal
         open={createOpen}
@@ -314,6 +333,7 @@ function DliFormView({
     register,
     control,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<DliForm>({
     defaultValues: {
@@ -329,6 +349,21 @@ function DliFormView({
       notes: initial?.notes ?? "",
     },
   });
+
+  useEffect(() => {
+    reset({
+      patientId: initial?.patientId ?? "",
+      sessionId: initial?.sessionId ?? "",
+      donorId: initial?.donorId ?? "",
+      date: initial?.date ? initial.date.slice(0, 10) : new Date().toISOString().slice(0, 10),
+      volumeMl: initial?.volumeMl ?? 50,
+      wbc: initial?.wbc ?? undefined,
+      lymphocytePercent: initial?.lymphocytePercent ?? undefined,
+      cd3Percent: initial?.cd3Percent ?? undefined,
+      cd3PerKgOverride: undefined,
+      notes: initial?.notes ?? "",
+    });
+  }, [initial, reset]);
 
   const values = useWatch({ control }) as DliForm;
   const selectedPatient = patients.find((p) => p.id === values.patientId);

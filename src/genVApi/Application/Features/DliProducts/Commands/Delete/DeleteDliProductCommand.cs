@@ -42,7 +42,7 @@ public class DeleteDliProductCommand : IRequest<DeletedDliProductResponse>, ISec
             DliProduct? dliProduct = await _dliProductRepository.GetAsync(predicate: dp => dp.Id == request.Id, cancellationToken: cancellationToken);
             await _dliProductBusinessRules.DliProductShouldExistWhenSelected(dliProduct);
 
-            await _dliProductRepository.DeleteAsync(dliProduct!);
+            await _dliProductRepository.DeleteAsync(dliProduct!, permanent: true);
 
             DeletedDliProductResponse response = _mapper.Map<DeletedDliProductResponse>(dliProduct);
             return response;

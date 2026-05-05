@@ -29,6 +29,7 @@ public class UpdateDonorRangeCommand : IRequest<UpdatedDonorRangeResponse>, ISec
         public double WeightKg { get; set; }
         public string? BloodGroup { get; set; }
         public string? Relation { get; set; }
+        public string? IdentityNumber { get; set; }
     }
 
     public class UpdateDonorRangeCommandHandler : IRequestHandler<UpdateDonorRangeCommand, UpdatedDonorRangeResponse>

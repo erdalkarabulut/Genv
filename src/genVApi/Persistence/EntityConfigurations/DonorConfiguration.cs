@@ -15,6 +15,7 @@ public class DonorConfiguration : IEntityTypeConfiguration<Donor>
         builder.Property(d => d.WeightKg).HasColumnName("WeightKg").IsRequired();
         builder.Property(d => d.BloodGroup).HasColumnName("BloodGroup").HasMaxLength(10);
         builder.Property(d => d.Relation).HasColumnName("Relation").HasMaxLength(100);
+        builder.Property(d => d.IdentityNumber).HasColumnName("IdentityNumber").HasMaxLength(20);
         builder.Property(d => d.DonorType).HasColumnName("DonorType").HasConversion<string>().HasMaxLength(20).IsRequired();
         builder.Property(d => d.BirthDate).HasColumnName("BirthDate");
         builder.Property(d => d.CreatedDate).HasColumnName("CreatedDate").IsRequired();

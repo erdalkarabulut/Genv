@@ -11,6 +11,7 @@ public class CreatedPatientResponse : IResponse
     public Domain.Enums.TransplantType TransplantType { get; set; }
     public string? Diagnosis { get; set; }
     public string? ProtocolNo { get; set; }
+    public string? IdentityNumber { get; set; }
     public DateTime? BirthDate { get; set; }
     public Guid? DonorId { get; set; }
 }

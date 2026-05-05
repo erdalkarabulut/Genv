@@ -8,6 +8,7 @@ using NArchitecture.Core.Application.Pipelines.Authorization;
 using NArchitecture.Core.Application.Pipelines.Caching;
 using NArchitecture.Core.Application.Pipelines.Logging;
 using NArchitecture.Core.Application.Pipelines.Transaction;
+using NArchitecture.Core.CrossCuttingConcerns.Exception.Types;
 using MediatR;
 using static Application.Features.CollectionSessions.Constants.CollectionSessionsOperationClaims;
 
@@ -27,13 +28,16 @@ public class DeleteCollectionSessionCommand : IRequest<DeletedCollectionSessionR
     {
         private readonly IMapper _mapper;
         private readonly ICollectionSessionRepository _collectionSessionRepository;
+        private readonly IBagRepository _bagRepository;
         private readonly CollectionSessionBusinessRules _collectionSessionBusinessRules;
 
         public DeleteCollectionSessionCommandHandler(IMapper mapper, ICollectionSessionRepository collectionSessionRepository,
+                                         IBagRepository bagRepository,
                                          CollectionSessionBusinessRules collectionSessionBusinessRules)
         {
             _mapper = mapper;
             _collectionSessionRepository = collectionSessionRepository;
+            _bagRepository = bagRepository;
             _collectionSessionBusinessRules = collectionSessionBusinessRules;
         }
 
@@ -42,7 +46,14 @@ public class DeleteCollectionSessionCommand : IRequest<DeletedCollectionSessionR
             CollectionSession? collectionSession = await _collectionSessionRepository.GetAsync(predicate: cs => cs.Id == request.Id, cancellationToken: cancellationToken);
             await _collectionSessionBusinessRules.CollectionSessionShouldExistWhenSelected(collectionSession);
 
-            await _collectionSessionRepository.DeleteAsync(collectionSession!);
+            bool hasBags = await _bagRepository.AnyAsync(
+                predicate: b => b.SessionId == request.Id,
+                enableTracking: false,
+                cancellationToken: cancellationToken);
+            if (hasBags)
+                throw new BusinessException("Bu seansa bağlı torbalar var. Önce torbaları silin.");
+
+            await _collectionSessionRepository.DeleteAsync(collectionSession!, permanent: true);
 
             DeletedCollectionSessionResponse response = _mapper.Map<DeletedCollectionSessionResponse>(collectionSession);
             return response;

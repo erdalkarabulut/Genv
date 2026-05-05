@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { ApheresisPlans, BagCells, Bags, Dashboard, Donors, Patients, Sessions } from "@/lib/api";
+import { ApheresisPlans, BagCells, Bags, ClinicalSettingsApi, Dashboard, Donors, Patients, Sessions } from "@/lib/api";
 import { Card, CardHeader, Stat } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -59,7 +59,6 @@ export default function PatientDetailPage() {
   });
 
   const [sessionOpen, setSessionOpen] = useState(false);
-  const [splitOpen, setSplitOpen] = useState(false);
   const [customSplitOpen, setCustomSplitOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -146,18 +145,6 @@ export default function PatientDetailPage() {
             onClick={() => setSessionOpen(true)}
           >
             Aferez seansı ekle
-          </Button>
-          <Button
-            icon={<Scissors className="size-4" />}
-            disabled={!p?.isSufficient || !p?.completedSessions?.length}
-            onClick={() => setSplitOpen(true)}
-            title={
-              !p?.isSufficient
-                ? "Kümülatif CD34 hedefe ulaşmadan bölme yapılamaz"
-                : "4 torbaya böl ve cryo'ya yerleştir"
-            }
-          >
-            4 torbaya böl + Cryo
           </Button>
           <Button
             variant="soft"
@@ -264,23 +251,6 @@ export default function PatientDetailPage() {
             await refresh();
             setSessionOpen(false);
             toast.success("Aferez seansı kaydedildi ve hesaplandı");
-          }}
-        />
-      </Modal>
-
-      <Modal
-        open={splitOpen}
-        onClose={() => setSplitOpen(false)}
-        title="4 torbaya bölme + Cryo yerleştirme"
-        description="Aferez ürünü 4 eşit torbaya bölünür. 1. torba (Cryo) otomatik olarak ilk boş slota yerleştirilir."
-        size="md"
-      >
-        <SplitForm
-          plan={p}
-          onCancel={() => setSplitOpen(false)}
-          onDone={() => {
-            refresh();
-            setSplitOpen(false);
           }}
         />
       </Modal>
@@ -437,7 +407,7 @@ function PatientBagsCard({
       ) : bags.length === 0 ? (
         <p className="text-sm text-ink-muted">
           Bu hastaya ait torba yok. Aferez seansı tamamlandıktan sonra{" "}
-          <b>4 torbaya böl + Cryo</b> veya <b>Özel torba + Dondur</b> ile torba oluşturabilirsiniz.
+          <b>Özel torba + Dondur</b> ile torba oluşturabilirsiniz.
         </p>
       ) : (
         <div className="space-y-4">
@@ -990,7 +960,10 @@ function SessionInlineForm({
   onCancel: () => void;
   onSaved: () => void;
 }) {
-  const { register, handleSubmit, watch, formState: { isSubmitting } } = useForm<SessionForm>({
+  const qc = useQueryClient();
+  const clinical = useQuery({ queryKey: ["clinical-settings"], queryFn: () => ClinicalSettingsApi.get(), staleTime: 0 });
+  const sessionDivisor = clinical.data?.sessionCd34Cd3Divisor ?? 10000;
+  const { register, handleSubmit, watch, reset, formState: { isSubmitting } } = useForm<SessionForm>({
     defaultValues: {
       day: initial.day,
       date: initial.date.slice(0, 10),
@@ -1015,11 +988,37 @@ function SessionInlineForm({
     },
   });
 
+  // Query cache'inden yeni veri gelirse form alanlarını güncel değerlerle senkronla.
+  useEffect(() => {
+    reset({
+      day: initial.day,
+      date: initial.date.slice(0, 10),
+      wbcPre: initial.wbcPre ?? undefined,
+      hgb: initial.hgb ?? undefined,
+      hct: initial.hct ?? undefined,
+      plt: initial.plt ?? undefined,
+      preCd45Percent: initial.preCd45Percent ?? undefined,
+      preCd34Percent: initial.preCd34Percent ?? undefined,
+      preMhs: initial.preMhs ?? undefined,
+      wbcPost: initial.wbcPost ?? undefined,
+      hgbPost: initial.hgbPost ?? undefined,
+      hctPost: initial.hctPost ?? undefined,
+      pltPost: initial.pltPost ?? undefined,
+      volumeMl: initial.volumeMl,
+      wbc: initial.wbc,
+      cd34Percent: initial.cd34Percent,
+      cd45Percent: initial.cd45Percent,
+      cd3Percent: initial.cd3Percent,
+      lymphocytePercent: initial.lymphocytePercent ?? undefined,
+      mhs: initial.mhs ?? undefined,
+    });
+  }, [initial, reset]);
+
   const values = watch();
-  const preview = usePreviewCalculation(values, weightKg ?? 0);
+  const preview = usePreviewCalculation(values, weightKg ?? 0, sessionDivisor);
 
   const onSubmit = async (d: SessionForm) => {
-    await Sessions.update({
+    const updated = await Sessions.update({
       id: initial.id,
       patientId,
       day: Number(d.day),
@@ -1045,6 +1044,14 @@ function SessionInlineForm({
       cd34PerKg: initial.cd34PerKg,
       cd3PerKg: isAutologous ? 0 : initial.cd3PerKg,
     });
+    await Sessions.calculate(updated.id);
+    qc.setQueryData(["session", initial.id], updated);
+    qc.invalidateQueries({ queryKey: ["session", initial.id] });
+    qc.invalidateQueries({ queryKey: ["apheresis-plan", patientId] });
+    qc.invalidateQueries({ queryKey: ["patient", patientId] });
+    qc.invalidateQueries({ queryKey: ["patients"] });
+    qc.invalidateQueries({ queryKey: ["sessions"] });
+    qc.invalidateQueries({ queryKey: ["dashboard"] });
     toast.success("Seans güncellendi");
     onSaved();
   };
@@ -1072,17 +1079,8 @@ function SessionInlineForm({
         </div>
       </section>
       <section>
-        <SectionTitle title="3 · İşlem sonrası hemogram (opsiyonel)" />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Input label="WBC (post)" type="number" step="0.01" {...register("wbcPost")} />
-          <Input label="HGB (post)" type="number" step="0.01" {...register("hgbPost")} />
-          <Input label="HCT (post)" type="number" step="0.01" {...register("hctPost")} />
-          <Input label="PLT (post)" type="number" step="0.01" {...register("pltPost")} />
-        </div>
-      </section>
-      <section>
         <SectionTitle
-          title="4 · ÜRÜN — Aferez sonrası"
+          title="3 · ÜRÜN — Aferez sonrası"
           hint={isAutologous ? "Otolog · CD3/Lenfosit takibi uygulanmaz" : undefined}
         />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -1374,6 +1372,8 @@ function CreateSessionForm({
   onCancel: () => void;
   onCreated: () => void;
 }) {
+  const clinical = useQuery({ queryKey: ["clinical-settings"], queryFn: () => ClinicalSettingsApi.get(), staleTime: 0 });
+  const sessionDivisor = clinical.data?.sessionCd34Cd3Divisor ?? 10000;
   const { register, handleSubmit, watch, formState: { errors } } = useForm<SessionForm>({
     defaultValues: {
       day: defaultDay,
@@ -1387,7 +1387,7 @@ function CreateSessionForm({
   });
 
   const values = watch();
-  const preview = usePreviewCalculation(values, weightKg ?? 0);
+  const preview = usePreviewCalculation(values, weightKg ?? 0, sessionDivisor);
 
   const create = useMutation({
     mutationFn: (data: SessionForm) =>
@@ -1462,20 +1462,7 @@ function CreateSessionForm({
 
       <section>
         <SectionTitle
-          title="3 · İşlem sonrası hemogram (opsiyonel)"
-          hint="Aferez sonrası hastanın kontrol kan paneli — formdaki el yazısı işlem sonrası değerlerine karşılık gelir."
-        />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Input label="WBC (post)" type="number" step="0.01" {...register("wbcPost")} />
-          <Input label="HGB (post)" type="number" step="0.01" {...register("hgbPost")} />
-          <Input label="HCT (post)" type="number" step="0.01" {...register("hctPost")} />
-          <Input label="PLT (post)" type="number" step="0.01" {...register("pltPost")} />
-        </div>
-      </section>
-
-      <section>
-        <SectionTitle
-          title="4 · ÜRÜN — Aferez sonrası (post-procedure)"
+          title="3 · ÜRÜN — Aferez sonrası (post-procedure)"
           hint={
             isAutologous
               ? "Otolog · sadece CD34 takibi yapılır, CD3/Lenfosit uygulanmaz"
@@ -1528,7 +1515,7 @@ function CreateSessionForm({
           )}
         </div>
         <p className="mt-1 text-[11px] text-ink-dim">
-          Hesap: (Hacim × WBC × %CD45 × %CD34) / 10000 / kilo · sunucu kaydederken de aynı formülü uygular.
+          Hesap: (Hacim × WBC × %CD45 × %CD34) / {formatNumber(sessionDivisor, 0)} / kilo · sunucu ile ayni bolen.
         </p>
       </div>
 
@@ -1571,7 +1558,7 @@ function VariantBanner({ isAutologous }: { isAutologous?: boolean }) {
         </div>
       </div>
       <div className="text-[10px] uppercase tracking-wider text-ink-dim hidden sm:block">
-        form sırası: PK · işlem sonrası · ÜRÜN
+        form sırası: PK · ÜRÜN
       </div>
     </div>
   );
@@ -1583,7 +1570,7 @@ function numOrNull(v: unknown): number | undefined {
   return Number.isFinite(n) ? n : undefined;
 }
 
-function usePreviewCalculation(v: Partial<SessionForm>, weight: number) {
+function usePreviewCalculation(v: Partial<SessionForm>, weight: number, divisor = 10000) {
   if (!weight || !v.volumeMl || !v.wbc) return null;
   const vol = Number(v.volumeMl);
   const wbc = Number(v.wbc);
@@ -1592,8 +1579,8 @@ function usePreviewCalculation(v: Partial<SessionForm>, weight: number) {
   const cd3 = Number(v.cd3Percent ?? 0);
   const total = vol * wbc;
   return {
-    cd34: (total * (cd45 / 100) * (cd34 / 100)) / 10000 / weight,
-    cd3: (total * (cd3 / 100)) / 10000 / weight,
+    cd34: (total * (cd45 / 100) * (cd34 / 100)) / divisor / weight,
+    cd3: (total * (cd3 / 100)) / divisor / weight,
   };
 }
 
@@ -1774,7 +1761,7 @@ function CustomSplitForm({
   const bagCellsQ = useQuery({
     queryKey: ["bagCells-free"],
     queryFn: () => BagCells.list(0, 2000),
-    staleTime: 5_000,
+    staleTime: 0,
   });
   const freeBagCells = (bagCellsQ.data?.items ?? []).filter((s) => !s.isOccupied);
 

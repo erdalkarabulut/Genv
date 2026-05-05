@@ -7,8 +7,10 @@ import { Input } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { Pagination } from "@/components/ui/Pagination";
+import { useDebounce } from "@/lib/useDebounce";
 import { Plus, Search, Pencil, Trash2, HeartHandshake, Link2, Users } from "lucide-react";
 import { toast } from "sonner";
 import { formatDate } from "@/lib/utils";
@@ -19,35 +21,51 @@ export interface DonorFormValues {
   weightKg: number;
   bloodGroup?: string;
   relation?: string;
+  identityNumber?: string;
   donorType: DonorType;
   birthDate?: string;
 }
 
 export default function DonorsPage() {
   const qc = useQueryClient();
-  const list = useQuery({ queryKey: ["donors"], queryFn: () => Donors.list(0, 500) });
+
+  const [q, setQ] = useState("");
+  const [page, setPage] = useState(0);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [editing, setEditing] = useState<Donor | null>(null);
+  const [detailId, setDetailId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Donor | null>(null);
+  const debouncedQ = useDebounce(q, 300);
+
+  useEffect(() => { setPage(0); }, [debouncedQ]);
+
+  const PAGE_SIZE = 10;
+
+  const buildQuery = () => {
+    const sort = [{ field: "createdDate", dir: "desc" as const }];
+    if (!debouncedQ) return { sort };
+    const filter = {
+      field: "fullName", operator: "contains" as const, value: debouncedQ,
+      logic: "or" as const,
+      filters: [
+        { field: "bloodGroup", operator: "contains" as const, value: debouncedQ,
+          logic: "or" as const,
+          filters: [{ field: "relation", operator: "contains" as const, value: debouncedQ }] },
+      ],
+    };
+    return { filter, sort };
+  };
+
+  const list = useQuery({
+    queryKey: ["donors", page, PAGE_SIZE, debouncedQ],
+    queryFn: () => Donors.byDynamic(buildQuery(), page, PAGE_SIZE),
+  });
   const patients = useQuery({
     queryKey: ["patients", "for-donors"],
     queryFn: () => Patients.list(0, 500),
   });
 
-  const [q, setQ] = useState("");
-  const [createOpen, setCreateOpen] = useState(false);
-  const [editing, setEditing] = useState<Donor | null>(null);
-  const [detailId, setDetailId] = useState<string | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<Donor | null>(null);
-
-  const filtered = useMemo(() => {
-    const items = list.data?.items ?? [];
-    if (!q) return items;
-    const ql = q.toLowerCase();
-    return items.filter(
-      (d) =>
-        d.fullName.toLowerCase().includes(ql) ||
-        d.bloodGroup?.toLowerCase().includes(ql) ||
-        d.relation?.toLowerCase().includes(ql),
-    );
-  }, [list.data, q]);
+  const paginated = list.data?.items ?? [];
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["donors"] });
@@ -95,7 +113,7 @@ export default function DonorsPage() {
             <div key={i} className="card h-28 skeleton" />
           ))}
         </div>
-      ) : filtered.length === 0 ? (
+      ) : paginated.length === 0 ? (
         <EmptyState
           icon={<HeartHandshake className="size-10" />}
           title="Donor kaydı yok"
@@ -108,7 +126,7 @@ export default function DonorsPage() {
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((d) => {
+          {paginated.map((d) => {
             const linkedPatients = (patients.data?.items ?? []).filter((p) => p.donorId === d.id);
             return (
               <div
@@ -164,6 +182,14 @@ export default function DonorsPage() {
         </div>
       )}
 
+      <Pagination
+        page={page}
+        totalPages={list.data?.pages ?? 0}
+        totalItems={list.data?.count ?? 0}
+        pageSize={PAGE_SIZE}
+        onPageChange={setPage}
+      />
+
       {/* Create */}
       <Modal open={createOpen} onClose={() => setCreateOpen(false)} title="Yeni donor">
         <DonorFormView
@@ -195,6 +221,10 @@ export default function DonorsPage() {
                 birthDate: d.birthDate ? new Date(d.birthDate).toISOString() : undefined,
               });
               toast.success("Donor güncellendi");
+              qc.setQueryData(["donors"], (old: { items: Donor[] } | undefined) => {
+                if (!old) return old;
+                return { ...old, items: old.items.map(i => i.id === editing.id ? { ...i, ...d, weightKg: Number(d.weightKg), birthDate: d.birthDate ? new Date(d.birthDate).toISOString() : i.birthDate } : i) };
+              });
               invalidate();
               setEditing(null);
             }}
@@ -244,17 +274,30 @@ export function DonorFormView({
   onCancel: () => void;
   onSubmit: (d: DonorFormValues) => Promise<void>;
 }) {
-  const { register, handleSubmit, control, watch, formState: { errors, isSubmitting } } =
+  const { register, handleSubmit, control, watch, reset, formState: { errors, isSubmitting } } =
     useForm<DonorFormValues>({
       defaultValues: {
         fullName: initial?.fullName ?? "",
         weightKg: initial?.weightKg ?? 70,
         bloodGroup: initial?.bloodGroup ?? "",
         relation: initial?.relation ?? "",
+        identityNumber: initial?.identityNumber ?? "",
         donorType: initial?.donorType ?? "Related",
         birthDate: initial?.birthDate ? initial.birthDate.slice(0, 10) : "",
       },
     });
+
+  useEffect(() => {
+    reset({
+      fullName: initial?.fullName ?? "",
+      weightKg: initial?.weightKg ?? 70,
+      bloodGroup: initial?.bloodGroup ?? "",
+      relation: initial?.relation ?? "",
+      identityNumber: initial?.identityNumber ?? "",
+      donorType: initial?.donorType ?? "Related",
+      birthDate: initial?.birthDate ? initial.birthDate.slice(0, 10) : "",
+    });
+  }, [initial, reset]);
 
   const donorType = watch("donorType");
 
@@ -307,6 +350,7 @@ export function DonorFormView({
         placeholder={donorType === "Related" ? "Sibling, Parent..." : "MUD, Unrelated..."}
         {...register("relation")}
       />
+      <Input label="Kimlik No (opsiyonel)" {...register("identityNumber")} />
       <Input label="Doğum tarihi" type="date" {...register("birthDate")} />
 
       <div className="col-span-2 flex justify-end gap-2 mt-1">
@@ -372,6 +416,7 @@ function DonorDetail({ donorId, onClose }: { donorId: string; onClose: () => voi
         <Mini label="Kilo" value={`${d.weightKg} kg`} />
         <Mini label="Kan grubu" value={d.bloodGroup ?? "—"} />
         <Mini label="Yakınlık" value={d.relation ?? "—"} />
+        <Mini label="Kimlik No" value={d.identityNumber ?? "—"} />
         <Mini
           label="Doğum tarihi"
           value={d.birthDate ? formatDate(d.birthDate) : "—"}

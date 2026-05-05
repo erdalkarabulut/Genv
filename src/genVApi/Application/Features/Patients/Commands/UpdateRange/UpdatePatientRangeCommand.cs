@@ -31,6 +31,7 @@ public class UpdatePatientRangeCommand : IRequest<UpdatedPatientRangeResponse>, 
         public Domain.Enums.TransplantType TransplantType { get; set; }
         public string? Diagnosis { get; set; }
         public string? ProtocolNo { get; set; }
+        public string? IdentityNumber { get; set; }
         public DateTime? BirthDate { get; set; }
         public Guid? DonorId { get; set; }
     }

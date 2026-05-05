@@ -1,15 +1,23 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bags, Dashboard, Patients, Sessions } from "@/lib/api";
+import { Bags, Dashboard, Donors, Patients, Sessions } from "@/lib/api";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Drawer } from "@/components/ui/Modal";
+import { Pagination } from "@/components/ui/Pagination";
 import { useEffect, useMemo, useState } from "react";
-import type { Bag, CryoBoxDto, CryoBagCellDto } from "@/lib/types";
+import type {
+  Bag,
+  CollectionSession,
+  CryoBagCellDto,
+  CryoBoxDto,
+  CryoTankDto,
+  Donor,
+  Patient,
+} from "@/lib/types";
 import {
   Hand,
   Layers,
-  MousePointerClick,
   PackageOpen,
   Snowflake,
   X,
@@ -17,6 +25,7 @@ import {
   Beaker,
   Calendar,
   ExternalLink,
+  Search,
   StickyNote,
 } from "lucide-react";
 import { onCryo } from "@/lib/signalr";
@@ -24,25 +33,33 @@ import { cn, formatDate, formatNumber, shortId } from "@/lib/utils";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 
-const purposeTone: Record<string, string> = {
-  Cryo: "bg-sky-500/30 border-sky-400/60",
-  Infusion: "bg-emerald-500/30 border-emerald-400/60",
-  Backup: "bg-amber-500/30 border-amber-400/60",
-  QualityControl: "bg-fuchsia-500/30 border-fuchsia-400/60",
-};
-
 type PickUp =
   | { kind: "stored"; bagId: string; fromBagCellId: string; label: string }
   | { kind: "reserved"; bagId: string; label: string }
   | null;
 
+type CellMeta = { bag?: Bag; session?: CollectionSession; patient?: Patient; donor?: Donor };
+
+type HoverHintState = {
+  cell: CryoBagCellDto;
+  meta?: CellMeta;
+  left: number;
+  top: number;
+};
+
 export default function CryoGridPage() {
   const qc = useQueryClient();
   const grid = useQuery({ queryKey: ["cryo-grid"], queryFn: Dashboard.cryoGrid });
   const bagsQ = useQuery({ queryKey: ["bags", "all"], queryFn: () => Bags.list(0, 500) });
+  const sessionsQ = useQuery({ queryKey: ["sessions", "for-cryo"], queryFn: () => Sessions.list(0, 1000) });
+  const patientsQ = useQuery({ queryKey: ["patients", "for-cryo"], queryFn: () => Patients.list(0, 1000) });
+  const donorsQ = useQuery({ queryKey: ["donors", "for-cryo"], queryFn: () => Donors.list(0, 1000) });
   const [activeTank, setActiveTank] = useState<number>(0);
+  const [rackPage, setRackPage] = useState(0);
   const [drawerCell, setDrawerCell] = useState<CryoBagCellDto | null>(null);
   const [pickup, setPickup] = useState<PickUp>(null);
+  const [hoverHint, setHoverHint] = useState<HoverHintState | null>(null);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const unsubA = onCryo("BagStored", () => {
@@ -114,13 +131,103 @@ export default function CryoGridPage() {
   };
 
   const tank = grid.data?.tanks?.[activeTank];
+  const searchText = search.trim().toLowerCase();
 
-  const tankStats = useMemo(() => {
-    if (!tank) return { boxes: 0, occupied: 0, cells: 0 };
+  const bagById = useMemo(() => {
+    const m = new Map<string, Bag>();
+    (bagsQ.data?.items ?? []).forEach((b) => m.set(b.id, b));
+    return m;
+  }, [bagsQ.data]);
+
+  const sessionById = useMemo(() => {
+    const m = new Map<string, CollectionSession>();
+    (sessionsQ.data?.items ?? []).forEach((s) => m.set(s.id, s));
+    return m;
+  }, [sessionsQ.data]);
+
+  const patientById = useMemo(() => {
+    const m = new Map<string, Patient>();
+    (patientsQ.data?.items ?? []).forEach((p) => m.set(p.id, p));
+    return m;
+  }, [patientsQ.data]);
+
+  const donorById = useMemo(() => {
+    const m = new Map<string, Donor>();
+    (donorsQ.data?.items ?? []).forEach((d) => m.set(d.id, d));
+    return m;
+  }, [donorsQ.data]);
+
+  const cellMetaById = useMemo(() => {
+    const meta = new Map<string, CellMeta>();
+    if (!grid.data?.tanks) return meta;
+    for (const t of grid.data.tanks) {
+      for (const r of t.racks) {
+        for (const slot of r.slots) {
+          for (const box of slot.boxes) {
+            for (const c of box.bagCells) {
+              if (!c.isOccupied || !c.bagId) continue;
+              const bag = bagById.get(c.bagId);
+              const session = bag?.sessionId ? sessionById.get(bag.sessionId) : undefined;
+              const patient = session?.patientId ? patientById.get(session.patientId) : undefined;
+              const donor = patient?.donorId ? donorById.get(patient.donorId) : undefined;
+              meta.set(c.id, { bag, session, patient, donor });
+            }
+          }
+        }
+      }
+    }
+    return meta;
+  }, [grid.data, bagById, sessionById, patientById, donorById]);
+
+  const matchedCellIds = useMemo(() => {
+    if (!searchText) return null;
+    const ids = new Set<string>();
+    for (const [cellId, m] of cellMetaById.entries()) {
+      const bagNo = m.bag?.bagNumber ? String(m.bag.bagNumber) : "";
+      const hay = [
+        m.patient?.fullName ?? "",
+        m.patient?.protocolNo ?? "",
+        m.donor?.fullName ?? "",
+        m.donor?.relation ?? "",
+        bagNo,
+      ]
+        .join(" ")
+        .toLowerCase();
+      if (hay.includes(searchText)) ids.add(cellId);
+    }
+    return ids;
+  }, [searchText, cellMetaById]);
+
+  const visibleTank: CryoTankDto | undefined = useMemo(() => {
+    if (!tank) return undefined;
+    if (!matchedCellIds) return tank;
+    return {
+      ...tank,
+      racks: tank.racks
+        .map((r) => ({
+          ...r,
+          slots: r.slots
+            .map((s) => ({
+              ...s,
+              boxes: s.boxes
+                .map((b) => ({
+                  ...b,
+                  bagCells: b.bagCells.filter((c) => matchedCellIds.has(c.id)),
+                }))
+                .filter((b) => b.bagCells.length > 0),
+            }))
+            .filter((s) => s.boxes.length > 0),
+        }))
+        .filter((r) => r.slots.length > 0),
+    };
+  }, [tank, matchedCellIds]);
+
+  const visibleStats = useMemo(() => {
+    if (!visibleTank) return { boxes: 0, occupied: 0, cells: 0 };
     let boxes = 0;
     let occupied = 0;
     let cells = 0;
-    for (const r of tank.racks) {
+    for (const r of visibleTank.racks) {
       for (const slot of r.slots) {
         boxes += slot.boxes.length;
         for (const box of slot.boxes) {
@@ -130,7 +237,45 @@ export default function CryoGridPage() {
       }
     }
     return { boxes, occupied, cells };
-  }, [tank]);
+  }, [visibleTank]);
+
+  const RACKS_PER_PAGE = 20;
+  const pagedRacks = useMemo(() => {
+    const racks = visibleTank?.racks ?? [];
+    const start = rackPage * RACKS_PER_PAGE;
+    return racks.slice(start, start + RACKS_PER_PAGE);
+  }, [visibleTank, rackPage]);
+
+  useEffect(() => {
+    setRackPage(0);
+  }, [activeTank, searchText]);
+
+  useEffect(() => {
+    setHoverHint(null);
+  }, [activeTank, rackPage, searchText, pickup, drawerCell]);
+
+  const showHoverHint = (cell: CryoBagCellDto, rect: DOMRect) => {
+    const hintWidth = 380;
+    const hintHeight = 260;
+    const gap = 10;
+    const margin = 8;
+
+    let left = rect.right + gap;
+    if (left + hintWidth > window.innerWidth - margin) {
+      left = rect.left - hintWidth - gap;
+    }
+    left = Math.max(margin, Math.min(left, window.innerWidth - hintWidth - margin));
+
+    let top = rect.top + rect.height / 2 - hintHeight / 2;
+    top = Math.max(margin, Math.min(top, window.innerHeight - hintHeight - margin));
+
+    setHoverHint({
+      cell,
+      meta: cellMetaById.get(cell.id),
+      left,
+      top,
+    });
+  };
 
   const reservedBags: Bag[] = useMemo(
     () =>
@@ -140,27 +285,16 @@ export default function CryoGridPage() {
     [bagsQ.data],
   );
 
-  return (
-    <div className="space-y-6">
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Cryo Grid</h1>
-          <p className="text-sm text-ink-muted mt-1 flex items-center gap-2 flex-wrap">
-            Tank seçin: tüm rack, raf slotu, kutu ve hücreler tek ekranda.
-            <span className="inline-flex items-center gap-1 text-[11px] text-ink-dim border border-line/60 rounded-md px-1.5 py-0.5">
-              <Hand className="size-3" /> sürükle-bırak
-            </span>
-            <span className="inline-flex items-center gap-1 text-[11px] text-ink-dim border border-line/60 rounded-md px-1.5 py-0.5">
-              <MousePointerClick className="size-3" /> tıkla-seç-boş slota bırak
-            </span>
-          </p>
-        </div>
-      </header>
+  const showPagination = !!visibleTank && visibleTank.racks.length > RACKS_PER_PAGE;
 
-      <div className="grid grid-cols-12 gap-4">
+  return (
+    <div className="h-[calc(100vh-8.75rem)] flex flex-col gap-4 overflow-hidden">
+      <div className="grid grid-cols-12 gap-4 min-h-0 flex-1">
         {/* Tank list */}
-        <Card className="col-span-12 lg:col-span-3 p-3">
-          <div className="px-2 mb-2 text-xs uppercase tracking-wide text-ink-dim">Tanklar</div>
+        <div className="col-span-12 lg:col-span-3 min-h-0 flex flex-col gap-2">
+          <h1 className="text-2xl font-semibold tracking-tight px-1">Cryo Grid</h1>
+          <Card className="p-3 min-h-0 flex-1 overflow-auto">
+            <div className="px-2 mb-2 text-xs uppercase tracking-wide text-ink-dim">Tanklar</div>
           {grid.isLoading && (
             <div className="space-y-2 px-2">
               {Array.from({ length: 3 }).map((_, i) => (
@@ -270,52 +404,103 @@ export default function CryoGridPage() {
               })}
             </div>
           </div>
-        </Card>
+          </Card>
+        </div>
 
         {/* Rack tabs + boxes */}
-        <Card className="col-span-12 lg:col-span-9 flex flex-col min-h-0">
+        <Card className="col-span-12 lg:col-span-9 flex flex-col min-h-0 overflow-hidden">
           <CardHeader
             title={tank?.name ?? "Seçili tank yok"}
             subtitle={
-              tank
-                ? `${tank.racks.length} rack · ${tankStats.boxes} kutu · ${tankStats.occupied}/${tankStats.cells} hücre dolu`
+              visibleTank
+                ? `${visibleTank.racks.length} rack · ${visibleStats.boxes} kutu · ${visibleStats.occupied}/${visibleStats.cells} hucre dolu`
                 : undefined
             }
             right={<Badge tone="brand" dot>Live</Badge>}
           />
 
-          {!grid.isLoading && tank && tank.racks.length === 0 && (
-            <p className="text-sm text-ink-muted">Bu tankta rack yok.</p>
+          {showPagination && (
+            <div className="mb-3">
+              <Pagination
+                page={rackPage}
+                totalPages={Math.ceil(visibleTank.racks.length / RACKS_PER_PAGE)}
+                totalItems={visibleTank.racks.length}
+                pageSize={RACKS_PER_PAGE}
+                onPageChange={setRackPage}
+                middle={
+                  <div className="relative w-full max-w-sm md:flex-1 md:max-w-md">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-ink-dim" />
+                    <input
+                      className="input h-9 pl-8 text-xs"
+                      placeholder="Hasta veya donor adindan hucre ara..."
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                    />
+                  </div>
+                }
+              />
+            </div>
+          )}
+
+          {!showPagination && (
+            <div className="mb-2 px-0">
+            <div className="relative max-w-sm">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-ink-dim" />
+              <input
+                className="input h-9 pl-8 text-xs"
+                placeholder="Hasta veya donor adindan hucre ara..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            {searchText && (
+              <p className="mt-1.5 text-xs text-ink-dim">
+                {matchedCellIds && matchedCellIds.size > 0
+                  ? `${matchedCellIds.size} hucre eslesti. Sadece eslesen hucreler gosteriliyor.`
+                  : "Eslesen hucre bulunamadi."}
+              </p>
+            )}
+            </div>
+          )}
+
+          {showPagination && searchText && (
+            <p className="mb-2 text-xs text-ink-dim">
+              {matchedCellIds && matchedCellIds.size > 0
+                ? `${matchedCellIds.size} hucre eslesti. Sadece eslesen hucreler gosteriliyor.`
+                : "Eslesen hucre bulunamadi."}
+            </p>
+          )}
+
+          {!grid.isLoading && visibleTank && visibleTank.racks.length === 0 && (
+            <p className="text-sm text-ink-muted">
+              {searchText ? "Arama ile eslesen hucre bulunamadi." : "Bu tankta rack yok."}
+            </p>
           )}
 
           {!grid.isLoading &&
-            tank &&
-            tank.racks.length > 0 &&
-            tankStats.boxes === 0 && (
+            visibleTank &&
+            visibleTank.racks.length > 0 &&
+            visibleStats.boxes === 0 && (
               <p className="text-sm text-ink-muted">
                 Bu tanktaki rack&apos;lerde henüz kutu yok; önce envanterden raf slotu ve kutu ekleyin.
               </p>
             )}
 
-          {tank && tankStats.boxes > 0 && (
-            <div className="max-h-[min(72vh,calc(100vh-10rem))] overflow-auto pr-1 pb-2 mt-1 grid gap-6 auto-cols-fr grid-flow-col">
-              {tank.racks.map((rack) => {
-                const rackBoxCount = rack.slots.reduce((n, s) => n + s.boxes.length, 0);
+          {visibleTank && visibleStats.boxes > 0 && (
+            <div className="min-h-0 flex-1 overflow-y-auto overflow-x-visible pr-1 pb-2 mt-1 grid gap-1.5 grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10">
+              {pagedRacks.map((rack) => {
                 return (
-                  <section key={rack.id} className="space-y-3 min-w-[16rem]">
-                    <div className="sticky top-0 z-10 -mx-1 px-2 py-2.5 bg-bg-card/95 backdrop-blur-sm border-b border-line/60 flex flex-wrap items-center justify-between gap-2">
-                      <div className="flex items-center gap-2 text-sm font-semibold text-ink">
-                        <Layers className="size-4 text-brand-400 shrink-0" />
+                  <section key={rack.id} className="space-y-1.5 min-w-0">
+                    <div className="sticky top-0 z-10 -mx-1 px-1 py-1 bg-bg-card/95 backdrop-blur-sm border-b border-line/60 flex flex-wrap items-center justify-between gap-1">
+                      <div className="flex items-center gap-1 text-[11px] font-semibold text-ink">
+                        <Layers className="size-3 text-brand-400 shrink-0" />
                         <span>{rack.name}</span>
                       </div>
-                      <span className="text-[11px] text-ink-dim">
-                        {rack.slots.length} raf slotu · {rackBoxCount} kutu
-                      </span>
                     </div>
                     {rack.slots.length === 0 ? (
                       <p className="text-xs text-ink-muted pl-1">Bu rack&apos;te raf slotu yok.</p>
                     ) : (
-                      <div className="grid grid-cols-1 gap-4">
+                      <div className="grid grid-cols-1 gap-1.5">
                         {rack.slots.flatMap((rackSlot) =>
                           rackSlot.boxes.map((box) => (
                             <BoxGrid
@@ -323,7 +508,10 @@ export default function CryoGridPage() {
                               rackName={rack.name}
                               rackSlotName={rackSlot.name}
                               box={box}
+                              cellMetaById={cellMetaById}
                               pickup={pickup}
+                              onHoverCell={showHoverHint}
+                              onHoverLeave={() => setHoverHint(null)}
                               onCell={(s) => {
                                 if (pickup) {
                                   dropOnCell(s, pickup);
@@ -382,6 +570,17 @@ export default function CryoGridPage() {
         </div>
       )}
 
+      {hoverHint && !pickup && (
+        <div
+          className="pointer-events-none fixed z-[120]"
+          style={{ left: hoverHint.left, top: hoverHint.top, width: 380 }}
+        >
+          <div className="rounded-xl border border-brand-500/30 bg-bg-card/95 p-2 text-left shadow-glow">
+            <HoverHintCard cell={hoverHint.cell} meta={hoverHint.meta} />
+          </div>
+        </div>
+      )}
+
       <Drawer
         open={!!drawerCell}
         onClose={() => setDrawerCell(null)}
@@ -411,7 +610,10 @@ function BoxGrid({
   rackName,
   rackSlotName,
   box,
+  cellMetaById,
   pickup,
+  onHoverCell,
+  onHoverLeave,
   onCell,
   onDropOnCell,
   onPickUpStored,
@@ -419,63 +621,65 @@ function BoxGrid({
   rackName: string;
   rackSlotName: string;
   box: CryoBoxDto;
+  cellMetaById: Map<string, CellMeta>;
   pickup: PickUp;
+  onHoverCell: (s: CryoBagCellDto, rect: DOMRect) => void;
+  onHoverLeave: () => void;
   onCell: (s: CryoBagCellDto) => void;
   onDropOnCell: (s: CryoBagCellDto, p: PickUp) => void;
   onPickUpStored: (s: CryoBagCellDto) => void;
 }) {
-  const cols = useMemo(() => {
-    const positions = box.bagCells.map((s) => s.position);
-    const letters = new Set(positions.map((p) => p.replace(/[0-9]/g, "")));
-    const numbers = new Set(positions.map((p) => Number(p.replace(/[A-Za-z]/g, ""))));
-    return { letters: [...letters].sort(), numbers: [...numbers].sort((a, b) => a - b) };
-  }, [box]);
+  const orderedCells = useMemo(() => {
+    const parse = (pos: string) => {
+      const letter = pos.replace(/[0-9]/g, "");
+      const number = Number(pos.replace(/[A-Za-z]/g, ""));
+      return { letter, number };
+    };
+    return [...box.bagCells].sort((a, b) => {
+      const pa = parse(a.position);
+      const pb = parse(b.position);
+      if (pa.letter !== pb.letter) return pa.letter.localeCompare(pb.letter);
+      return pa.number - pb.number;
+    });
+  }, [box.bagCells]);
 
-  const cellMap = useMemo(() => {
-    const m = new Map<string, CryoBagCellDto>();
-    box.bagCells.forEach((s) => m.set(s.position, s));
-    return m;
-  }, [box]);
+  const bagColumnCount = Math.floor(box.bagCells.length / 10) + 1;
+  const bagRowCount = Math.min(10, Math.max(box.bagCells.length, 1));
 
   const occupied = box.bagCells.filter((s) => s.isOccupied).length;
 
   return (
-    <div className="rounded-2xl border border-line/60 bg-bg-elevated/30 p-3 w-fit">
-      <div className="mb-2">
-        <div className="text-sm font-medium leading-tight">
-          {rackName} · {rackSlotName}
+    <div className="rounded-lg border border-line/60 bg-bg-elevated/30 p-1.5 w-fit">
+      <div className="mb-1">
+        <div className="text-[11px] font-medium leading-tight truncate" title={`${rackName} · ${rackSlotName}`}>
+            {rackName} · {rackSlotName}
         </div>
-        <div className="flex items-center gap-2 mt-0.5">
+        <div className="flex items-center gap-1 mt-0.5">
           <span className="text-[10px] text-ink-dim">{box.name}</span>
           <Badge
             tone={occupied === box.bagCells.length ? "rose" : occupied === 0 ? "mint" : "amber"}
-            className="text-[10px]"
+            className="text-[9px]"
           >
             {occupied}/{box.bagCells.length}
           </Badge>
         </div>
       </div>
       <div
-        className="grid gap-2 w-fit"
-        style={{ gridTemplateColumns: `repeat(${cols.letters.length || 1}, 4.5rem)` }}
+        className="grid gap-1.5 w-fit"
+        style={{
+          gridAutoFlow: "column",
+          gridTemplateColumns: `repeat(${bagColumnCount}, 3rem)`,
+          gridTemplateRows: `repeat(${bagRowCount}, 3rem)`,
+        }}
       >
-        {cols.numbers.flatMap((N) =>
-          cols.letters.map((L) => {
-            const pos = `${L}${N}`;
-            const slot = cellMap.get(pos);
-            if (!slot)
-              return (
-                <div
-                  key={pos}
-                  className="size-[4.5rem] rounded bg-bg-subtle/40 border border-line/40"
-                />
-              );
+        {orderedCells.map((slot) => {
+            const pos = slot.position;
             const isPickupSource =
               pickup?.kind === "stored" && pickup.fromBagCellId === slot.id;
             const isValidTarget = !slot.isOccupied && !!pickup;
             const tone = slot.isOccupied
-              ? purposeTone[slot.purpose ?? "Cryo"] ?? "bg-rose-500/30 border-rose-400/60"
-              : "bg-emerald-500/15 border-emerald-400/30 hover:bg-emerald-500/25";
+              ? "bg-emerald-500/30 border-emerald-500/70"
+              : "bg-white border-slate-300 hover:bg-slate-50";
             return (
               <button
                 key={pos}
@@ -501,9 +705,14 @@ function BoxGrid({
                   onDropOnCell(slot, pickup);
                 }}
                 onClick={() => onCell(slot)}
-                title={`${pos} ${slot.isOccupied ? "· dolu" : "· boş"}`}
+                onMouseEnter={(e) => {
+                  if (slot.isOccupied && !pickup) {
+                    onHoverCell(slot, e.currentTarget.getBoundingClientRect());
+                  }
+                }}
+                onMouseLeave={onHoverLeave}
                 className={cn(
-                  "relative size-[4.5rem] rounded-md border text-xs font-semibold tracking-tight transition",
+                  "group relative size-12 rounded-md border text-[9px] font-semibold tracking-tight transition",
                   tone,
                   isValidTarget && "ring-2 ring-brand-400/70 animate-pulseGlow",
                   isPickupSource && "ring-2 ring-amber-400/70",
@@ -513,9 +722,62 @@ function BoxGrid({
                 {pos}
               </button>
             );
-          }),
-        )}
+          })}
       </div>
+    </div>
+  );
+}
+
+function HoverHintCard({
+  cell,
+  meta,
+}: {
+  cell: CryoBagCellDto;
+  meta?: CellMeta;
+}) {
+  const patientName = meta?.patient?.fullName ?? "Bilinmiyor";
+  const donorName = meta?.donor?.fullName ?? "—";
+  const day = meta?.session?.day ?? "—";
+  const bagNo = cell.bagNumber ?? meta?.bag?.bagNumber ?? "—";
+  const volume = meta?.bag?.volumeMl != null ? `${formatNumber(meta.bag.volumeMl, 1)} ml` : "—";
+  const sourceVolume = meta?.bag?.sourceVolumeMl != null ? `${formatNumber(meta.bag.sourceVolumeMl, 1)} ml` : "—";
+  const cd34 = cell.cd34PerKg != null ? formatNumber(cell.cd34PerKg, 2) : "—";
+  const cd3 = cell.cd3PerKg != null ? formatNumber(cell.cd3PerKg, 2) : "—";
+  const wbc = meta?.bag?.wbc != null ? formatNumber(meta.bag.wbc, 2) : "—";
+  const cd34Pct = meta?.bag?.cd34Percent != null ? formatNumber(meta.bag.cd34Percent, 2) : "—";
+  const cd45Pct = meta?.bag?.cd45Percent != null ? formatNumber(meta.bag.cd45Percent, 2) : "—";
+  const cd3Pct = meta?.bag?.cd3Percent != null ? formatNumber(meta.bag.cd3Percent, 2) : "—";
+  const purpose = purposeLabel(cell.purpose);
+  const status = cell.status ?? "—";
+  const note = meta?.bag?.compositionNote?.trim();
+
+  return (
+    <div className="space-y-1.5">
+      <div className="rounded-lg border border-brand-500/30 bg-gradient-to-br from-brand-500/10 to-transparent p-1.5">
+        <div className="text-[10px] text-ink-dim">Konum</div>
+        <div className="text-xs font-semibold">{cell.locationCode ?? cell.position}</div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-1.5">
+        <Field label="Hasta" value={patientName} compact />
+        <Field label="Donor" value={donorName} compact />
+        <Field label="Ürün" value={`Bag #${bagNo} · Gün ${day}`} compact />
+        <Field label="Durum / Amaç" value={`${status} · ${purpose}`} compact />
+        <Field label="Hacim" value={volume} compact />
+        <Field label="Kaynak Hacim" value={sourceVolume} compact />
+        <Field label="WBC" value={wbc} compact />
+        <Field label="%CD34 / %CD45" value={`${cd34Pct} / ${cd45Pct}`} compact />
+        <Field label="%CD3" value={cd3Pct} compact />
+        <Field label="CD34/kg" value={cd34} compact />
+        <Field label="CD3/kg" value={cd3} compact />
+      </div>
+
+      {note && (
+        <div className="rounded-lg border border-line/60 bg-bg-elevated/50 px-2 py-1">
+          <div className="text-[10px] uppercase tracking-wide text-ink-dim">Not</div>
+          <div className="text-[11px] text-ink-muted line-clamp-1">{note}</div>
+        </div>
+      )}
     </div>
   );
 }
@@ -568,8 +830,7 @@ function BagCellDetail({
         <p className="text-sm text-ink-muted">Bu hücre boş.</p>
         <p className="text-xs text-ink-dim">
           Soldan bir &quot;Depoya alınabilir&quot; torbayı buraya sürükleyebilir ya da tıklayarak seçip boş
-          hücreye bırakabilirsiniz. Alternatif: aferez seansını &quot;4 torbaya böl + Cryo&quot; ile otomatik
-          yerleştirin.
+          hücreye bırakabilirsiniz.
         </p>
       </div>
     );
@@ -777,11 +1038,16 @@ function statusTone(s?: string | null): "brand" | "mint" | "amber" | "rose" | "s
   }
 }
 
-function Field({ label, value }: { label: string; value: string }) {
+function Field({ label, value, compact = false }: { label: string; value: string; compact?: boolean }) {
   return (
-    <div className="rounded-lg bg-bg-elevated/40 border border-line/60 px-3 py-2">
+    <div
+      className={cn(
+        "rounded-lg bg-bg-elevated/40 border border-line/60",
+        compact ? "px-2 py-1.5" : "px-3 py-2",
+      )}
+    >
       <div className="text-[10px] uppercase tracking-wide text-ink-dim">{label}</div>
-      <div className="text-sm font-medium mt-0.5">{value}</div>
+      <div className={cn("font-medium mt-0.5", compact ? "text-xs leading-tight" : "text-sm")}>{value}</div>
     </div>
   );
 }

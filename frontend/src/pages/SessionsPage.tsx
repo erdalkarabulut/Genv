@@ -7,23 +7,53 @@ import { Input, Select } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { Pencil, Trash2, Calculator, Beaker, Search } from "lucide-react";
 import { toast } from "sonner";
 import { formatDate, formatNumber } from "@/lib/utils";
 import type { CollectionSession, Patient } from "@/lib/types";
+import { Pagination } from "@/components/ui/Pagination";
+import { useDebounce } from "@/lib/useDebounce";
 
 export default function SessionsPage() {
   const qc = useQueryClient();
-  const sessions = useQuery({ queryKey: ["sessions"], queryFn: () => Sessions.list(0, 500) });
-  const patients = useQuery({ queryKey: ["patients"], queryFn: () => Patients.list(0, 500) });
 
   const [q, setQ] = useState("");
   const [patientFilter, setPatientFilter] = useState<string>("all");
   const [editing, setEditing] = useState<CollectionSession | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<CollectionSession | null>(null);
+  const [page, setPage] = useState(0);
+  const debouncedQ = useDebounce(q, 300);
+
+  useEffect(() => { setPage(0); }, [debouncedQ, patientFilter]);
+
+  const PAGE_SIZE = 10;
+
+  const buildQuery = () => {
+    const sort = [{ field: "date", dir: "desc" as const }];
+    const dayNum = debouncedQ.trim() ? parseInt(debouncedQ, 10) : NaN;
+    const dayFilter = !isNaN(dayNum)
+      ? { field: "day", operator: "eq" as const, value: String(dayNum) }
+      : null;
+    const patientIdFilter = patientFilter !== "all"
+      ? { field: "patientId", operator: "eq" as const, value: patientFilter }
+      : null;
+    const active = [patientIdFilter, dayFilter].filter(Boolean) as any[];
+    if (active.length === 0) return { sort };
+    let f = active[active.length - 1];
+    for (let i = active.length - 2; i >= 0; i--) {
+      f = { ...active[i], logic: "and" as const, filters: [f] };
+    }
+    return { filter: f, sort };
+  };
+
+  const sessions = useQuery({
+    queryKey: ["sessions", page, PAGE_SIZE, debouncedQ, patientFilter],
+    queryFn: () => Sessions.byDynamic(buildQuery(), page, PAGE_SIZE),
+  });
+  const patients = useQuery({ queryKey: ["patients", "for-sessions"], queryFn: () => Patients.list(0, 500) });
 
   const pMap = useMemo(() => {
     const m = new Map<string, Patient>();
@@ -31,22 +61,7 @@ export default function SessionsPage() {
     return m;
   }, [patients.data]);
 
-  const filtered = useMemo(() => {
-    const items = sessions.data?.items ?? [];
-    return items
-      .filter((s) => patientFilter === "all" || s.patientId === patientFilter)
-      .filter((s) => {
-        if (!q) return true;
-        const ql = q.toLowerCase();
-        const p = pMap.get(s.patientId);
-        return (
-          p?.fullName.toLowerCase().includes(ql) ||
-          p?.protocolNo?.toLowerCase().includes(ql) ||
-          `${s.day}`.includes(ql)
-        );
-      })
-      .sort((a, b) => (a.date < b.date ? 1 : -1));
-  }, [sessions.data, q, patientFilter, pMap]);
+  const paginated = sessions.data?.items ?? [];
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["sessions"] });
@@ -87,7 +102,7 @@ export default function SessionsPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-ink-dim" />
             <input
               className="input pl-9"
-              placeholder="Hasta adı, protokol veya gün ile ara…"
+              placeholder="Gün numarası ile ara…"
               value={q}
               onChange={(e) => setQ(e.target.value)}
             />
@@ -109,7 +124,7 @@ export default function SessionsPage() {
 
       {sessions.isLoading ? (
         <div className="card h-40 skeleton" />
-      ) : filtered.length === 0 ? (
+      ) : paginated.length === 0 ? (
         <EmptyState
           icon={<Beaker className="size-10" />}
           title="Seans yok"
@@ -132,7 +147,7 @@ export default function SessionsPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((s) => {
+                {paginated.length === 0 ? null : paginated.map((s) => {
                   const p = pMap.get(s.patientId);
                   return (
                     <tr
@@ -210,6 +225,14 @@ export default function SessionsPage() {
         </Card>
       )}
 
+      <Pagination
+        page={page}
+        totalPages={sessions.data?.pages ?? 0}
+        totalItems={sessions.data?.count ?? 0}
+        pageSize={PAGE_SIZE}
+        onPageChange={setPage}
+      />
+
       <Modal
         open={!!editing}
         onClose={() => setEditing(null)}
@@ -276,7 +299,8 @@ function SessionEditForm({
   onCancel: () => void;
   onSaved: () => void;
 }) {
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<SessionFormVals>({
+  const qc = useQueryClient();
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<SessionFormVals>({
     defaultValues: {
       day: session.day,
       date: session.date.slice(0, 10),
@@ -296,10 +320,31 @@ function SessionEditForm({
     },
   });
 
+  // Modal açıkken farklı seans düzenlemeye geçilirse formu yeni kayıtla senkronla.
+  useEffect(() => {
+    reset({
+      day: session.day,
+      date: session.date.slice(0, 10),
+      wbcPre: session.wbcPre ?? undefined,
+      hgb: session.hgb ?? undefined,
+      hct: session.hct ?? undefined,
+      plt: session.plt ?? undefined,
+      volumeMl: session.volumeMl,
+      wbc: session.wbc,
+      cd34Percent: session.cd34Percent,
+      cd45Percent: session.cd45Percent,
+      cd3Percent: session.cd3Percent,
+      lymphocytePercent: session.lymphocytePercent ?? undefined,
+      mhs: session.mhs ?? undefined,
+      cd34PerKg: session.cd34PerKg,
+      cd3PerKg: session.cd3PerKg,
+    });
+  }, [session, reset]);
+
   const isAutologous = patient?.transplantType === "Autologous";
 
   const onSubmit = async (v: SessionFormVals) => {
-    await Sessions.update({
+    const updated = await Sessions.update({
       id: session.id,
       patientId: session.patientId,
       day: Number(v.day),
@@ -315,9 +360,27 @@ function SessionEditForm({
       cd3Percent: isAutologous ? 0 : Number(v.cd3Percent),
       lymphocytePercent: isAutologous ? undefined : numOrNull(v.lymphocytePercent),
       mhs: numOrNull(v.mhs),
-      cd34PerKg: Number(v.cd34PerKg),
-      cd3PerKg: isAutologous ? 0 : Number(v.cd3PerKg),
+      // Keep persisted calculated values stable until backend calculate recomputes.
+      cd34PerKg: session.cd34PerKg,
+      cd3PerKg: isAutologous ? 0 : session.cd3PerKg,
     });
+    await Sessions.calculate(updated.id);
+    const fresh = await Sessions.byId(updated.id);
+
+    qc.setQueryData(["session", updated.id], fresh);
+    qc.setQueriesData({ queryKey: ["sessions"] }, (old: any) => {
+      if (!old?.items) return old;
+      return {
+        ...old,
+        items: old.items.map((it: any) => (it.id === fresh.id ? fresh : it)),
+      };
+    });
+
+    qc.invalidateQueries({ queryKey: ["sessions"] });
+    qc.invalidateQueries({ queryKey: ["patient", session.patientId] });
+    qc.invalidateQueries({ queryKey: ["apheresis-plan", session.patientId] });
+    qc.invalidateQueries({ queryKey: ["patients"] });
+    qc.invalidateQueries({ queryKey: ["dashboard"] });
     toast.success("Seans güncellendi");
     onSaved();
   };

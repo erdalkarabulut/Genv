@@ -11,6 +11,7 @@ export interface Patient {
   transplantType: TransplantType;
   diagnosis?: string | null;
   protocolNo?: string | null;
+  identityNumber?: string | null;
   birthDate?: string | null;
   donorId?: string | null;
   createdDate: string;
@@ -25,6 +26,7 @@ export interface Donor {
   weightKg: number;
   bloodGroup?: string | null;
   relation?: string | null;
+  identityNumber?: string | null;
   donorType: DonorType;
   birthDate?: string | null;
   createdDate: string;

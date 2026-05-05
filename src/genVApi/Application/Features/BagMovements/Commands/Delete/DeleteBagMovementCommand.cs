@@ -42,7 +42,7 @@ public class DeleteBagMovementCommand : IRequest<DeletedBagMovementResponse>, IS
             BagMovement? bagMovement = await _bagMovementRepository.GetAsync(predicate: bm => bm.Id == request.Id, cancellationToken: cancellationToken);
             await _bagMovementBusinessRules.BagMovementShouldExistWhenSelected(bagMovement);
 
-            await _bagMovementRepository.DeleteAsync(bagMovement!);
+            await _bagMovementRepository.DeleteAsync(bagMovement!, permanent: true);
 
             DeletedBagMovementResponse response = _mapper.Map<DeletedBagMovementResponse>(bagMovement);
             return response;

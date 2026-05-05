@@ -8,6 +8,7 @@ using NArchitecture.Core.Application.Pipelines.Authorization;
 using NArchitecture.Core.Application.Pipelines.Caching;
 using NArchitecture.Core.Application.Pipelines.Logging;
 using NArchitecture.Core.Application.Pipelines.Transaction;
+using NArchitecture.Core.CrossCuttingConcerns.Exception.Types;
 using MediatR;
 using static Application.Features.Slots.Constants.SlotsOperationClaims;
 
@@ -27,13 +28,16 @@ public class DeleteSlotCommand : IRequest<DeletedSlotResponse>, ISecuredRequest,
     {
         private readonly IMapper _mapper;
         private readonly IBagCellRepository _bagCellRepository;
+        private readonly IBagRepository _bagRepository;
         private readonly BagCellBusinessRules _bagCellBusinessRules;
 
         public DeleteSlotCommandHandler(IMapper mapper, IBagCellRepository bagCellRepository,
+                                         IBagRepository bagRepository,
                                          BagCellBusinessRules bagCellBusinessRules)
         {
             _mapper = mapper;
             _bagCellRepository = bagCellRepository;
+            _bagRepository = bagRepository;
             _bagCellBusinessRules = bagCellBusinessRules;
         }
 
@@ -42,7 +46,14 @@ public class DeleteSlotCommand : IRequest<DeletedSlotResponse>, ISecuredRequest,
             BagCell? slot = await _bagCellRepository.GetAsync(predicate: s => s.Id == request.Id, cancellationToken: cancellationToken);
             await _bagCellBusinessRules.BagCellShouldExistWhenSelected(slot);
 
-            await _bagCellRepository.DeleteAsync(slot!);
+            bool hasAssignedBag = await _bagRepository.AnyAsync(
+                predicate: b => b.BagCellId == request.Id,
+                enableTracking: false,
+                cancellationToken: cancellationToken);
+            if (slot!.IsOccupied || hasAssignedBag)
+                throw new BusinessException("Bu hücre dolu olduğu için silinemez. Önce torbayı hücreden çıkarın.");
+
+            await _bagCellRepository.DeleteAsync(slot!, permanent: true);
 
             DeletedSlotResponse response = _mapper.Map<DeletedSlotResponse>(slot);
             return response;

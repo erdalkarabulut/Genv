@@ -502,7 +502,7 @@ function EntityForm({
   onSaved: () => void;
 }) {
   const i = (initial ?? {}) as Record<string, unknown>;
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormVals>({
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FormVals>({
     defaultValues: {
       name: (i.name as string) ?? "",
       tankId: (i.tankId as string) ?? "",
@@ -514,6 +514,20 @@ function EntityForm({
       version: (i.version as number) ?? 0,
     },
   });
+
+  useEffect(() => {
+    const iv = (initial ?? {}) as Record<string, unknown>;
+    reset({
+      name: (iv.name as string) ?? "",
+      tankId: (iv.tankId as string) ?? "",
+      rackId: (iv.rackId as string) ?? "",
+      slotId: (iv.slotId as string) ?? "",
+      boxId: (iv.boxId as string) ?? "",
+      position: (iv.position as string) ?? "",
+      isOccupied: (iv.isOccupied as boolean) ?? false,
+      version: (iv.version as number) ?? 0,
+    });
+  }, [initial, reset]);
   const editId = i.id as string | undefined;
 
   const onSubmit = async (v: FormVals) => {
