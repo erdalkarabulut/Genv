@@ -21,7 +21,7 @@ echo "[4/5] Frontend build..."
 docker build -t cryoflow-frontend -f Dockerfile.frontend .
 
 echo "[5/5] Container'lari baslat..."
-docker-compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml up -d
 
 echo ""
 echo "=== CryoFlow basariyla deploy edildi ==="
