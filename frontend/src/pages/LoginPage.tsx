@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { Snowflake, Lock, Mail, ArrowRight, ShieldCheck } from "lucide-react";
+import { Lock, Mail, ArrowRight, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
@@ -65,11 +65,9 @@ export default function LoginPage() {
           className="hidden lg:flex flex-col justify-between rounded-3xl border border-line/60 bg-bg-subtle/40 backdrop-blur-xl p-8"
         >
           <div className="flex items-center gap-3">
-            <div className="grid place-items-center size-11 rounded-2xl bg-gradient-to-br from-brand-500 to-emerald-400 shadow-glow">
-              <Snowflake className="size-5 text-white" />
-            </div>
+            <img src="/favicon.svg" alt="CryoFlow" className="size-11 rounded-2xl" />
             <div>
-              <div className="text-lg font-semibold tracking-tight">GenV Suite</div>
+              <div className="text-lg font-semibold tracking-tight">CryoFlow</div>
               <div className="text-xs text-ink-dim">Hematoloji & Kök Hücre Operasyon Platformu</div>
             </div>
           </div>
@@ -105,11 +103,9 @@ export default function LoginPage() {
           className="rounded-3xl border border-line/60 bg-bg-card/70 backdrop-blur-xl p-7 sm:p-9 shadow-glow"
         >
           <div className="lg:hidden flex items-center gap-3 mb-6">
-            <div className="grid place-items-center size-9 rounded-xl bg-gradient-to-br from-brand-500 to-emerald-400 shadow-glow">
-              <Snowflake className="size-4 text-white" />
-            </div>
+            <img src="/favicon.svg" alt="CryoFlow" className="size-9 rounded-xl" />
             <div>
-              <div className="text-sm font-semibold">GenV Suite</div>
+              <div className="text-sm font-semibold">CryoFlow</div>
               <div className="text-[11px] text-ink-dim">Cryo & Apheresis</div>
             </div>
           </div>

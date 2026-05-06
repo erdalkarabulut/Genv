@@ -120,7 +120,7 @@ export default function Layout() {
         <div className="flex items-center gap-2.5 px-5 py-5">
           <Logo />
           <div>
-            <div className="text-sm font-semibold tracking-tight">GenV Suite</div>
+            <div className="text-sm font-semibold tracking-tight">CryoFlow</div>
             <div className="text-[11px] text-ink-dim">Cryo & Apheresis</div>
           </div>
         </div>
@@ -194,7 +194,7 @@ export default function Layout() {
               <div className="flex items-center gap-2.5">
                 <Logo />
                 <div>
-                  <div className="text-sm font-semibold tracking-tight">GenV Suite</div>
+                  <div className="text-sm font-semibold tracking-tight">CryoFlow</div>
                   <div className="text-[11px] text-ink-dim">Cryo & Apheresis</div>
                 </div>
               </div>
@@ -281,7 +281,7 @@ export default function Layout() {
               </button>
               <span className="lg:hidden flex items-center gap-2">
                 <Logo />
-                <span className="text-sm font-semibold">GenV</span>
+                <span className="text-sm font-semibold">CryoFlow</span>
               </span>
               <span className="text-xs text-ink-dim hidden sm:inline-flex items-center gap-1">
                 <Activity className="size-3.5" /> Live operasyon paneli
@@ -327,8 +327,8 @@ function groupedSections<T extends { section?: string }>(items: T[]): [string, T
 
 function Logo() {
   return (
-    <div className="grid place-items-center size-8 rounded-xl bg-gradient-to-br from-brand-500 to-emerald-400 shadow-glow">
-      <Snowflake className="size-4 text-white" />
+    <div className="size-8 rounded-lg overflow-hidden">
+      <img src="/favicon.svg" alt="CryoFlow" className="size-full" />
     </div>
   );
 }
