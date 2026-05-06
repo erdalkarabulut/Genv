@@ -9,7 +9,7 @@ import path from "node:path";
  * HTTPS dev (kendi imzalı sertifika): VITE_PROXY_TARGET=https://127.0.0.1:PORT  (secure:false aşağıda)
  */
 const proxyTarget =
-  process.env.VITE_PROXY_TARGET ?? "apicyro.smartreadly.tech";
+  process.env.VITE_PROXY_TARGET ?? "cyroapi.smartreadly.tech";
 
 const proxyCommon = {
   target: proxyTarget,
