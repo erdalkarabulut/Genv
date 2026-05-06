@@ -1,34 +1,35 @@
-# PostgreSQL compose içinde değil; DATABASE_URL ile dış veritabanına bağlanın.
+version: '3.8'
+
 services:
   api:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    container_name: genv-api
+    container_name: cryoflow-api
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: ${DATABASE_URL:?set DATABASE_URL}
-      ConnectionStrings__BaseDb: ${DATABASE_URL:?set DATABASE_URL}
+      ASPNETCORE_URLS: http://+:5001
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=GenV;Username=admin;Password=wsx53ujm
+      ConnectionStrings__BaseDb: Host=postgres;Port=5432;Database=GenV;Username=admin;Password=wsx53ujm
+      Redis__InstanceName: cryoflow
+      Redis__ConnectionString: redis:6379,password=Edum?ndR24DS@fe
     ports:
-      - "8080:8080"
+      - "5001:5001"
     networks:
-      - genv-network
+      - oqlt-network
 
   frontend:
     build:
       context: .
       dockerfile: Dockerfile.frontend
-    container_name: genv-frontend
+    container_name: cryoflow-frontend
     restart: unless-stopped
-    depends_on:
-      - api
     ports:
-      - "80:80"
+      - "6001:80"
     networks:
-      - genv-network
+      - oqlt-network
 
 networks:
-  genv-network:
-    driver: bridge
+  oqlt-network:
+    external: true

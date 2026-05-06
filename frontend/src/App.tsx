@@ -12,7 +12,6 @@ import BagsPage from "./pages/BagsPage";
 import BagDetailPage from "./pages/BagDetailPage";
 import MovementsPage from "./pages/MovementsPage";
 import InventoryPage from "./pages/InventoryPage";
-import DliPage from "./pages/DliPage";
 import LoginPage from "./pages/LoginPage";
 import AdminRoute from "./components/AdminRoute";
 import PlcIntegrationPage from "./pages/PlcIntegrationPage";
@@ -40,7 +39,6 @@ export default function App() {
         <Route path="/bags" element={<BagsPage />} />
         <Route path="/bags/:id" element={<BagDetailPage />} />
         <Route path="/movements" element={<MovementsPage />} />
-        <Route path="/dli" element={<DliPage />} />
         <Route path="/inventory" element={<InventoryPage />} />
         <Route
           path="/plc"
