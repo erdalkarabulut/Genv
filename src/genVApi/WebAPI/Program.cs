@@ -21,6 +21,7 @@ using WebAPI.Hubs;
 using WebAPI.Services;
 using Licensing.Shared;
 using Infrastructure.Sms;
+using Microsoft.AspNetCore.HttpOverrides;
 
 // Müşteri makinesinden parmak izi almak için: WebAPI.exe --license-fingerprint
 if (args is { Length: > 0 } && args.Contains("--license-fingerprint", StringComparer.Ordinal))
@@ -86,6 +87,14 @@ builder.Services.AddCors(opt =>
     opt.AddDefaultPolicy(p =>
         p.WithOrigins(corsConfiguration.AllowedOrigins).AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    // NPM / Docker: gerçek istemci IP ve TLS şeması (X-Forwarded-*) güvenilir
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 builder.Services.AddSwaggerGen(opt =>
 {
     opt.AddSecurityDefinition(
@@ -106,6 +115,8 @@ builder.Services.AddSwaggerGen(opt =>
 });
 
 WebApplication app = builder.Build();
+
+app.UseForwardedHeaders();
 
 OfflineLicenseOptions offlineLicense =
     app.Configuration.GetSection(OfflineLicenseOptions.SectionName).Get<OfflineLicenseOptions>()
