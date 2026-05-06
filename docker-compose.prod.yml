@@ -17,7 +17,7 @@ services:
     ports:
       - "5001:5001"
     networks:
-      - oqlt-network
+      - smartready_oqlt-network
 
   frontend:
     build:
@@ -28,8 +28,8 @@ services:
     ports:
       - "6001:80"
     networks:
-      - oqlt-network
+      - smartready_oqlt-network
 
 networks:
-  oqlt-network:
+  smartready_oqlt-network:
     external: true

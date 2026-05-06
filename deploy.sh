@@ -3,7 +3,7 @@ set -e
 
 # === CryoFlow Deployment Script ===
 # Kullanim: ./deploy.sh
-# Mevcut 'oqlt-network' network'u ve PostgreSQL kurulu olmali.
+# Mevcut 'smartready_oqlt-network' network'u ve PostgreSQL kurulu olmali.
 # Bu betik sadece cryoflow-api ve cryoflow-frontend container'larini deploy eder.
 # Mevcut diger container'lara dokunmaz.
 
@@ -25,7 +25,7 @@ docker compose -f docker-compose.prod.yml up -d
 
 echo ""
 echo "=== CryoFlow basariyla deploy edildi ==="
-echo "API:       cryoflow-api (internal:8080)"
+echo "API:       cryoflow-api (internal:5001)"
 echo "Frontend:  cryoflow-frontend (internal:80)"
 echo ""
 echo "nginx-proxy-manager'da Proxy Host ekle:"
