@@ -67,13 +67,13 @@ public readonly record struct ClinicalThresholds(
         double weightKg)
     {
         double total = volumeMl * wbc;
-        return (total * (cd45Percent / 100) * (cd34Percent / 100)) / SessionCd34Cd3Divisor / weightKg;
+        return (total * (cd45Percent ) * (cd34Percent)) / SessionCd34Cd3Divisor / weightKg;
     }
 
     public double ComputeSessionCd3PerKg(double volumeMl, double wbc, double cd3Percent, double weightKg)
     {
         double total = volumeMl * wbc;
-        return (total * (cd3Percent / 100)) / SessionCd34Cd3Divisor / weightKg;
+        return (total * (cd3Percent )) / SessionCd34Cd3Divisor / weightKg;
     }
 
     public string ComputeAggregateRisk(double totalCd34, double totalCd3)

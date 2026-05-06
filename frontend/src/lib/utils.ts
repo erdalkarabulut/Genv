@@ -1,5 +1,6 @@
 import clsx, { type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { calculateCellDose } from "./calculations";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -32,3 +33,7 @@ export function shortId(id?: string | null) {
   if (!id) return "—";
   return `${id.slice(0, 4)}…${id.slice(-4)}`;
 }
+
+// Re-export dose calculation utilities for convenient imports
+export { calculateCellDose, roundDose } from "./calculations";
+export type { DoseInput } from "./calculations";

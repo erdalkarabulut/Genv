@@ -160,13 +160,13 @@ export default function BagDetailPage() {
         <Stat
           label="CD34/kg"
           value={b ? formatNumber(b.cd34PerKg, 2) : "—"}
-          hint="Hedef ≥ 2 · İdeal 4–5"
+         
           icon={<Droplet className="size-4" />}
         />
         <Stat
           label="CD3/kg"
           value={b ? formatNumber(b.cd3PerKg, 2) : "—"}
-          hint="3–8 ideal · >10 GVHD riski"
+          
           icon={<Beaker className="size-4" />}
         />
         <Stat

@@ -1,36 +1,40 @@
+# PostgreSQL ve Redis ayrı çalıştırılmalı; bağlantı dizesini .env ile verin veya aşağıdaki varsayılanı kullanın (Docker Desktop: host makinedeki PG).
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: genv-postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: gen_v_api_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - genv-pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
   api:
     build:
       context: .
-      dockerfile: src/genVApi/WebAPI/Dockerfile
+      dockerfile: Dockerfile.backend
     container_name: genv-api
-    depends_on:
-      postgres:
-        condition: service_healthy
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=gen_v_api_db;Username=postgres;Password=postgres"
-      ConnectionStrings__BaseDb: "Host=postgres;Port=5432;Database=gen_v_api_db;Username=postgres;Password=postgres"
+      ConnectionStrings__DefaultConnection: ${CONNECTION_STRING:-Host=host.docker.internal;Port=5432;Database=gen_v_api_db;Username=postgres;Password=postgres}
+      ConnectionStrings__BaseDb: ${CONNECTION_STRING:-Host=host.docker.internal;Port=5432;Database=gen_v_api_db;Username=postgres;Password=postgres}
+      CacheSettings__Enabled: "true"
+      WebAPIConfiguration__APIDomain: "http://localhost/api"
+      WebAPIConfiguration__AllowedOrigins__0: "http://localhost"
+      WebAPIConfiguration__AllowedOrigins__1: "http://localhost:80"
+      WebAPIConfiguration__AllowedOrigins__2: "http://localhost:5173"
+      WebAPIConfiguration__AllowedOrigins__3: "http://127.0.0.1"
     ports:
       - "8080:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - genv-network
 
-volumes:
-  genv-pgdata:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: genv-frontend
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+    networks:
+      - genv-network
+
+networks:
+  genv-network:
+    driver: bridge

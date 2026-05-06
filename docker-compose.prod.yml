@@ -1,43 +1,16 @@
-# GenVApi Production docker-compose
+# PostgreSQL compose içinde değil; DATABASE_URL ile dış veritabanına bağlanın.
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: genv-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-gen_v_api_db}
-    ports:
-      - "5432:5432"
-    volumes:
-      - genv-pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    networks:
-      - genv-network
-
   api:
     build:
       context: .
       dockerfile: Dockerfile.backend
     container_name: genv-api
     restart: unless-stopped
-    depends_on:
-      postgres:
-        condition: service_healthy
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: ${DATABASE_URL}
-      ConnectionStrings__BaseDb: ${DATABASE_URL}
-      # Add other production environment variables here
-      # JWT Configuration
-      # Logging Configuration
-      # etc.
+      ConnectionStrings__DefaultConnection: ${DATABASE_URL:?set DATABASE_URL}
+      ConnectionStrings__BaseDb: ${DATABASE_URL:?set DATABASE_URL}
     ports:
       - "8080:8080"
     networks:
@@ -55,10 +28,6 @@ services:
       - "80:80"
     networks:
       - genv-network
-
-volumes:
-  genv-pgdata:
-    driver: local
 
 networks:
   genv-network:

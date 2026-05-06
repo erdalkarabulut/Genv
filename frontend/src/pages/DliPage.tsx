@@ -158,6 +158,7 @@ export default function DliPage() {
           patients={patients.data?.items ?? []}
           donors={donors.data?.items ?? []}
           sessions={sessions.data?.items ?? []}
+          dliDivisor={dliDivisor}
           onCancel={() => setCreateOpen(false)}
           onSubmit={async (d) => {
             await DliProducts.create({
@@ -198,6 +199,7 @@ export default function DliPage() {
             patients={patients.data?.items ?? []}
             donors={donors.data?.items ?? []}
             sessions={sessions.data?.items ?? []}
+            dliDivisor={dliDivisor}
             onCancel={() => setEditing(null)}
             onSubmit={async (d) => {
               await DliProducts.update({
@@ -319,6 +321,7 @@ function DliFormView({
   patients,
   donors,
   sessions,
+  dliDivisor,
   onCancel,
   onSubmit,
 }: {
@@ -326,6 +329,7 @@ function DliFormView({
   patients: Patient[];
   donors: { id: string; fullName: string }[];
   sessions: { id: string; patientId: string; day: number; date: string }[];
+  dliDivisor: number;
   onCancel: () => void;
   onSubmit: (d: DliForm) => Promise<void>;
 }) {
@@ -373,7 +377,7 @@ function DliFormView({
   const wbc = Number(values.wbc || 0);
   const lymph = Number(values.lymphocytePercent || 0) / 100;
   const cd3 = Number(values.cd3Percent || 0) / 100;
-  const totalCd3 = (volumeUl * wbc * lymph * cd3) / 10000;
+  const totalCd3 = (volumeUl * wbc * lymph * cd3) / dliDivisor;
   const weight = selectedPatient?.weightKg ?? 0;
   const autoCd3PerKg = weight > 0 ? totalCd3 / weight : 0;
   const hasOverride =

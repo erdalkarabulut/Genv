@@ -55,8 +55,8 @@ public class CollectionSession : Entity<Guid>
             return;
         double total = VolumeMl * WBC;
 
-        Cd34PerKg = (total * (Cd45Percent / 100) * (Cd34Percent / 100)) / sessionCd34Cd3Divisor / weight;
-        Cd3PerKg = (total * (Cd3Percent / 100)) / sessionCd34Cd3Divisor / weight;
+        Cd34PerKg = Math.Floor((total * (Cd45Percent ) * (Cd34Percent )) / sessionCd34Cd3Divisor / weight);
+        Cd3PerKg = Math.Floor((total * (Cd3Percent )) / sessionCd34Cd3Divisor / weight);
     }
 
     public double GetTotalBagCd34()

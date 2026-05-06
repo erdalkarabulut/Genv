@@ -4,7 +4,7 @@ import { ApheresisPlans, BagCells, Bags, ClinicalSettingsApi, Dashboard, Donors,
 import { Card, CardHeader, Stat } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { formatDate, formatNumber } from "@/lib/utils";
+import { formatDate, formatNumber, calculateCellDose } from "@/lib/utils";
 import {
   ArrowLeft,
   Beaker,
@@ -1572,16 +1572,18 @@ function numOrNull(v: unknown): number | undefined {
 
 function usePreviewCalculation(v: Partial<SessionForm>, weight: number, divisor = 10000) {
   if (!weight || !v.volumeMl || !v.wbc) return null;
-  const vol = Number(v.volumeMl);
-  const wbc = Number(v.wbc);
-  const cd34 = Number(v.cd34Percent ?? 0);
-  const cd45 = Number(v.cd45Percent ?? 0);
-  const cd3 = Number(v.cd3Percent ?? 0);
-  const total = vol * wbc;
-  return {
-    cd34: (total * (cd45 / 100) * (cd34 / 100)) / divisor / weight,
-    cd3: (total * (cd3 / 100)) / divisor / weight,
-  };
+  const result = calculateCellDose(
+    {
+      volumeMl: Number(v.volumeMl),
+      wbc: Number(v.wbc),
+      cd45Percent: Number(v.cd45Percent ?? 0),
+      cd34Percent: Number(v.cd34Percent ?? 0),
+      cd3Percent: Number(v.cd3Percent ?? 0),
+    },
+    weight,
+    divisor,
+  );
+  return { cd34: result.cd34PerKg, cd3: result.cd3PerKg };
 }
 
 function SplitForm({
@@ -1765,6 +1767,13 @@ function CustomSplitForm({
   });
   const freeBagCells = (bagCellsQ.data?.items ?? []).filter((s) => !s.isOccupied);
 
+  const clinicalQ = useQuery({
+    queryKey: ["clinical-settings"],
+    queryFn: () => ClinicalSettingsApi.get(),
+    staleTime: 0,
+  });
+  const divisor = clinicalQ.data?.sessionCd34Cd3Divisor ?? 10000;
+
   const updateRow = (id: string, patch: Partial<CustomBagRow>) =>
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
 
@@ -1778,17 +1787,19 @@ function CustomSplitForm({
 
   // Canlı CD34/kg önizleme (frontend formülü).
   const computed = rows.map((r) => {
-    const vol = Number(r.volumeMl);
-    const wbc = Number(r.wbc || 0);
-    const cd34 = Number(r.cd34Percent || 0);
-    const cd45 = Number(r.cd45Percent || 0);
-    const cd3 = Number(r.cd3Percent || 0);
-    if (!vol || !wbc || !weight) return { cd34: 0, cd3: 0 };
-    const total = vol * wbc;
-    return {
-      cd34: (total * (cd45 / 100) * (cd34 / 100)) / 10000 / weight,
-      cd3: cd3 ? (total * (cd3 / 100)) / 10000 / weight : 0,
-    };
+    if (!r.volumeMl || !r.wbc || !weight) return { cd34: 0, cd3: 0 };
+    const result = calculateCellDose(
+      {
+        volumeMl: Number(r.volumeMl),
+        wbc: Number(r.wbc),
+        cd45Percent: Number(r.cd45Percent || 0),
+        cd34Percent: Number(r.cd34Percent || 0),
+        cd3Percent: Number(r.cd3Percent || 0),
+      },
+      weight,
+      divisor,
+    );
+    return { cd34: result.cd34PerKg, cd3: result.cd3PerKg };
   });
 
   const totalVolume = rows.reduce((a, r) => a + (Number(r.volumeMl) || 0), 0);

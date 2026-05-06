@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bags, Dashboard, Donors, Patients, Sessions } from "@/lib/api";
+import { Bags, ClinicalSettingsApi, Dashboard, Donors, Patients, Sessions } from "@/lib/api";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -30,7 +30,7 @@ import {
   Plus,
 } from "lucide-react";
 import { onCryo } from "@/lib/signalr";
-import { cn, formatDate, formatNumber, shortId } from "@/lib/utils";
+import { cn, formatDate, formatNumber, shortId, calculateCellDose } from "@/lib/utils";
 import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -56,6 +56,8 @@ export default function CryoGridPage() {
   const sessionsQ = useQuery({ queryKey: ["sessions", "for-cryo"], queryFn: () => Sessions.list(0, 1000) });
   const patientsQ = useQuery({ queryKey: ["patients", "for-cryo"], queryFn: () => Patients.list(0, 1000) });
   const donorsQ = useQuery({ queryKey: ["donors", "for-cryo"], queryFn: () => Donors.list(0, 1000) });
+  const clinicalQ = useQuery({ queryKey: ["clinical-settings"], queryFn: () => ClinicalSettingsApi.get(), staleTime: 0 });
+  const divisor = clinicalQ.data?.sessionCd34Cd3Divisor ?? 10000;
   const [activeTank, setActiveTank] = useState<number>(0);
   const [rackPage, setRackPage] = useState(0);
   const [drawerCell, setDrawerCell] = useState<CryoBagCellDto | null>(null);
@@ -589,7 +591,7 @@ export default function CryoGridPage() {
           style={{ left: hoverHint.left, top: hoverHint.top, width: 380 }}
         >
           <div className="rounded-xl border border-brand-500/30 bg-bg-card/95 p-2 text-left shadow-glow">
-            <HoverHintCard cell={hoverHint.cell} meta={hoverHint.meta} />
+            <HoverHintCard cell={hoverHint.cell} meta={hoverHint.meta} divisor={divisor} />
           </div>
         </div>
       )}
@@ -744,9 +746,11 @@ function BoxGrid({
 function HoverHintCard({
   cell,
   meta,
+  divisor,
 }: {
   cell: CryoBagCellDto;
   meta?: CellMeta;
+  divisor: number;
 }) {
   const patientName = meta?.patient?.fullName ?? "Bilinmiyor";
   const donorName = meta?.donor?.fullName ?? "—";
@@ -754,8 +758,6 @@ function HoverHintCard({
   const bagNo = cell.bagNumber ?? meta?.bag?.bagNumber ?? "—";
   const volume = meta?.bag?.volumeMl != null ? `${formatNumber(meta.bag.volumeMl, 1)} ml` : "—";
   const sourceVolume = meta?.bag?.sourceVolumeMl != null ? `${formatNumber(meta.bag.sourceVolumeMl, 1)} ml` : "—";
-  const cd34 = cell.cd34PerKg != null ? formatNumber(cell.cd34PerKg, 2) : "—";
-  const cd3 = cell.cd3PerKg != null ? formatNumber(cell.cd3PerKg, 2) : "—";
   const wbc = meta?.bag?.wbc != null ? formatNumber(meta.bag.wbc, 2) : "—";
   const cd34Pct = meta?.bag?.cd34Percent != null ? formatNumber(meta.bag.cd34Percent, 2) : "—";
   const cd45Pct = meta?.bag?.cd45Percent != null ? formatNumber(meta.bag.cd45Percent, 2) : "—";
@@ -763,6 +765,43 @@ function HoverHintCard({
   const purpose = purposeLabel(cell.purpose);
   const status = cell.status ?? "—";
   const note = meta?.bag?.compositionNote?.trim();
+
+  // Recalculate from raw bag values if cell dose is missing
+  const weightKg = meta?.patient?.weightKg ?? 0;
+  const rawCd34 =
+    cell.cd34PerKg != null
+      ? cell.cd34PerKg
+      : weightKg > 0
+        ? calculateCellDose(
+            {
+              volumeMl: meta?.bag?.volumeMl ?? 0,
+              wbc: meta?.bag?.wbc ?? 0,
+              cd45Percent: meta?.bag?.cd45Percent ?? 0,
+              cd34Percent: meta?.bag?.cd34Percent ?? 0,
+              cd3Percent: meta?.bag?.cd3Percent ?? 0,
+            },
+            weightKg,
+            divisor,
+          ).cd34PerKg
+        : 0;
+  const rawCd3 =
+    cell.cd3PerKg != null
+      ? cell.cd3PerKg
+      : weightKg > 0
+        ? calculateCellDose(
+            {
+              volumeMl: meta?.bag?.volumeMl ?? 0,
+              wbc: meta?.bag?.wbc ?? 0,
+              cd45Percent: meta?.bag?.cd45Percent ?? 0,
+              cd34Percent: meta?.bag?.cd34Percent ?? 0,
+              cd3Percent: meta?.bag?.cd3Percent ?? 0,
+            },
+            weightKg,
+            divisor,
+          ).cd3PerKg
+        : 0;
+  const cd34 = rawCd34 > 0 ? formatNumber(rawCd34, 0) : "—";
+  const cd3 = rawCd3 > 0 ? formatNumber(rawCd3, 0) : "—";
 
   return (
     <div className="space-y-1.5">
