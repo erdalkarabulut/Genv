@@ -1,0 +1,43 @@
+# Multi-stage build for GenVApi Backend
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy project files
+COPY ["src/genVApi/WebAPI/WebAPI.csproj", "src/genVApi/WebAPI/"]
+COPY ["src/genVApi/Application/Application.csproj", "src/genVApi/Application/"]
+COPY ["src/genVApi/Domain/Domain.csproj", "src/genVApi/Domain/"]
+COPY ["src/genVApi/Infrastructure/Infrastructure.csproj", "src/genVApi/Infrastructure/"]
+COPY ["src/genVApi/Persistence/Persistence.csproj", "src/genVApi/Persistence/"]
+COPY ["src/genVApi/Licensing.Shared/Licensing.Shared.csproj", "src/genVApi/Licensing.Shared/"]
+COPY ["src/corePackages/", "src/corePackages/"]
+
+# Restore dependencies
+RUN dotnet restore "src/genVApi/WebAPI/WebAPI.csproj"
+
+# Copy everything else
+COPY . .
+
+# Build and publish
+WORKDIR /src/src/genVApi/WebAPI
+RUN dotnet publish "WebAPI.csproj" -c Release -o /app/publish --no-restore
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S appgroup && \
+    adduser -u 1001 -S appuser -G appgroup
+
+# Copy published files
+COPY --from=build /app/publish .
+
+# Set ownership
+RUN chown -R appuser:appgroup /app
+
+# Switch to non-root user
+USER appuser
+
+EXPOSE 8080
+
+ENTRYPOINT ["dotnet", "WebAPI.dll"]
