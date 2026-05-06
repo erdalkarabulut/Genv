@@ -52,6 +52,7 @@ const nav: Array<{
     section: "Yönetim",
     adminOnly: true,
   },
+  { to: "/users", label: "Kullanıcı yönetimi", icon: Users, section: "Yönetim", adminOnly: true },
 ];
 
 export default function Layout() {

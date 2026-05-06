@@ -488,3 +488,17 @@ export const Auth = {
   revokeToken: () => api.put("/api/Auth/RevokeToken").then((r) => r.data),
   refreshToken: () => refreshAccessToken(),
 };
+
+export const Users = {
+  list: (page = 0, size = 20) =>
+    api.get<PageResponse<any>>(`/api/Users?pageIndex=${page}&pageSize=${size}`).then((r) => r.data),
+  claims: (page = 0, size = 100) =>
+    api.get<PageResponse<{ id: number; name: string }>>(`/api/Users/claims?pageIndex=${page}&pageSize=${size}`).then((r) => r.data),
+  createAdmin: (body: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    operationClaimIds: number[];
+  }) => api.post<{ id: string; firstName: string; lastName: string; email: string; operationClaimNames: string[] }>(`/api/Users/admin`, body).then((r) => r.data),
+};

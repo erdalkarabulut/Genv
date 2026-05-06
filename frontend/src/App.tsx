@@ -17,6 +17,7 @@ import LoginPage from "./pages/LoginPage";
 import AdminRoute from "./components/AdminRoute";
 import PlcIntegrationPage from "./pages/PlcIntegrationPage";
 import ClinicalSettingsPage from "./pages/ClinicalSettingsPage";
+import UsersPage from "./pages/UsersPage";
 
 export default function App() {
   return (
@@ -54,6 +55,14 @@ export default function App() {
           element={
             <AdminRoute>
               <ClinicalSettingsPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <AdminRoute>
+              <UsersPage />
             </AdminRoute>
           }
         />

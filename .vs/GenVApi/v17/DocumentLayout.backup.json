@@ -3,6 +3,22 @@
   "WorkspaceRootPath": "D:\\GenvAp\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{8587D7E2-7A17-4731-83D2-CBFDA2C4A0E1}|src\\genVApi\\Persistence\\Persistence.csproj|d:\\genvap\\src\\genvapi\\persistence\\migrations\\20260505232520_addclinicalsettingsoperationclaims.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8587D7E2-7A17-4731-83D2-CBFDA2C4A0E1}|src\\genVApi\\Persistence\\Persistence.csproj|solutionrelative:src\\genvapi\\persistence\\migrations\\20260505232520_addclinicalsettingsoperationclaims.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8587D7E2-7A17-4731-83D2-CBFDA2C4A0E1}|src\\genVApi\\Persistence\\Persistence.csproj|d:\\genvap\\src\\genvapi\\persistence\\entityconfigurations\\operationclaimconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8587D7E2-7A17-4731-83D2-CBFDA2C4A0E1}|src\\genVApi\\Persistence\\Persistence.csproj|solutionrelative:src\\genvapi\\persistence\\entityconfigurations\\operationclaimconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{98DB48DE-CBB4-4BA4-982A-8A564016BBA1}|src\\genVApi\\Application\\Application.csproj|d:\\genvap\\src\\genvapi\\application\\features\\patients\\queries\\getlistbydynamic\\getlistbydynamicpatientquery.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{98DB48DE-CBB4-4BA4-982A-8A564016BBA1}|src\\genVApi\\Application\\Application.csproj|solutionrelative:src\\genvapi\\application\\features\\patients\\queries\\getlistbydynamic\\getlistbydynamicpatientquery.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{98DB48DE-CBB4-4BA4-982A-8A564016BBA1}|src\\genVApi\\Application\\Application.csproj|d:\\genvap\\src\\genvapi\\application\\features\\patients\\profiles\\mappingprofiles.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{98DB48DE-CBB4-4BA4-982A-8A564016BBA1}|src\\genVApi\\Application\\Application.csproj|solutionrelative:src\\genvapi\\application\\features\\patients\\profiles\\mappingprofiles.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{98DB48DE-CBB4-4BA4-982A-8A564016BBA1}|src\\genVApi\\Application\\Application.csproj|d:\\genvap\\src\\genvapi\\application\\features\\collectionsessions\\commands\\calculate\\calculatesessioncommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{98DB48DE-CBB4-4BA4-982A-8A564016BBA1}|src\\genVApi\\Application\\Application.csproj|solutionrelative:src\\genvapi\\application\\features\\collectionsessions\\commands\\calculate\\calculatesessioncommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -18,7 +34,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -30,7 +46,59 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "OperationClaimConfiguration.cs",
+              "DocumentMoniker": "D:\\GenvAp\\src\\genVApi\\Persistence\\EntityConfigurations\\OperationClaimConfiguration.cs",
+              "RelativeDocumentMoniker": "src\\genVApi\\Persistence\\EntityConfigurations\\OperationClaimConfiguration.cs",
+              "ToolTip": "D:\\GenvAp\\src\\genVApi\\Persistence\\EntityConfigurations\\OperationClaimConfiguration.cs",
+              "RelativeToolTip": "src\\genVApi\\Persistence\\EntityConfigurations\\OperationClaimConfiguration.cs",
+              "ViewState": "AgIAADwAAAAAAAAAAAAwwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-05T23:27:17.865Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "20260505232520_AddClinicalSettingsOperationClaims.cs",
+              "DocumentMoniker": "D:\\GenvAp\\src\\genVApi\\Persistence\\Migrations\\20260505232520_AddClinicalSettingsOperationClaims.cs",
+              "RelativeDocumentMoniker": "src\\genVApi\\Persistence\\Migrations\\20260505232520_AddClinicalSettingsOperationClaims.cs",
+              "ToolTip": "D:\\GenvAp\\src\\genVApi\\Persistence\\Migrations\\20260505232520_AddClinicalSettingsOperationClaims.cs",
+              "RelativeToolTip": "src\\genVApi\\Persistence\\Migrations\\20260505232520_AddClinicalSettingsOperationClaims.cs",
+              "ViewState": "AgIAABkAAAAAAAAAAAAAwDsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-05T23:25:21.248Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "GetListByDynamicPatientQuery.cs",
+              "DocumentMoniker": "D:\\GenvAp\\src\\genVApi\\Application\\Features\\Patients\\Queries\\GetListByDynamic\\GetListByDynamicPatientQuery.cs",
+              "RelativeDocumentMoniker": "src\\genVApi\\Application\\Features\\Patients\\Queries\\GetListByDynamic\\GetListByDynamicPatientQuery.cs",
+              "ToolTip": "D:\\GenvAp\\src\\genVApi\\Application\\Features\\Patients\\Queries\\GetListByDynamic\\GetListByDynamicPatientQuery.cs",
+              "RelativeToolTip": "src\\genVApi\\Application\\Features\\Patients\\Queries\\GetListByDynamic\\GetListByDynamicPatientQuery.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAABDAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-05T22:42:26.566Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MappingProfiles.cs",
+              "DocumentMoniker": "D:\\GenvAp\\src\\genVApi\\Application\\Features\\Patients\\Profiles\\MappingProfiles.cs",
+              "RelativeDocumentMoniker": "src\\genVApi\\Application\\Features\\Patients\\Profiles\\MappingProfiles.cs",
+              "ToolTip": "D:\\GenvAp\\src\\genVApi\\Application\\Features\\Patients\\Profiles\\MappingProfiles.cs",
+              "RelativeToolTip": "src\\genVApi\\Application\\Features\\Patients\\Profiles\\MappingProfiles.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-05T22:42:22.503Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "CalculateSessionCommand.cs",
               "DocumentMoniker": "D:\\GenvAp\\src\\genVApi\\Application\\Features\\CollectionSessions\\Commands\\Calculate\\CalculateSessionCommand.cs",
               "RelativeDocumentMoniker": "src\\genVApi\\Application\\Features\\CollectionSessions\\Commands\\Calculate\\CalculateSessionCommand.cs",
@@ -43,7 +111,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 5,
               "Title": "appsettings.Development.json",
               "DocumentMoniker": "D:\\GenvAp\\src\\genVApi\\WebAPI\\appsettings.Development.json",
               "RelativeDocumentMoniker": "src\\genVApi\\WebAPI\\appsettings.Development.json",

@@ -1,17 +1,17 @@
 using Application.Features.ClinicalConfiguration;
+using Application.Features.ClinicalConfiguration.Constants;
 using Application.Services.Repositories;
 using Domain.Entities;
 using MediatR;
 using NArchitecture.Core.Application.Pipelines.Authorization;
-using NArchitecture.Core.Security.Constants;
-using static Application.Features.Patients.Constants.PatientsOperationClaims;
+using static Application.Features.ClinicalConfiguration.Constants.ClinicalSettingsOperationClaims;
 
 namespace Application.Features.ClinicalConfiguration.Queries.GetClinicalSettings;
 
 public class GetClinicalSettingsQuery : IRequest<ClinicalSettingsDto>, ISecuredRequest
 {
-    /// <summary>Admin veya hasta okuma yetkisi olan kullanıcılar.</summary>
-    public string[] Roles => [GeneralOperationClaims.Admin, Read];
+    /// <summary>Admin veya ClinicalSettings okuma yetkisi olan kullanıcılar.</summary>
+    public string[] Roles => [Admin, Read];
 
     public class Handler : IRequestHandler<GetClinicalSettingsQuery, ClinicalSettingsDto>
     {

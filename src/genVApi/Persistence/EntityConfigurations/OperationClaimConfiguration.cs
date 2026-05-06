@@ -12,6 +12,7 @@ using NArchitecture.Core.Security.Constants;
 using Application.Features.Bags.Constants;
 using Application.Features.BagMovements.Constants;
 using Application.Features.Boxes.Constants;
+using Application.Features.ClinicalConfiguration.Constants;
 using Application.Features.CollectionSessions.Constants;
 using Application.Features.DliProducts.Constants;
 using Application.Features.Donors.Constants;
@@ -159,9 +160,7 @@ public class OperationClaimConfiguration : IEntityTypeConfiguration<OperationCla
         );
         #endregion
 
-return featureOperationClaims;
-
-#region Bags
+        #region Bags
 featureOperationClaims.AddRange(
     [
         new() { Id = ++lastId, Name = BagsOperationClaims.Admin },
@@ -347,6 +346,18 @@ featureOperationClaims.AddRange(
 );
 #endregion
 
+
+#region ClinicalSettings
+featureOperationClaims.AddRange(
+    [
+        new() { Id = ++lastId, Name = ClinicalSettingsOperationClaims.Admin },
+        new() { Id = ++lastId, Name = ClinicalSettingsOperationClaims.Read },
+        new() { Id = ++lastId, Name = ClinicalSettingsOperationClaims.Write },
+    ]
+);
+#endregion
+
+        return featureOperationClaims;
     }
 #pragma warning restore S1854 // Unused assignments should be removed
 }

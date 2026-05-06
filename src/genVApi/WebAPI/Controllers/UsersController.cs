@@ -1,7 +1,9 @@
 ﻿using Application.Features.Users.Commands.Create;
+using Application.Features.Users.Commands.CreateAdmin;
 using Application.Features.Users.Commands.Delete;
 using Application.Features.Users.Commands.Update;
 using Application.Features.Users.Commands.UpdateFromAuth;
+using Application.Features.Users.Queries.GetAllClaims;
 using Application.Features.Users.Queries.GetById;
 using Application.Features.Users.Queries.GetList;
 using Application.Features.Users.Queries.GetListByDynamic;
@@ -38,6 +40,14 @@ public class UsersController : BaseController
         return Ok(result);
     }
 
+    [HttpGet("claims")]
+    public async Task<IActionResult> GetAllClaims([FromQuery] PageRequest pageRequest)
+    {
+        GetAllOperationClaimsQuery query = new() { PageRequest = pageRequest };
+        GetListResponse<GetAllOperationClaimsDto> result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
     [HttpPost("by-dynamic")]
     public async Task<IActionResult> GetListByDynamic([FromBody] GetListByDynamicUserQuery query)
     {
@@ -49,6 +59,13 @@ public class UsersController : BaseController
     public async Task<IActionResult> Add([FromBody] CreateUserCommand createUserCommand)
     {
         CreatedUserResponse result = await Mediator.Send(createUserCommand);
+        return Created(uri: "", result);
+    }
+
+    [HttpPost("admin")]
+    public async Task<IActionResult> AddAdmin([FromBody] CreateAdminUserCommand createAdminUserCommand)
+    {
+        CreatedAdminUserResponse result = await Mediator.Send(createAdminUserCommand);
         return Created(uri: "", result);
     }
 
