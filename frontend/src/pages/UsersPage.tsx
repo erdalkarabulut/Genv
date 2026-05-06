@@ -89,6 +89,29 @@ export default function UsersPage() {
   const totalPages = usersQ.data?.pages ?? 1;
   const totalCount = usersQ.data?.count ?? 0;
 
+  const groupedClaims = useMemo(() => {
+    const items = claimsQ.data?.items ?? [];
+    const map = new Map<string, OperationClaim[]>();
+
+    for (const claim of items) {
+      const key = claim.name.includes(".")
+        ? claim.name.split(".")[0]
+        : claim.name.includes(":")
+          ? claim.name.split(":")[0]
+          : "Genel";
+
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(claim);
+    }
+
+    return [...map.entries()]
+      .sort(([a], [b]) => a.localeCompare(b, "tr"))
+      .map(([groupName, claims]) => ({
+        groupName,
+        claims: claims.sort((a, b) => a.name.localeCompare(b.name, "tr")),
+      }));
+  }, [claimsQ.data?.items]);
+
   const inputClass =
     "input w-full text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
 
@@ -261,24 +284,35 @@ export default function UsersPage() {
               </div>
             ) : (
               <div className="rounded-lg border border-line/60 bg-bg-subtle/50 p-3 max-h-48 overflow-y-auto">
-                {claimsQ.data?.items?.map((claim: OperationClaim) => {
-                  const isSelected = selectedClaims.includes(claim.id);
-                  return (
-                    <button
-                      key={claim.id}
-                      type="button"
-                      onClick={() => toggleClaim(claim.id)}
-                      className={cn(
-                        "px-3 py-1.5 rounded-lg border text-xs font-medium transition",
-                        isSelected
-                          ? "border-brand-500/40 bg-brand-500/10 text-brand-400"
-                          : "border-line/60 bg-bg-elevated/30 text-ink-dim hover:border-brand-500/20"
-                      )}
-                    >
-                      {claim.name}
-                    </button>
-                  );
-                })}
+                <div className="space-y-4">
+                  {groupedClaims.map((group) => (
+                    <div key={group.groupName} className="space-y-2">
+                      <div className="text-[11px] font-semibold uppercase tracking-wide text-ink-dim">
+                        {group.groupName}
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {group.claims.map((claim) => {
+                          const isSelected = selectedClaims.includes(claim.id);
+                          return (
+                            <button
+                              key={claim.id}
+                              type="button"
+                              onClick={() => toggleClaim(claim.id)}
+                              className={cn(
+                                "px-3 py-1.5 rounded-lg border text-xs font-medium transition",
+                                isSelected
+                                  ? "border-brand-500/40 bg-brand-500/10 text-brand-400"
+                                  : "border-line/60 bg-bg-elevated/30 text-ink-dim hover:border-brand-500/20"
+                              )}
+                            >
+                              {claim.name}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
             {selectedClaims.length > 0 && (
