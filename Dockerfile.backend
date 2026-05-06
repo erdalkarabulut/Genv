@@ -32,6 +32,9 @@ RUN addgroup -g 1001 -S appgroup && \
 # Copy published files
 COPY --from=build /app/publish .
 
+# logs klasörünü oluştur ve izin ver
+RUN mkdir -p /app/logs && chown -R appuser:appgroup /app/logs
+
 # Set ownership
 RUN chown -R appuser:appgroup /app
 
