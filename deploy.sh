@@ -14,14 +14,14 @@ echo "[2/5] Eski container'lari temizle..."
 (docker stop cryoflow-api 2>/dev/null && docker rm cryoflow-api 2>/dev/null) || true
 (docker stop cryoflow-frontend 2>/dev/null && docker rm cryoflow-frontend 2>/dev/null) || true
 
-echo "[3/5] Backend build..."
-docker build -t cryoflow-api -f Dockerfile.backend .
+echo "[3/5] Compose image'larini cache'siz build et..."
+docker compose -f docker-compose.prod.yml build --no-cache
 
-echo "[4/5] Frontend build..."
-docker build -t cryoflow-frontend -f Dockerfile.frontend .
+echo "[4/5] Container'lari yeni imajlarla zorla yeniden olustur..."
+docker compose -f docker-compose.prod.yml up -d --force-recreate
 
-echo "[5/5] Container'lari baslat..."
-docker compose -f docker-compose.prod.yml up -d
+echo "[5/5] Container durumlari..."
+docker compose -f docker-compose.prod.yml ps
 
 echo ""
 echo "=== CryoFlow basariyla deploy edildi ==="
@@ -38,5 +38,6 @@ echo "API file log (Serilog gunluk dosya adi YYYYMMDD.txt, log-*.txt degil):"
 echo "  docker exec cryoflow-api ls -la /app/logs"
 echo "  docker exec cryoflow-api tail -100 /app/logs/\$(date +%Y%m%d).txt"
 echo ""
-echo "frontend/nginx.conf degisti ama imaj eski kaldiysa (cache):"
-echo "  docker build --no-cache -t cryoflow-frontend -f Dockerfile.frontend ."
+echo "Hizli test komutlari:"
+echo "  curl -I http://localhost:5001/swagger/index.html"
+echo "  curl -I http://localhost:6001"

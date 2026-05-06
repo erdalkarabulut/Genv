@@ -1,5 +1,6 @@
 services:
   api:
+    image: cryoflow-api:latest
     build:
       context: .
       dockerfile: Dockerfile.backend
@@ -18,6 +19,7 @@ services:
       - smartready_oqlt-network
 
   frontend:
+    image: cryoflow-frontend:latest
     build:
       context: .
       dockerfile: Dockerfile.frontend
