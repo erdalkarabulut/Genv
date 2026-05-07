@@ -18,6 +18,12 @@ public class UseBagCommand : IRequest<UseBagResponse>, ISecuredRequest, ICacheRe
 {
     public Guid BagId { get; set; }
 
+    /// <summary>Kullanım sebebi. Other seçilirse Note zorunludur.</summary>
+    public BagUseReason Reason { get; set; } = BagUseReason.Infusion;
+
+    /// <summary>Serbest not. Reason == Other ise istemcide zorunlu.</summary>
+    public string? Note { get; set; }
+
     public string[] Roles => [Admin, Write];
 
     public bool BypassCache { get; }
@@ -68,6 +74,8 @@ public class UseBagCommand : IRequest<UseBagResponse>, ISecuredRequest, ICacheRe
             }
 
             bag.Status = BagStatus.Used;
+            bag.UseReason = request.Reason;
+            bag.UseNote = string.IsNullOrWhiteSpace(request.Note) ? null : request.Note!.Trim();
             await _bagRepository.UpdateAsync(bag);
 
             await _movementRepository.AddAsync(new BagMovement
@@ -75,7 +83,7 @@ public class UseBagCommand : IRequest<UseBagResponse>, ISecuredRequest, ICacheRe
                 BagId = bag.Id,
                 FromBagCellId = fromCellId,
                 ToBagCellId = null,
-                Action = "Use"
+                Action = $"Use:{request.Reason}"
             });
 
             await _notifier.BagUsedAsync(bag.Id, fromCellId, cancellationToken);

@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/Button";
 import { Input, Select } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { UseBagDialog } from "@/components/bags/UseBagDialog";
 import { useEffect, useState } from "react";
 import { onCryo } from "@/lib/signalr";
 import { Pagination } from "@/components/ui/Pagination";
 import { useDebounce } from "@/lib/useDebounce";
-import type { Bag, BagPurpose, BagStatus } from "@/lib/types";
+import type { Bag, BagPurpose, BagStatus, BagUseReason } from "@/lib/types";
 import { formatDate, formatNumber, shortId } from "@/lib/utils";
 import { Search, Trash2, Pencil, PackageCheck, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
@@ -238,64 +239,81 @@ function BagRow({
   onUseSuccess: () => void;
 }) {
   const nav = useNavigate();
+  const [useDialogOpen, setUseDialogOpen] = useState(false);
+
   const useMut = useMutation({
-    mutationFn: () => Bags.use(b.id),
+    mutationFn: ({ reason, note }: { reason: BagUseReason; note: string | null }) =>
+      Bags.use(b.id, reason, note),
     onSuccess: () => {
       toast.success(`Bag #${b.bagNumber} kullanıldı`);
+      setUseDialogOpen(false);
       onUseSuccess();
     },
   });
 
+  const isUsedOrDiscarded = b.status === "Used" || b.status === "Discarded";
+
   return (
-    <tr
-      className="border-b border-line/40 hover:bg-bg-elevated/40 transition cursor-pointer"
-      onClick={() => nav(`/bags/${b.id}`)}
-    >
-      <td className="px-4 py-3">
-        <div className="font-medium">#{b.bagNumber}</div>
-        <div className="text-[11px] text-ink-dim">{shortId(b.id)}</div>
-      </td>
-      <td className="px-4 py-3">
-        <Badge tone={statusTone[b.status]} dot>{b.status}</Badge>
-      </td>
-      <td className="px-4 py-3">
-        <Badge tone={purposeTone[b.purpose]}>{b.purpose}</Badge>
-      </td>
-      <td className="px-4 py-3 text-ink-muted">{formatNumber(b.cd34PerKg, 2)}</td>
-      <td className="px-4 py-3 text-ink-muted">{formatNumber(b.cd3PerKg, 2)}</td>
-      <td className="px-4 py-3 text-ink-muted">{b.volumeMl} ml</td>
-      <td className="px-4 py-3 text-ink-muted">{b.bagCellId ? shortId(b.bagCellId) : "—"}</td>
-      <td className="px-4 py-3 text-ink-muted">{formatDate(b.createdDate)}</td>
-      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-        <div className="flex justify-end gap-1">
-          {b.status !== "Used" && b.status !== "Discarded" && (
-            <Button
-              size="sm"
-              variant="soft"
-              icon={<PackageCheck className="size-3.5" />}
-              onClick={() => useMut.mutate()}
-              loading={useMut.isPending}
-              title="Kullan"
-            >
-              Kullan
+    <>
+      <tr
+        className="border-b border-line/40 hover:bg-bg-elevated/40 transition cursor-pointer"
+        onClick={() => nav(`/bags/${b.id}`)}
+      >
+        <td className="px-4 py-3">
+          <div className="font-medium">#{b.bagNumber}</div>
+          <div className="text-[11px] text-ink-dim">{shortId(b.id)}</div>
+        </td>
+        <td className="px-4 py-3">
+          <Badge tone={statusTone[b.status]} dot>{b.status}</Badge>
+        </td>
+        <td className="px-4 py-3">
+          <Badge tone={purposeTone[b.purpose]}>{b.purpose}</Badge>
+        </td>
+        <td className="px-4 py-3 text-ink-muted">{formatNumber(b.cd34PerKg, 2)}</td>
+        <td className="px-4 py-3 text-ink-muted">{formatNumber(b.cd3PerKg, 2)}</td>
+        <td className="px-4 py-3 text-ink-muted">{b.volumeMl} ml</td>
+        <td className="px-4 py-3 text-ink-muted">{b.bagCellId ? shortId(b.bagCellId) : "—"}</td>
+        <td className="px-4 py-3 text-ink-muted">{formatDate(b.createdDate)}</td>
+        <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+          <div className="flex justify-end gap-1">
+            {!isUsedOrDiscarded && (
+              <Button
+                size="sm"
+                variant="soft"
+                icon={<PackageCheck className="size-3.5" />}
+                onClick={() => setUseDialogOpen(true)}
+                loading={useMut.isPending}
+                title="Kullan"
+              >
+                Kullan
+              </Button>
+            )}
+            <Button size="sm" variant="soft" icon={<Pencil className="size-3.5" />} onClick={onEdit}>
+              Düzenle
             </Button>
-          )}
-          <Button size="sm" variant="soft" icon={<Pencil className="size-3.5" />} onClick={onEdit}>
-            Düzenle
-          </Button>
-          <Button size="sm" variant="danger" icon={<Trash2 className="size-3.5" />} onClick={onDelete}>
-            Sil
-          </Button>
-          <button
-            className="ml-1 rounded-md p-1 text-ink-dim hover:text-ink"
-            onClick={() => nav(`/bags/${b.id}`)}
-            title="Detay"
-          >
-            <ChevronRight className="size-4" />
-          </button>
-        </div>
-      </td>
-    </tr>
+            {b.status !== "Used" && (
+              <Button size="sm" variant="danger" icon={<Trash2 className="size-3.5" />} onClick={onDelete}>
+                Sil
+              </Button>
+            )}
+            <button
+              className="ml-1 rounded-md p-1 text-ink-dim hover:text-ink"
+              onClick={() => nav(`/bags/${b.id}`)}
+              title="Detay"
+            >
+              <ChevronRight className="size-4" />
+            </button>
+          </div>
+        </td>
+      </tr>
+      <UseBagDialog
+        open={useDialogOpen}
+        onClose={() => setUseDialogOpen(false)}
+        bagLabel={`Bag #${b.bagNumber}`}
+        loading={useMut.isPending}
+        onSubmit={(reason, note) => useMut.mutateAsync({ reason, note })}
+      />
+    </>
   );
 }
 

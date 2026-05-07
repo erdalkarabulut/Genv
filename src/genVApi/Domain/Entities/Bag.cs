@@ -36,6 +36,12 @@ public class Bag : Entity<Guid>
 
     public BagStatus Status { get; set; }
 
+    /// <summary>Torba &quot;Kullan&quot; aksiyonunda seçilen sebep (Infusion / Disposal / Transfer / Other).</summary>
+    public BagUseReason? UseReason { get; set; }
+
+    /// <summary>&quot;Kullan&quot; sırasında girilen serbest not. UseReason == Other ise zorunludur.</summary>
+    public string? UseNote { get; set; }
+
     /// <summary>Torbanın amacı (Cryo, Infusion, Backup, QC).</summary>
     public BagPurpose Purpose { get; set; } = BagPurpose.Cryo;
 

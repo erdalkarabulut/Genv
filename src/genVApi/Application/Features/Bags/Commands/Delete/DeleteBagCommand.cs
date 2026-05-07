@@ -1,9 +1,9 @@
 using Application.Features.Bags.Constants;
-using Application.Features.Bags.Constants;
 using Application.Features.Bags.Rules;
 using Application.Services.Repositories;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Enums;
 using NArchitecture.Core.Application.Pipelines.Authorization;
 using NArchitecture.Core.Application.Pipelines.Caching;
 using NArchitecture.Core.Application.Pipelines.Logging;
@@ -45,6 +45,9 @@ public class DeleteBagCommand : IRequest<DeletedBagResponse>, ISecuredRequest, I
         {
             Bag? bag = await _bagRepository.GetAsync(predicate: b => b.Id == request.Id, cancellationToken: cancellationToken);
             await _bagBusinessRules.BagShouldExistWhenSelected(bag);
+
+            if (bag!.Status == BagStatus.Used)
+                throw new BusinessException("Kullanılmış torba silinemez.");
 
             bool hasMovements = await _bagMovementRepository.AnyAsync(
                 predicate: m => m.BagId == request.Id,

@@ -5,9 +5,11 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Drawer } from "@/components/ui/Modal";
 import { Pagination } from "@/components/ui/Pagination";
+import { UseBagDialog } from "@/components/bags/UseBagDialog";
 import { useEffect, useMemo, useState } from "react";
 import type {
   Bag,
+  BagUseReason,
   CollectionSession,
   CryoBagCellDto,
   CryoBoxDto,
@@ -861,18 +863,23 @@ function BagCellDetail({
     enabled: !!sessionQ.data?.patientId,
   });
 
-  const useBag = async () => {
+  const [useDialogOpen, setUseDialogOpen] = useState(false);
+  const [useSubmitting, setUseSubmitting] = useState(false);
+
+  const submitUse = async (reason: BagUseReason, note: string | null) => {
     if (!cell.bagId) return;
+    setUseSubmitting(true);
     try {
-      await Bags.use(cell.bagId);
+      await Bags.use(cell.bagId, reason, note);
       toast.success("Torba kullanıldı, hücre boşaldı");
       qc.invalidateQueries({ queryKey: ["cryo-grid"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       qc.invalidateQueries({ queryKey: ["bags"] });
       qc.invalidateQueries({ queryKey: ["movements"] });
+      setUseDialogOpen(false);
       onAfter();
-    } catch {
-      /* toast already shown */
+    } finally {
+      setUseSubmitting(false);
     }
   };
 
@@ -1047,13 +1054,21 @@ function BagCellDetail({
         <Button variant="soft" onClick={() => onMove(cell)} icon={<Hand className="size-4" />}>
           Taşımak için seç
         </Button>
-        <Button variant="danger" onClick={useBag}>
+        <Button variant="danger" onClick={() => setUseDialogOpen(true)} loading={useSubmitting}>
           Torbayı kullan (hücre boşalt)
         </Button>
       </div>
       <p className="text-[11px] text-ink-dim">
         İpucu: Hücreyi sürükleyerek başka boş bir hücreye de doğrudan taşıyabilirsiniz.
       </p>
+
+      <UseBagDialog
+        open={useDialogOpen}
+        onClose={() => setUseDialogOpen(false)}
+        bagLabel={cell.bagNumber ? `Bag #${cell.bagNumber}` : undefined}
+        loading={useSubmitting}
+        onSubmit={submitUse}
+      />
     </div>
   );
 }

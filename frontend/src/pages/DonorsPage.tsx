@@ -3,7 +3,7 @@ import { Donors, Patients } from "@/lib/api";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { Input, Select } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -13,7 +13,7 @@ import { Pagination } from "@/components/ui/Pagination";
 import { useDebounce } from "@/lib/useDebounce";
 import { Plus, Search, Pencil, Trash2, HeartHandshake, Link2, Users } from "lucide-react";
 import { toast } from "sonner";
-import { formatDate } from "@/lib/utils";
+import { formatDate, BLOOD_GROUP_OPTIONS } from "@/lib/utils";
 import type { Donor, DonorType } from "@/lib/types";
 
 export interface DonorFormValues {
@@ -343,7 +343,7 @@ export function DonorFormView({
         {...register("weightKg", { required: "Zorunlu", min: 1 })}
         error={errors.weightKg?.message}
       />
-      <Input label="Kan grubu" placeholder="A+, B-, 0+..." {...register("bloodGroup")} />
+      <Select label="Kan grubu" {...register("bloodGroup")} options={BLOOD_GROUP_OPTIONS} />
 
       <Input
         label={donorType === "Related" ? "Yakınlık (ör. Kardeş, Anne)" : "Yakınlık/not (opsiyonel)"}

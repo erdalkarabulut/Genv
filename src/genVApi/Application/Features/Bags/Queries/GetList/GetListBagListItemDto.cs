@@ -17,6 +17,8 @@ public class GetListBagListItemDto : IDto
     public double Cd34PerKg { get; set; }
     public double Cd3PerKg { get; set; }
     public Domain.Enums.BagStatus Status { get; set; }
+    public Domain.Enums.BagUseReason? UseReason { get; set; }
+    public string? UseNote { get; set; }
     public Domain.Enums.BagPurpose Purpose { get; set; }
     public Guid? SplitBatchId { get; set; }
     public Guid? BagCellId { get; set; }

@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { UseBagDialog } from "@/components/bags/UseBagDialog";
 import { Select } from "@/components/ui/Input";
 import { formatDateTime, formatNumber, shortId } from "@/lib/utils";
 import {
@@ -27,7 +28,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import type { Bag, BagPurpose, BagStatus } from "@/lib/types";
+import type { Bag, BagPurpose, BagStatus, BagUseReason } from "@/lib/types";
 
 const statusTone: Record<BagStatus, "sky" | "mint" | "amber" | "neutral" | "rose"> = {
   Frozen: "sky",
@@ -59,6 +60,7 @@ export default function BagDetailPage() {
   const [storeOpen, setStoreOpen] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [useDialogOpen, setUseDialogOpen] = useState(false);
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["bag", id] });
@@ -70,9 +72,11 @@ export default function BagDetailPage() {
   };
 
   const use = useMutation({
-    mutationFn: () => Bags.use(id!),
+    mutationFn: ({ reason, note }: { reason: BagUseReason; note: string | null }) =>
+      Bags.use(id!, reason, note),
     onSuccess: () => {
       toast.success("Bag kullanıldı");
+      setUseDialogOpen(false);
       invalidate();
     },
   });
@@ -139,19 +143,21 @@ export default function BagDetailPage() {
               <Button
                 variant="soft"
                 icon={<PackageCheck className="size-4" />}
-                onClick={() => use.mutate()}
+                onClick={() => setUseDialogOpen(true)}
                 loading={use.isPending}
               >
                 Kullan
               </Button>
             ) : null}
-            <Button
-              variant="danger"
-              icon={<Trash2 className="size-4" />}
-              onClick={() => setDeleteOpen(true)}
-            >
-              Sil
-            </Button>
+            {b.status !== "Used" && (
+              <Button
+                variant="danger"
+                icon={<Trash2 className="size-4" />}
+                onClick={() => setDeleteOpen(true)}
+              >
+                Sil
+              </Button>
+            )}
           </div>
         )}
       </header>
@@ -244,6 +250,16 @@ export default function BagDetailPage() {
         loading={remove.isPending}
         description={`Bag #${b?.bagNumber ?? ""} kaydını silmek üzeresiniz. Hareket kayıtları korunur ancak hücre serbest bırakılmaz — önce "Kullan" aksiyonu öneririz.`}
       />
+
+      {b && (
+        <UseBagDialog
+          open={useDialogOpen}
+          onClose={() => setUseDialogOpen(false)}
+          bagLabel={`Bag #${b.bagNumber}`}
+          loading={use.isPending}
+          onSubmit={(reason, note) => use.mutateAsync({ reason, note })}
+        />
+      )}
     </div>
   );
 }

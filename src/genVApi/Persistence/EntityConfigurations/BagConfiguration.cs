@@ -23,6 +23,8 @@ public class BagConfiguration : IEntityTypeConfiguration<Bag>
         builder.Property(b => b.Cd34PerKg).HasColumnName("Cd34PerKg").IsRequired();
         builder.Property(b => b.Cd3PerKg).HasColumnName("Cd3PerKg").IsRequired();
         builder.Property(b => b.Status).HasColumnName("Status").HasConversion<string>().HasMaxLength(20).IsRequired();
+        builder.Property(b => b.UseReason).HasColumnName("UseReason").HasConversion<string>().HasMaxLength(20);
+        builder.Property(b => b.UseNote).HasColumnName("UseNote").HasMaxLength(500);
         builder.Property(b => b.Purpose).HasColumnName("Purpose").HasConversion<string>().HasMaxLength(20).IsRequired();
         builder.Property(b => b.SplitBatchId).HasColumnName("SplitBatchId");
         builder.Property(b => b.BagCellId).HasColumnName("BagCellId");

@@ -241,18 +241,21 @@ export default function PatientDetailPage() {
         description={`Sonraki gün: ${p?.nextDay ?? 1}. gün · Pre-procedure (PK) + post-procedure (ÜRÜN) birlikte kaydedilir`}
         size="xl"
       >
-        <CreateSessionForm
-          patientId={id}
-          weightKg={p?.weightKg ?? patient.data?.weightKg}
-          defaultDay={p?.nextDay ?? (p ? (p.completedDays ?? 0) + 1 : 1)}
-          isAutologous={p?.isAutologous ?? patient.data?.transplantType === "Autologous"}
-          onCancel={() => setSessionOpen(false)}
-          onCreated={async () => {
-            await refresh();
-            setSessionOpen(false);
-            toast.success("Aferez seansı kaydedildi ve hesaplandı");
-          }}
-        />
+        {sessionOpen && (
+          <CreateSessionForm
+            key={`session-form-${sessionOpen ? "open" : "closed"}-${p?.nextDay ?? 1}`}
+            patientId={id}
+            weightKg={p?.weightKg ?? patient.data?.weightKg}
+            defaultDay={p?.nextDay ?? (p ? (p.completedDays ?? 0) + 1 : 1)}
+            isAutologous={p?.isAutologous ?? patient.data?.transplantType === "Autologous"}
+            onCancel={() => setSessionOpen(false)}
+            onCreated={async () => {
+              await refresh();
+              setSessionOpen(false);
+              toast.success("Aferez seansı kaydedildi ve hesaplandı");
+            }}
+          />
+        )}
       </Modal>
 
       <Modal
@@ -262,14 +265,17 @@ export default function PatientDetailPage() {
         description="Her torba için kendi hacim / WBC / yüzde değerlerinizi girin (ör. 32 + 32 = 64 ml). Torbayı istediğiniz slota dondurarak yerleştirin."
         size="xl"
       >
-        <CustomSplitForm
-          plan={p}
-          onCancel={() => setCustomSplitOpen(false)}
-          onDone={() => {
-            refresh();
-            setCustomSplitOpen(false);
-          }}
-        />
+        {customSplitOpen && (
+          <CustomSplitForm
+            key={`custom-split-${customSplitOpen ? "open" : "closed"}`}
+            plan={p}
+            onCancel={() => setCustomSplitOpen(false)}
+            onDone={() => {
+              refresh();
+              setCustomSplitOpen(false);
+            }}
+          />
+        )}
       </Modal>
 
       <Card>
@@ -1378,11 +1384,11 @@ function CreateSessionForm({
     defaultValues: {
       day: defaultDay,
       date: new Date().toISOString().slice(0, 10),
-      volumeMl: 250,
-      wbc: 180,
-      cd34Percent: 1.2,
-      cd45Percent: 80,
-      cd3Percent: 35,
+      volumeMl: undefined,
+      wbc: undefined,
+      cd34Percent: undefined,
+      cd45Percent: undefined,
+      cd3Percent: undefined,
     },
   });
 
@@ -1600,6 +1606,7 @@ function SplitForm({
 
   const lastSession =
     plan?.completedSessions?.[plan.completedSessions.length - 1];
+  const isAutologous = !!plan?.isAutologous;
 
   const split = useMutation({
     mutationFn: () =>
@@ -1654,8 +1661,13 @@ function SplitForm({
           ))}
         </div>
         <p className="mt-2 text-[11px] text-ink-dim">
-          Her torba ≈ {formatNumber(perBag(lastSession.cd34PerKg), 2)} CD34/kg ve{" "}
-          {formatNumber(perBag(lastSession.cd3PerKg), 2)} CD3/kg.
+          Her torba ≈ {formatNumber(perBag(lastSession.cd34PerKg), 2)} CD34/kg
+          {!isAutologous && (
+            <>
+              {" "}ve {formatNumber(perBag(lastSession.cd3PerKg), 2)} CD3/kg
+            </>
+          )}
+          .
         </p>
       </div>
 
@@ -1707,14 +1719,16 @@ interface CustomBagRow {
   freezeIntoBagCellId: string;
 }
 
-function makeRow(session?: { wbc?: number | null; cd45Percent?: number | null; cd34Percent?: number | null; cd3Percent?: number | null }, purpose = 0): CustomBagRow {
+function makeRow(_session?: { wbc?: number | null; cd45Percent?: number | null; cd34Percent?: number | null; cd3Percent?: number | null }, purpose = 0): CustomBagRow {
+  // Her satır boş başlar; her torbanın WBC/CD3 vb. değerleri normalde farklıdır.
+  // Kullanıcı isterse manuel girer; session değerlerinden otomatik kopyalanmaz.
   return {
     id: crypto.randomUUID(),
     volumeMl: "",
-    wbc: session?.wbc != null ? String(session.wbc) : "",
-    cd45Percent: session?.cd45Percent != null ? String(session.cd45Percent) : "",
-    cd34Percent: session?.cd34Percent != null ? String(session.cd34Percent) : "",
-    cd3Percent: session?.cd3Percent != null ? String(session.cd3Percent) : "",
+    wbc: "",
+    cd45Percent: "",
+    cd34Percent: "",
+    cd3Percent: "",
     purpose,
     compositionNote: "",
     freezeIntoBagCellId: "",
@@ -1741,24 +1755,12 @@ function CustomSplitForm({
   const selectedSession = completed.find((s) => s.sessionId === sessionId);
   const weight = plan?.weightKg ?? 0;
 
-  const [rows, setRows] = useState<CustomBagRow[]>(() => [
-    makeRow(selectedSession, 0),
-    makeRow(selectedSession, 1),
-  ]);
+  const isAutologous = !!plan?.isAutologous;
 
-  // Session değişirse satır varsayılanlarını tazele.
-  useEffect(() => {
-    setRows((prev) =>
-      prev.map((r) => ({
-        ...r,
-        wbc: r.wbc || (selectedSession?.wbc != null ? String(selectedSession.wbc) : ""),
-        cd45Percent: r.cd45Percent || (selectedSession?.cd45Percent != null ? String(selectedSession.cd45Percent) : ""),
-        cd34Percent: r.cd34Percent || (selectedSession?.cd34Percent != null ? String(selectedSession.cd34Percent) : ""),
-        cd3Percent: r.cd3Percent || (selectedSession?.cd3Percent != null ? String(selectedSession.cd3Percent) : ""),
-      })),
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionId]);
+  const [rows, setRows] = useState<CustomBagRow[]>(() => [
+    makeRow(undefined, 0),
+    makeRow(undefined, 1),
+  ]);
 
   const bagCellsQ = useQuery({
     queryKey: ["bagCells-free"],
@@ -1782,7 +1784,7 @@ function CustomSplitForm({
   const addRow = () =>
     setRows((prev) => [
       ...prev,
-      makeRow(selectedSession, prev.length === 0 ? 0 : 2),
+      makeRow(undefined, prev.length === 0 ? 0 : 2),
     ]);
 
   // Canlı CD34/kg önizleme (frontend formülü).
@@ -1824,7 +1826,8 @@ function CustomSplitForm({
           wbc: num(r.wbc),
           cd45Percent: num(r.cd45Percent),
           cd34Percent: num(r.cd34Percent),
-          cd3Percent: num(r.cd3Percent),
+          // Otolog torbalarda CD3 toplanmaz/raporlanmaz.
+          cd3Percent: isAutologous ? undefined : num(r.cd3Percent),
           purpose: r.purpose,
           compositionNote: r.compositionNote.trim() || undefined,
           freezeIntoBagCellId: r.freezeIntoBagCellId || undefined,
@@ -1892,6 +1895,8 @@ function CustomSplitForm({
                 <Input
                   type="number"
                   step="0.1"
+                  inputMode="decimal"
+                  className="text-right min-w-[88px]"
                   value={r.volumeMl}
                   onChange={(e) => updateRow(r.id, { volumeMl: e.target.value })}
                   placeholder="32"
@@ -1902,38 +1907,48 @@ function CustomSplitForm({
                 <Input
                   type="number"
                   step="0.1"
+                  inputMode="decimal"
+                  className="text-right min-w-[88px]"
                   value={r.wbc}
                   onChange={(e) => updateRow(r.id, { wbc: e.target.value })}
                 />
               </div>
-              <div className="col-span-4 md:col-span-1">
+              <div className="col-span-4 md:col-span-2">
                 <div className="label">CD45%</div>
                 <Input
                   type="number"
                   step="0.01"
+                  inputMode="decimal"
+                  className="text-right min-w-[88px]"
                   value={r.cd45Percent}
                   onChange={(e) => updateRow(r.id, { cd45Percent: e.target.value })}
                 />
               </div>
-              <div className="col-span-4 md:col-span-1">
+              <div className={isAutologous ? "col-span-4 md:col-span-2" : "col-span-4 md:col-span-1"}>
                 <div className="label">CD34%</div>
                 <Input
                   type="number"
                   step="0.01"
+                  inputMode="decimal"
+                  className="text-right min-w-[88px]"
                   value={r.cd34Percent}
                   onChange={(e) => updateRow(r.id, { cd34Percent: e.target.value })}
                 />
               </div>
-              <div className="col-span-4 md:col-span-1">
-                <div className="label">CD3%</div>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={r.cd3Percent}
-                  onChange={(e) => updateRow(r.id, { cd3Percent: e.target.value })}
-                  placeholder="opsiyonel"
-                />
-              </div>
+              {!isAutologous && (
+                <div className="col-span-4 md:col-span-1">
+                  <div className="label">CD3%</div>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    inputMode="decimal"
+                    className="text-right min-w-[88px]"
+                    value={r.cd3Percent}
+                    onChange={(e) => updateRow(r.id, { cd3Percent: e.target.value })}
+                    placeholder="opsiyonel"
+                  />
+                </div>
+              )}
               <div className="col-span-6 md:col-span-2">
                 <div className="label">Amaç</div>
                 <Select
@@ -1947,7 +1962,7 @@ function CustomSplitForm({
                   ))}
                 </Select>
               </div>
-              <div className="col-span-5 md:col-span-2">
+              <div className="col-span-11 md:col-span-9">
                 <div className="label">Dondur → hücre (opsiyonel)</div>
                 <Select
                   value={r.freezeIntoBagCellId}
@@ -1972,7 +1987,7 @@ function CustomSplitForm({
                   <Trash className="size-4" />
                 </button>
               </div>
-              <div className="col-span-12 md:col-span-8">
+              <div className="col-span-12">
                 <div className="label">Bölünme notu (ör. "32+32=64 ml")</div>
                 <Input
                   value={r.compositionNote}
@@ -1984,11 +1999,11 @@ function CustomSplitForm({
                 <span className="inline-flex items-center gap-1">
                   <Calculator className="size-3" />
                   CD34/kg:{" "}
-                  <span className="text-ink font-medium">{formatNumber(c.cd34, 3)}</span>
+                  <span className="text-ink font-medium">{formatNumber(c.cd34, 0)}</span>
                 </span>
-                {c.cd3 > 0 && (
+                {!isAutologous && c.cd3 > 0 && (
                   <span>
-                    CD3/kg: <span className="text-ink">{formatNumber(c.cd3, 3)}</span>
+                    CD3/kg: <span className="text-ink">{formatNumber(c.cd3, 0)}</span>
                   </span>
                 )}
                 {r.freezeIntoBagCellId && (

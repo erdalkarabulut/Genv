@@ -13,6 +13,7 @@ import type {
   ApheresisPlanResponse,
   Bag,
   BagMovement,
+  BagUseReason,
   Box,
   CollectionSession,
   CryoGridResponse,
@@ -274,7 +275,10 @@ export const Bags = {
     api
       .post(`/api/Bags/move`, { bagId, targetBagCellId })
       .then((r) => r.data),
-  use: (bagId: string) => api.post(`/api/Bags/use`, { bagId }).then((r) => r.data),
+  use: (bagId: string, reason: BagUseReason, note?: string | null) =>
+    api
+      .post(`/api/Bags/use`, { bagId, reason, note: note ?? null })
+      .then((r) => r.data),
   split: (body: {
     sessionId: string;
     bagCount?: number;

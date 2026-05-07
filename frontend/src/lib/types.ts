@@ -1,6 +1,7 @@
 export type TransplantType = "Autologous" | "Allogeneic";
 export type BagStatus = "Frozen" | "Stored" | "Reserved" | "Used" | "Discarded";
 export type BagPurpose = "Cryo" | "Infusion" | "Backup" | "QualityControl";
+export type BagUseReason = "Infusion" | "Disposal" | "Transfer" | "Other";
 
 /* -------------------------- Patient -------------------------- */
 export interface Patient {
@@ -80,6 +81,8 @@ export interface Bag {
   cd34PerKg: number;
   cd3PerKg: number;
   status: BagStatus;
+  useReason?: BagUseReason | null;
+  useNote?: string | null;
   purpose: BagPurpose;
   splitBatchId?: string | null;
   bagCellId?: string | null;

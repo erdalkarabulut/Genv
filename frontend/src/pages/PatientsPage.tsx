@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { Plus, Search, UserRound, Pencil, Trash2, HeartHandshake } from "lucide-react";
-import { formatDate } from "@/lib/utils";
+import { formatDate, BLOOD_GROUP_OPTIONS } from "@/lib/utils";
 import { toast } from "sonner";
 import type { Patient, TransplantType } from "@/lib/types";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -384,7 +384,7 @@ export function PatientFormView({
           { value: "Allogeneic", label: "Allogeneik (donör) — 2 gün" },
         ]}
       />
-      <Input label="Kan grubu" placeholder="A+, B-, …" {...register("bloodGroup")} />
+      <Select label="Kan grubu" {...register("bloodGroup")} options={BLOOD_GROUP_OPTIONS} />
       <Input label="Protokol no" {...register("protocolNo")} />
       <Input label="Kimlik No (opsiyonel)" {...register("identityNumber")} />
       <div className="col-span-2">
