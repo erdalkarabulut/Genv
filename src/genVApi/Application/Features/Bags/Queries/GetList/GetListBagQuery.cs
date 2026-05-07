@@ -9,6 +9,7 @@ using NArchitecture.Core.Application.Responses;
 using NArchitecture.Core.Persistence.Paging;
 using MediatR;
 using static Application.Features.Bags.Constants.BagsOperationClaims;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Bags.Queries.GetList;
 
@@ -37,9 +38,11 @@ public class GetListBagQuery : IRequest<GetListResponse<GetListBagListItemDto>>,
         public async Task<GetListResponse<GetListBagListItemDto>> Handle(GetListBagQuery request, CancellationToken cancellationToken)
         {
             IPaginate<Bag> bags = await _bagRepository.GetListAsync(
+                include: m => m.Include(b => b.BagCell).ThenInclude(c => c!.Box).ThenInclude(b => b.Slot).ThenInclude(s => s.Rack).ThenInclude(r => r.Tank),
                 index: request.PageRequest.PageIndex,
-                size: request.PageRequest.PageSize, 
-                cancellationToken: cancellationToken
+                size: request.PageRequest.PageSize,
+                cancellationToken: cancellationToken,
+                enableTracking: false
             );
 
             GetListResponse<GetListBagListItemDto> response = _mapper.Map<GetListResponse<GetListBagListItemDto>>(bags);

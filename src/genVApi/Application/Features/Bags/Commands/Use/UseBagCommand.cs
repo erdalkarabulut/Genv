@@ -83,7 +83,8 @@ public class UseBagCommand : IRequest<UseBagResponse>, ISecuredRequest, ICacheRe
                 BagId = bag.Id,
                 FromBagCellId = fromCellId,
                 ToBagCellId = null,
-                Action = $"Use:{request.Reason}"
+                Action = $"Use:{request.Reason}",
+                UsedAt = DateTime.UtcNow
             });
 
             await _notifier.BagUsedAsync(bag.Id, fromCellId, cancellationToken);

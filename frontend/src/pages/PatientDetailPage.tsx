@@ -1702,9 +1702,6 @@ function SplitForm({
 
 const PURPOSE_OPTIONS: { value: number; label: string }[] = [
   { value: 0, label: "Cryo (dondurma)" },
-  { value: 1, label: "Infusion (infüzyon)" },
-  { value: 2, label: "Backup (yedek)" },
-  { value: 3, label: "Quality Control (QC)" },
 ];
 
 interface CustomBagRow {
@@ -1716,7 +1713,6 @@ interface CustomBagRow {
   cd3Percent: string;
   purpose: number;
   compositionNote: string;
-  freezeIntoBagCellId: string;
 }
 
 function makeRow(_session?: { wbc?: number | null; cd45Percent?: number | null; cd34Percent?: number | null; cd3Percent?: number | null }, purpose = 0): CustomBagRow {
@@ -1731,7 +1727,6 @@ function makeRow(_session?: { wbc?: number | null; cd45Percent?: number | null; 
     cd3Percent: "",
     purpose,
     compositionNote: "",
-    freezeIntoBagCellId: "",
   };
 }
 
@@ -1759,15 +1754,10 @@ function CustomSplitForm({
 
   const [rows, setRows] = useState<CustomBagRow[]>(() => [
     makeRow(undefined, 0),
-    makeRow(undefined, 1),
+    makeRow(undefined, 0),
   ]);
 
-  const bagCellsQ = useQuery({
-    queryKey: ["bagCells-free"],
-    queryFn: () => BagCells.list(0, 2000),
-    staleTime: 0,
-  });
-  const freeBagCells = (bagCellsQ.data?.items ?? []).filter((s) => !s.isOccupied);
+  // Removed per-row freeze slot selection — handled later via Cryo grid or server-side auto-placement.
 
   const clinicalQ = useQuery({
     queryKey: ["clinical-settings"],
@@ -1784,7 +1774,7 @@ function CustomSplitForm({
   const addRow = () =>
     setRows((prev) => [
       ...prev,
-      makeRow(undefined, prev.length === 0 ? 0 : 2),
+      makeRow(undefined, 0),
     ]);
 
   // Canlı CD34/kg önizleme (frontend formülü).
@@ -1811,14 +1801,10 @@ function CustomSplitForm({
     mutationFn: async () => {
       if (!sessionId) throw new Error("Önce bir aferez seansı seçin.");
       if (!rows.length) throw new Error("En az bir torba ekleyin.");
-      const seenSlot = new Set<string>();
       const bags = rows.map((r, i) => {
         const volumeMl = Number(r.volumeMl);
         if (!volumeMl || volumeMl <= 0)
           throw new Error(`${i + 1}. torba için hacim girmelisiniz.`);
-        if (r.freezeIntoBagCellId && seenSlot.has(r.freezeIntoBagCellId))
-          throw new Error("Aynı hücreyi birden fazla torbaya atayamazsınız.");
-        if (r.freezeIntoBagCellId) seenSlot.add(r.freezeIntoBagCellId);
 
         const num = (s: string) => (s === "" ? undefined : Number(s));
         return {
@@ -1830,7 +1816,6 @@ function CustomSplitForm({
           cd3Percent: isAutologous ? undefined : num(r.cd3Percent),
           purpose: r.purpose,
           compositionNote: r.compositionNote.trim() || undefined,
-          freezeIntoBagCellId: r.freezeIntoBagCellId || undefined,
         };
       });
       return Bags.customSplit({ sessionId, bags, validateTotalVolume: validateTotal });
@@ -1962,20 +1947,7 @@ function CustomSplitForm({
                   ))}
                 </Select>
               </div>
-              <div className="col-span-11 md:col-span-9">
-                <div className="label">Dondur → hücre (opsiyonel)</div>
-                <Select
-                  value={r.freezeIntoBagCellId}
-                  onChange={(e) => updateRow(r.id, { freezeIntoBagCellId: e.target.value })}
-                >
-                  <option value="">— seçilmedi —</option>
-                  {freeBagCells.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.position}
-                    </option>
-                  ))}
-                </Select>
-              </div>
+              {/* per-row freeze → cell removed as requested */}
               <div className="col-span-1 flex justify-end">
                 <button
                   type="button"
@@ -2006,11 +1978,7 @@ function CustomSplitForm({
                     CD3/kg: <span className="text-ink">{formatNumber(c.cd3, 0)}</span>
                   </span>
                 )}
-                {r.freezeIntoBagCellId && (
-                  <span className="inline-flex items-center gap-1 text-brand-400">
-                    <Snowflake className="size-3" /> hücreye dondurularak yerleştirilecek
-                  </span>
-                )}
+                {/* per-row freeze indicator removed */}
               </div>
             </div>
           );
@@ -2039,7 +2007,7 @@ function CustomSplitForm({
           loading={submit.isPending}
           icon={<Snowflake className="size-4" />}
         >
-          Torbaları oluştur {rows.some((r) => r.freezeIntoBagCellId) ? "ve dondur" : ""}
+          Torbaları oluştur
         </Button>
       </div>
     </div>

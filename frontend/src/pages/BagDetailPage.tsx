@@ -182,7 +182,7 @@ export default function BagDetailPage() {
         />
         <Stat
           label="Torba hücresi"
-          value={b?.bagCellId ? shortId(b.bagCellId) : "—"}
+          value={b?.bagCellLocation ?? "—"}
           hint={b?.bagCellId ? "Cryo gridde" : "Yerleştirilmemiş"}
         />
       </section>
@@ -210,9 +210,17 @@ export default function BagDetailPage() {
                     <div>
                       <div className="text-sm font-medium">{m.action}</div>
                       <div className="text-[11px] text-ink-dim flex items-center gap-1 flex-wrap">
-                        {m.fromBagCellId ? shortId(m.fromBagCellId) : "—"}
+                        {m.fromBagCellLocation ? (
+                          <span className="font-mono">{m.fromBagCellLocation}</span>
+                        ) : (
+                          <span className="text-ink-dim">—</span>
+                        )}
                         <MoveRight className="size-3" />
-                        {m.toBagCellId ? shortId(m.toBagCellId) : "—"}
+                        {m.toBagCellLocation ? (
+                          <span className="font-mono">{m.toBagCellLocation}</span>
+                        ) : (
+                          <span className="text-ink-dim">—</span>
+                        )}
                       </div>
                     </div>
                     <div className="text-[11px] text-ink-dim">

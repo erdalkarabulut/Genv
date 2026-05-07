@@ -7,6 +7,7 @@ using Application.Features.BagMovements.Commands.UpdateRange;
 using Application.Features.BagMovements.Queries.GetById;
 using Application.Features.BagMovements.Queries.GetList;
 using Application.Features.BagMovements.Queries.GetListByDynamic;
+using Application.Features.BagMovements.Queries.Search;
 using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
 using Microsoft.AspNetCore.Mvc;
@@ -77,6 +78,13 @@ public class BagMovementsController : BaseController
     {
         GetListBagMovementQuery getListBagMovementQuery = new() { PageRequest = pageRequest };
         GetListResponse<GetListBagMovementListItemDto> response = await Mediator.Send(getListBagMovementQuery);
+        return Ok(response);
+    }
+
+    [HttpPost("search")]
+    public async Task<IActionResult> Search([FromBody] SearchBagMovementQuery query)
+    {
+        GetListResponse<GetListBagMovementListItemDto> response = await Mediator.Send(query);
         return Ok(response);
     }
 

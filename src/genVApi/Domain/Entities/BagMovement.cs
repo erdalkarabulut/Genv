@@ -10,7 +10,12 @@ public class BagMovement : Entity<Guid>
 
     public string Action { get; set; } = default!;
 
+    // If the movement is a "Use" action, store when the bag was used.
+    public DateTime? UsedAt { get; set; }
+
     public virtual Bag Bag { get; set; } = default!;
+    public virtual BagCell? FromBagCell { get; set; }
+    public virtual BagCell? ToBagCell { get; set; }
 
     public string GetSummary()
     {

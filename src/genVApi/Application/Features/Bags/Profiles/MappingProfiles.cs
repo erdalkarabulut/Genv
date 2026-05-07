@@ -25,7 +25,9 @@ public class MappingProfiles : Profile
         CreateMap<Bag, DeleteBagCommand>().ReverseMap();
         CreateMap<Bag, DeletedBagResponse>().ReverseMap();
         CreateMap<Bag, GetByIdBagResponse>().ReverseMap();
-        CreateMap<Bag, GetListBagListItemDto>().ReverseMap();
+        CreateMap<Bag, GetListBagListItemDto>()
+            .ForMember(d => d.BagCellLocation, opt => opt.MapFrom(s => s.BagCell != null ? s.BagCell.GetFullLocation() : null))
+            .ReverseMap();
         CreateMap<IPaginate<Bag>, GetListResponse<GetListBagListItemDto>>().ReverseMap();
     }
 }

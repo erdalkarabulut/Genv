@@ -10,6 +10,7 @@ using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
 using NArchitecture.Core.Persistence.Dynamic;
 using NArchitecture.Core.Persistence.Paging;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Bags.Queries.GetListByDynamic;
 
@@ -37,6 +38,7 @@ public class GetListByDynamicBagQuery : IRequest<GetListResponse<GetListBagListI
 
             IPaginate<Bag> bags = await _bagRepository.GetListByDynamicAsync(
                 dynamicQuery,
+                include: m => m.Include(b => b.BagCell).ThenInclude(c => c!.Box).ThenInclude(b => b.Slot).ThenInclude(s => s.Rack).ThenInclude(r => r.Tank),
                 index: request.PageRequest.PageIndex,
                 size: request.PageRequest.PageSize,
                 cancellationToken: cancellationToken,

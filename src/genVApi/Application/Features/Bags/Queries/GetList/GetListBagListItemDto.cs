@@ -22,5 +22,6 @@ public class GetListBagListItemDto : IDto
     public Domain.Enums.BagPurpose Purpose { get; set; }
     public Guid? SplitBatchId { get; set; }
     public Guid? BagCellId { get; set; }
+    public string? BagCellLocation { get; set; }
     public DateTime CreatedDate { get; set; }
 }

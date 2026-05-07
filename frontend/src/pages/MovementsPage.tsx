@@ -44,20 +44,9 @@ export default function MovementsPage() {
 
   const PAGE_SIZE = 10;
 
-  const buildQuery = () => {
-    const sort = [{ field: "createdDate", dir: "desc" as const }];
-    if (action !== "all") {
-      return { filter: { field: "action", operator: "eq" as const, value: action }, sort };
-    }
-    if (debouncedQ) {
-      return { filter: { field: "action", operator: "contains" as const, value: debouncedQ }, sort };
-    }
-    return { sort };
-  };
-
   const movements = useQuery({
     queryKey: ["movements", page, PAGE_SIZE, debouncedQ, action],
-    queryFn: () => Movements.byDynamic(buildQuery(), page, PAGE_SIZE),
+    queryFn: () => Movements.search(debouncedQ, action, page, PAGE_SIZE),
   });
   const bags = useQuery({ queryKey: ["bags", "for-movements"], queryFn: () => Bags.list(0, 500) });
 
@@ -127,6 +116,7 @@ export default function MovementsPage() {
                   <Th>Zaman</Th>
                   <Th>Bag</Th>
                   <Th>Action</Th>
+                  <Th>Hasta</Th>
                   <Th>From</Th>
                   <Th>To</Th>
                 </tr>
@@ -154,14 +144,37 @@ export default function MovementsPage() {
                         )}
                       </td>
                       <td className="px-4 py-3">
-                        <Badge tone={actionTone(m.action)} dot>{m.action}</Badge>
+                        <Badge tone={actionTone(m.actionDisplay ?? m.action)} dot>
+                          {m.actionDisplay ?? m.action}
+                        </Badge>
+                        {m.usedAt && (
+                          <div className="text-[11px] text-ink-dim">{formatDateTime(m.usedAt)}</div>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        {m.patientFullName ? (
+                          <div>
+                            <div className="text-sm font-medium">{m.patientFullName}</div>
+                            <div className="text-[11px] text-ink-dim">{m.patientId ? shortId(m.patientId) : ""}</div>
+                          </div>
+                        ) : (
+                          <span className="text-ink-dim">—</span>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-ink-muted">
-                        {m.fromBagCellId ? shortId(m.fromBagCellId) : "—"}
+                        {m.fromBagCellLocation ? (
+                          <span className="font-mono text-xs">{m.fromBagCellLocation}</span>
+                        ) : (
+                          <span className="text-ink-dim">—</span>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-ink-muted inline-flex items-center gap-1">
                         <MoveRight className="size-3 text-ink-dim" />
-                        {m.toBagCellId ? shortId(m.toBagCellId) : "—"}
+                        {m.toBagCellLocation ? (
+                          <span className="font-mono text-xs">{m.toBagCellLocation}</span>
+                        ) : (
+                          <span className="text-ink-dim">—</span>
+                        )}
                       </td>
                     </tr>
                   );

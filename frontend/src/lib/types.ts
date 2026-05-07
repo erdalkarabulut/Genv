@@ -86,6 +86,7 @@ export interface Bag {
   purpose: BagPurpose;
   splitBatchId?: string | null;
   bagCellId?: string | null;
+  bagCellLocation?: string | null;
   createdDate: string;
 }
 
@@ -95,8 +96,14 @@ export interface BagMovement {
   bagId: string;
   fromBagCellId?: string | null;
   toBagCellId?: string | null;
+  fromBagCellLocation?: string | null;
+  toBagCellLocation?: string | null;
   action: string;
+  actionDisplay?: string | null;
   createdDate: string;
+  usedAt?: string | null;
+  patientId?: string | null;
+  patientFullName?: string | null;
 }
 
 /* --------------- Cryo: Tank → Rack → RackSlot → Box → BagCell --------- */

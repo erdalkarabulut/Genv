@@ -43,6 +43,11 @@ public class CreateBagMovementCommand : IRequest<CreatedBagMovementResponse>, IS
         {
             BagMovement bagMovement = _mapper.Map<BagMovement>(request);
 
+            if (!string.IsNullOrWhiteSpace(request.Action) && request.Action.StartsWith("Use:", StringComparison.OrdinalIgnoreCase))
+            {
+                bagMovement.UsedAt = DateTime.UtcNow;
+            }
+
             await _bagMovementRepository.AddAsync(bagMovement);
 
             CreatedBagMovementResponse response = _mapper.Map<CreatedBagMovementResponse>(bagMovement);

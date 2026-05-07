@@ -2,6 +2,8 @@ using Application.Features.BagMovements.Constants;
 using Application.Services.Repositories;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using NArchitecture.Core.Application.Pipelines.Authorization;
 using NArchitecture.Core.Application.Pipelines.Caching;
 using NArchitecture.Core.Application.Requests;
@@ -37,9 +39,13 @@ public class GetListBagMovementQuery : IRequest<GetListResponse<GetListBagMoveme
         public async Task<GetListResponse<GetListBagMovementListItemDto>> Handle(GetListBagMovementQuery request, CancellationToken cancellationToken)
         {
             IPaginate<BagMovement> bagMovements = await _bagMovementRepository.GetListAsync(
+                include: m => m.Include(bm => bm.Bag).ThenInclude(b => b.Session).ThenInclude(s => s.Patient)
+                           .Include(bm => bm.FromBagCell).ThenInclude(fbc => fbc!.Box).ThenInclude(b => b.Slot).ThenInclude(s => s.Rack).ThenInclude(r => r.Tank)
+                           .Include(bm => bm.ToBagCell).ThenInclude(tbc => tbc!.Box).ThenInclude(b => b.Slot).ThenInclude(s => s.Rack).ThenInclude(r => r.Tank),
                 index: request.PageRequest.PageIndex,
-                size: request.PageRequest.PageSize, 
-                cancellationToken: cancellationToken
+                size: request.PageRequest.PageSize,
+                cancellationToken: cancellationToken,
+                enableTracking: false
             );
 
             GetListResponse<GetListBagMovementListItemDto> response = _mapper.Map<GetListResponse<GetListBagMovementListItemDto>>(bagMovements);

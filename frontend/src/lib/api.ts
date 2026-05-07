@@ -349,6 +349,18 @@ export const Movements = {
   byDynamic: (q: DynamicQuery, page = 0, size = 10) =>
     dynamic<BagMovement>("/api/BagMovements", page, size, q),
   remove: (id: string) => api.delete(`/api/BagMovements/${id}`).then((r) => r.data),
+  /**
+   * Pure LINQ search — handles patient full-name filtering server-side,
+   * no dynamic-linq nested navigation needed.
+   */
+  search: (searchText: string, action: string, page = 0, size = 10) =>
+    api
+      .post<PageResponse<BagMovement>>(`/api/BagMovements/search`, {
+        searchText,
+        action: action === "all" ? null : action,
+        pageRequest: { pageIndex: page, pageSize: size },
+      })
+      .then((r) => r.data),
 };
 
 /* --------------------------------------------------------------- */

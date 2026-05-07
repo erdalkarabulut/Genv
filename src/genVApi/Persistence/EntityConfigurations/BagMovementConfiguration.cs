@@ -24,5 +24,15 @@ public class BagMovementConfiguration : IEntityTypeConfiguration<BagMovement>
             .WithMany()
             .HasForeignKey(bm => bm.BagId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(bm => bm.FromBagCell)
+            .WithMany()
+            .HasForeignKey(bm => bm.FromBagCellId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(bm => bm.ToBagCell)
+            .WithMany()
+            .HasForeignKey(bm => bm.ToBagCellId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

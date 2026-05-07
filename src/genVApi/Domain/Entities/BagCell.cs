@@ -35,6 +35,8 @@ public class BagCell : Entity<Guid>
 
     public string GetFullLocation()
     {
-        return $"{Box?.Slot?.Rack?.Tank?.Name}-{Box?.Slot?.Rack?.Name}-{Box?.Slot?.Name}-{Box?.Name}-{Position}";
+        if (Box == null || Box.Slot == null || Box.Slot.Rack == null || Box.Slot.Rack.Tank == null)
+            return "(未知位置)";
+        return $"{Box.Slot.Rack.Tank.Name}-{Box.Slot.Rack.Name}-{Box.Slot.Name}-{Box.Name}-{Position}";
     }
 }
