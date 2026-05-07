@@ -509,16 +509,17 @@ export const AlarmTemplates = {
   list: (page = 0, size = 50) =>
     api.get(`/api/AlarmTemplates?PageIndex=${page}&PageSize=${size}`).then((r) => {
       const data = r.data as any;
+      const items: AlarmTemplateDto[] = (data.items ?? data.Items ?? []).map((t: any): AlarmTemplateDto => ({
+        id: t.id ?? t.Id,
+        name: t.name ?? t.Name,
+        smsTemplate: t.smsTemplate ?? t.SmsTemplate,
+        emailSubjectTemplate: t.emailSubjectTemplate ?? t.EmailSubjectTemplate ?? null,
+        emailBodyTemplate: t.emailBodyTemplate ?? t.EmailBodyTemplate ?? null,
+        devicePrefix: t.devicePrefix ?? t.DevicePrefix ?? null,
+        isActive: t.isActive ?? t.IsActive ?? true,
+      }));
       return {
-        items: (data.items ?? data.Items ?? []).map((t: any) => ({
-          id: t.id ?? t.Id,
-          name: t.name ?? t.Name,
-          smsTemplate: t.smsTemplate ?? t.SmsTemplate,
-          emailSubjectTemplate: t.emailSubjectTemplate ?? t.EmailSubjectTemplate,
-          emailBodyTemplate: t.emailBodyTemplate ?? t.EmailBodyTemplate,
-          devicePrefix: t.devicePrefix ?? t.DevicePrefix,
-          isActive: t.isActive ?? t.IsActive,
-        })),
+        items,
         count: data.count ?? data.Count ?? 0,
         pages: data.pages ?? data.Pages ?? 1,
       };

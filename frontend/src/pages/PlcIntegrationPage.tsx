@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlarmTemplates, PlcAlarmContacts, PlcSensorPoints } from "@/lib/api";
-import type { PlcAlarmContactDto, PlcSensorPointDto } from "@/lib/types";
+import type { AlarmTemplateDto, PlcAlarmContactDto, PlcSensorPointDto } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -326,7 +326,7 @@ export default function PlcIntegrationPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-line/40">
-                  {contactRows.map((row) => (
+                  {contactRows.map((row: typeof contactRows[number]) => (
                     <tr key={row.id} className="hover:bg-bg-elevated/30">
                       <td className="px-4 py-2">{row.displayName}</td>
                       <td className="px-4 py-2 font-mono text-[11px]">{row.devicePrefix || "— (tümü)"}</td>
@@ -401,7 +401,7 @@ export default function PlcIntegrationPage() {
       <ContactEditModal
         open={!!contactModal}
         state={contactModal}
-        templates={(templates.data?.items ?? []).map(t => ({ id: t.id, name: t.name }))}
+        templates={(templates.data?.items ?? []).map((t: AlarmTemplateDto) => ({ id: t.id, name: t.name }))}
         onClose={() => setContactModal(null)}
         onChange={(values) => {
           if (!contactModal) return;

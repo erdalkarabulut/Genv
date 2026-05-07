@@ -102,7 +102,7 @@ export default function AlarmTemplatesPage() {
       values: {
         ...editModal.values,
         [field]: editModal.values[field] + ph,
-      },
+      } as AlarmTemplateDto,
     });
   };
 
@@ -174,16 +174,16 @@ export default function AlarmTemplatesPage() {
         />
       ) : (
         <div className="space-y-3">
-          {rows.map((tmpl) => (
+          {rows.map((tmpl: AlarmTemplateDto) => (
             <Card key={tmpl.id} className="p-5">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-semibold text-ink">{tmpl.name}</span>
                     {tmpl.devicePrefix && (
-                      <Badge variant="outline" className="text-[11px]">{tmpl.devicePrefix}</Badge>
+                      <Badge tone="neutral" className="text-[11px]">{tmpl.devicePrefix}</Badge>
                     )}
-                    <Badge variant={tmpl.isActive ? "success" : "destructive"} className="text-[11px]">
+                    <Badge tone={tmpl.isActive ? "mint" : "rose"} className="text-[11px]">
                       {tmpl.isActive ? "Aktif" : "Pasif"}
                     </Badge>
                   </div>
@@ -257,7 +257,6 @@ export default function AlarmTemplatesPage() {
           open
           onClose={() => setEditModal(null)}
           title={editModal.mode === "create" ? "Yeni alarm şablonu" : "Şablonu düzenle"}
-          className="max-w-2xl"
         >
           <div className="space-y-4">
             <div className="grid sm:grid-cols-3 gap-4">
@@ -265,7 +264,7 @@ export default function AlarmTemplatesPage() {
                 label="Şablon adı"
                 value={editModal.values.name}
                 onChange={(e) =>
-                  setEditModal({ ...editModal, values: { ...editModal.values, name: e.target.value } })
+                  setEditModal({ ...editModal, values: { ...editModal.values, name: e.target.value } as AlarmTemplateDto })
                 }
                 placeholder="örn. Kritik sıcaklık"
               />
@@ -275,7 +274,7 @@ export default function AlarmTemplatesPage() {
                 onChange={(e) =>
                   setEditModal({
                     ...editModal,
-                    values: { ...editModal.values, devicePrefix: e.target.value || null },
+                    values: { ...editModal.values, devicePrefix: e.target.value || null } as AlarmTemplateDto,
                   })
                 }
                 placeholder="örn. BT01 — boş = tümü"
@@ -288,7 +287,7 @@ export default function AlarmTemplatesPage() {
                     onChange={(e) =>
                       setEditModal({
                         ...editModal,
-                        values: { ...editModal.values, isActive: e.target.checked },
+                        values: { ...editModal.values, isActive: e.target.checked } as AlarmTemplateDto,
                       })
                     }
                     className="accent-brand-500 size-4"
@@ -321,7 +320,7 @@ export default function AlarmTemplatesPage() {
                 onChange={(e) =>
                   setEditModal({
                     ...editModal,
-                    values: { ...editModal.values, smsTemplate: e.target.value },
+                    values: { ...editModal.values, smsTemplate: e.target.value } as AlarmTemplateDto,
                   })
                 }
                 placeholder="⚠️ {DeviceName} {DataLabel} alarm!"
@@ -348,7 +347,7 @@ export default function AlarmTemplatesPage() {
                 onChange={(e) =>
                   setEditModal({
                     ...editModal,
-                    values: { ...editModal.values, emailSubjectTemplate: e.target.value || null },
+                    values: { ...editModal.values, emailSubjectTemplate: e.target.value || null } as AlarmTemplateDto,
                   })
                 }
                 placeholder="[Alarm] {DeviceName} - {DataLabel}"
@@ -376,7 +375,7 @@ export default function AlarmTemplatesPage() {
                 onChange={(e) =>
                   setEditModal({
                     ...editModal,
-                    values: { ...editModal.values, emailBodyTemplate: e.target.value || null },
+                    values: { ...editModal.values, emailBodyTemplate: e.target.value || null } as AlarmTemplateDto,
                   })
                 }
                 placeholder="Alarm detayları..."
@@ -384,7 +383,7 @@ export default function AlarmTemplatesPage() {
             </div>
 
             <div className="flex justify-end gap-2 pt-2">
-              <Button type="button" variant="secondary" onClick={() => setEditModal(null)}>
+              <Button type="button" variant="soft" onClick={() => setEditModal(null)}>
                 İptal
               </Button>
               <Button type="button" loading={save.isPending} onClick={() => save.mutate()}>
@@ -399,12 +398,11 @@ export default function AlarmTemplatesPage() {
       {deleteTarget && (
         <ConfirmDialog
           open
+          onClose={() => setDeleteTarget(null)}
           onConfirm={() => del.mutate(deleteTarget.id)}
-          onCancel={() => setDeleteTarget(null)}
           title="Şablonu sil"
           description={`"${deleteTarget.name}" şablonunu silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`}
-          confirmLabel="Sil"
-          destructive
+          confirmText="Sil"
         />
       )}
     </div>
