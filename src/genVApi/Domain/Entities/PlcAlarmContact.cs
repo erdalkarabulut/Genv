@@ -8,6 +8,11 @@ public class PlcAlarmContact : Entity<Guid>
     /// <summary>Boş veya null = tüm cihazlar; aksi halde SensorPoint.DevicePrefix ile eşleşir (ör. BT01).</summary>
     public string? DevicePrefix { get; set; }
 
+    /// <summary>Alarm tetiklendiğinde kullanılacak şablon. Boş = varsayılan (önek veya genel) template otomatik seçilir.</summary>
+    public Guid? AlarmTemplateId { get; set; }
+
+    public PlcAlarmTemplate? AlarmTemplate { get; set; }
+
     public string DisplayName { get; set; } = default!;
 
     public string Phone { get; set; } = default!;

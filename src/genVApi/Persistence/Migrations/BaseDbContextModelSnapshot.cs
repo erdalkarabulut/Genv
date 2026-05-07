@@ -219,6 +219,10 @@ namespace Persistence.Migrations
 
                     b.HasIndex("BagId");
 
+                    b.HasIndex("FromBagCellId");
+
+                    b.HasIndex("ToBagCellId");
+
                     b.ToTable("BagMovements", (string)null);
                 });
 
@@ -1643,6 +1647,9 @@ namespace Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("AlarmTemplateId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -1678,7 +1685,54 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AlarmTemplateId");
+
                     b.ToTable("PlcAlarmContacts", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.PlcAlarmTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DevicePrefix")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<string>("EmailBodyTemplate")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("EmailSubjectTemplate")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("SmsTemplate")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PlcAlarmTemplates", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.PlcSensorPoint", b =>
@@ -1754,6 +1808,61 @@ namespace Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("PlcSensorPoints", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.PlcSystemAlarm", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DevicePrefix")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<bool>("IsResolved")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("OccurredAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RelatedDeviceAddress")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("ResolvedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("SensorCode")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SensorCode");
+
+                    b.HasIndex("IsResolved", "OccurredAtUtc");
+
+                    b.ToTable("PlcSystemAlarms", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.PlcTelemetryReading", b =>
@@ -2057,12 +2166,12 @@ namespace Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("5378d2a0-92d2-4ae2-9b88-69f4c0664782"),
+                            Id = new Guid("e2c827a3-143f-4f0a-a099-3b954eb7d371"),
                             AuthenticatorType = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "narch@kodlama.io",
-                            PasswordHash = new byte[] { 253, 212, 215, 124, 176, 49, 227, 188, 25, 228, 120, 13, 138, 145, 220, 215, 21, 108, 154, 204, 139, 137, 152, 250, 136, 113, 245, 170, 10, 137, 63, 30, 25, 99, 100, 51, 32, 240, 80, 212, 238, 147, 238, 96, 52, 58, 149, 119, 232, 62, 156, 52, 61, 230, 45, 193, 94, 165, 187, 174, 227, 173, 233, 31 },
-                            PasswordSalt = new byte[] { 210, 136, 47, 76, 182, 213, 39, 250, 116, 232, 3, 64, 131, 132, 124, 218, 148, 45, 123, 151, 60, 239, 241, 194, 101, 197, 20, 208, 125, 139, 160, 228, 4, 110, 109, 177, 168, 55, 200, 45, 75, 124, 253, 132, 242, 6, 50, 79, 189, 213, 23, 175, 131, 33, 79, 116, 46, 16, 51, 51, 22, 69, 23, 86, 239, 207, 3, 162, 184, 117, 26, 96, 15, 208, 246, 47, 174, 177, 75, 231, 137, 64, 204, 130, 61, 168, 109, 108, 46, 13, 108, 212, 68, 236, 221, 232, 65, 198, 138, 228, 45, 158, 214, 29, 10, 144, 3, 58, 227, 119, 209, 106, 137, 240, 42, 175, 97, 98, 250, 3, 196, 159, 207, 10, 53, 226, 86, 164 }
+                            PasswordHash = new byte[] { 157, 91, 146, 234, 243, 183, 231, 210, 48, 22, 236, 10, 118, 107, 159, 235, 160, 230, 115, 121, 138, 126, 198, 65, 51, 125, 190, 86, 166, 113, 105, 76, 34, 153, 31, 147, 187, 254, 191, 226, 62, 203, 125, 45, 0, 169, 153, 31, 30, 168, 118, 164, 115, 29, 21, 200, 44, 23, 4, 83, 210, 104, 136, 226 },
+                            PasswordSalt = new byte[] { 94, 57, 1, 30, 138, 189, 54, 79, 62, 140, 211, 34, 177, 218, 123, 63, 46, 91, 133, 51, 220, 201, 104, 236, 137, 111, 190, 223, 133, 5, 18, 36, 200, 73, 31, 110, 131, 36, 27, 159, 110, 233, 38, 31, 89, 242, 86, 156, 143, 60, 11, 82, 100, 172, 8, 69, 124, 167, 248, 39, 191, 244, 92, 49, 121, 250, 250, 42, 11, 22, 117, 239, 65, 126, 215, 32, 111, 225, 46, 117, 223, 134, 179, 177, 134, 105, 47, 145, 238, 55, 28, 99, 100, 178, 177, 159, 99, 105, 218, 189, 220, 146, 87, 200, 96, 112, 140, 8, 123, 5, 78, 77, 7, 165, 124, 40, 163, 138, 223, 210, 106, 84, 94, 95, 57, 82, 53, 201 }
                         });
                 });
 
@@ -2104,10 +2213,10 @@ namespace Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("71aecea9-f407-4da1-9912-00f00fd0d879"),
+                            Id = new Guid("da4d132c-170b-4a16-b37f-6ff5200073c6"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             OperationClaimId = 1,
-                            UserId = new Guid("5378d2a0-92d2-4ae2-9b88-69f4c0664782")
+                            UserId = new Guid("e2c827a3-143f-4f0a-a099-3b954eb7d371")
                         });
                 });
 
@@ -2148,7 +2257,21 @@ namespace Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.BagCell", "FromBagCell")
+                        .WithMany()
+                        .HasForeignKey("FromBagCellId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Domain.Entities.BagCell", "ToBagCell")
+                        .WithMany()
+                        .HasForeignKey("ToBagCellId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("Bag");
+
+                    b.Navigation("FromBagCell");
+
+                    b.Navigation("ToBagCell");
                 });
 
             modelBuilder.Entity("Domain.Entities.Box", b =>
@@ -2228,6 +2351,16 @@ namespace Persistence.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Donor");
+                });
+
+            modelBuilder.Entity("Domain.Entities.PlcAlarmContact", b =>
+                {
+                    b.HasOne("Domain.Entities.PlcAlarmTemplate", "AlarmTemplate")
+                        .WithMany()
+                        .HasForeignKey("AlarmTemplateId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("AlarmTemplate");
                 });
 
             modelBuilder.Entity("Domain.Entities.PlcTelemetryReading", b =>

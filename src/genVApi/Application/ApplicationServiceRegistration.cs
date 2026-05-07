@@ -1,4 +1,5 @@
 using System.Reflection;
+using Application.Features.PlcIntegration.Alarms;
 using Application.Services.AuthenticatorService;
 using Application.Services.AuthService;
 using Application.Services.UsersService;
@@ -68,6 +69,7 @@ public static class ApplicationServiceRegistration
         services.AddScoped<IUserService, UserManager>();
 
         services.AddYamlResourceLocalization();
+        services.AddHostedService<SensorTimeoutMonitorService>();
 
         services.AddSecurityServices<Guid, int>();
 

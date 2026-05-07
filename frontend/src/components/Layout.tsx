@@ -17,6 +17,7 @@ import {
   UserCircle2,
   Menu,
   X,
+  Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -43,6 +44,7 @@ const nav: Array<{
   { to: "/movements", label: "Hareket kayıtları", icon: History, section: "Cryo" },
   { to: "/inventory", label: "Envanter yönetimi", icon: Database, section: "Yönetim" },
   { to: "/plc", label: "PLC entegrasyonu", icon: Cpu, section: "Yönetim", adminOnly: true },
+  { to: "/alarm-templates", label: "Alarm şablonları", icon: Bell, section: "Yönetim", adminOnly: true },
   {
     to: "/clinical-settings",
     label: "Klinik eşikleri",

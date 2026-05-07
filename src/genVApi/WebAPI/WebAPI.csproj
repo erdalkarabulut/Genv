@@ -22,7 +22,6 @@
     <ProjectReference Include="../../corePackages/Core.Security.WebApi.Swagger/Core.Security.WebApi.Swagger.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Licensing.Shared\Licensing.Shared.csproj" />
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\Persistence\Persistence.csproj" />

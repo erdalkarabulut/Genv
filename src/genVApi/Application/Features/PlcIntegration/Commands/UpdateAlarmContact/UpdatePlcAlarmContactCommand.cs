@@ -14,6 +14,8 @@ public class UpdatePlcAlarmContactCommand : IRequest<UpdatedPlcAlarmContactRespo
 
     public string? DevicePrefix { get; set; }
 
+    public Guid? AlarmTemplateId { get; set; }
+
     public string DisplayName { get; set; } = "";
     public string Phone { get; set; } = "";
     public string? Email { get; set; }
@@ -38,6 +40,7 @@ public class UpdatePlcAlarmContactCommand : IRequest<UpdatedPlcAlarmContactRespo
                 string.IsNullOrWhiteSpace(request.DevicePrefix) ? null : request.DevicePrefix.Trim();
 
             entity.DevicePrefix = prefix;
+            entity.AlarmTemplateId = request.AlarmTemplateId;
             entity.DisplayName = request.DisplayName.Trim();
             entity.Phone = request.Phone.Trim();
             entity.Email = string.IsNullOrWhiteSpace(request.Email) ? null : request.Email.Trim();

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { PlcAlarmContacts, PlcSensorPoints } from "@/lib/api";
+import { AlarmTemplates, PlcAlarmContacts, PlcSensorPoints } from "@/lib/api";
 import type { PlcAlarmContactDto, PlcSensorPointDto } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -34,6 +34,7 @@ const emptySensor = (): Omit<PlcSensorPointDto, "id"> => ({
 
 const emptyContact = (): Omit<PlcAlarmContactDto, "id"> => ({
   devicePrefix: "",
+  alarmTemplateId: undefined,
   displayName: "",
   phone: "",
   email: "",
@@ -55,9 +56,15 @@ export default function PlcIntegrationPage() {
     queryFn: () => PlcAlarmContacts.list(),
   });
 
+  const templates = useQuery({
+    queryKey: ["alarm-templates"],
+    queryFn: () => AlarmTemplates.list(),
+  });
+
   const invalidatePlc = () => {
     qc.invalidateQueries({ queryKey: ["plc-sensors"] });
     qc.invalidateQueries({ queryKey: ["plc-contacts"] });
+    qc.invalidateQueries({ queryKey: ["alarm-templates"] });
   };
 
   const [sensorModal, setSensorModal] = useState<
@@ -130,7 +137,7 @@ export default function PlcIntegrationPage() {
   });
 
   const sensorRows = sensors.data ?? [];
-  const contactRows = contacts.data ?? [];
+  const contactRows = contacts.data?.items ?? [];
 
   const tabBtn = (t: Tab, label: string, icon: ReactNode) => (
     <button
@@ -311,6 +318,7 @@ export default function PlcIntegrationPage() {
                   <tr>
                     <th className="px-4 py-2 font-medium">Ad</th>
                     <th className="px-4 py-2 font-medium">Önek</th>
+                    <th className="px-4 py-2 font-medium">Şablon</th>
                     <th className="px-4 py-2 font-medium">Telefon</th>
                     <th className="px-4 py-2 font-medium">E-posta</th>
                     <th className="px-4 py-2 font-medium">SMS / E-posta</th>
@@ -322,6 +330,15 @@ export default function PlcIntegrationPage() {
                     <tr key={row.id} className="hover:bg-bg-elevated/30">
                       <td className="px-4 py-2">{row.displayName}</td>
                       <td className="px-4 py-2 font-mono text-[11px]">{row.devicePrefix || "— (tümü)"}</td>
+                      <td className="px-4 py-2">
+                        {row.alarmTemplateName ? (
+                          <span className="text-[11px] px-1.5 py-0.5 rounded bg-brand-500/10 text-brand-400">
+                            {row.alarmTemplateName}
+                          </span>
+                        ) : (
+                          <span className="text-ink-dim text-[11px]">— (otomatik)</span>
+                        )}
+                      </td>
                       <td className="px-4 py-2">{row.phone}</td>
                       <td className="px-4 py-2 text-ink-muted max-w-[180px] truncate" title={row.email ?? ""}>
                         {row.email || "—"}
@@ -342,6 +359,7 @@ export default function PlcIntegrationPage() {
                                 values: {
                                   ...row,
                                   devicePrefix: row.devicePrefix ?? "",
+                                  alarmTemplateId: row.alarmTemplateId || undefined,
                                 },
                               })
                             }
@@ -383,6 +401,7 @@ export default function PlcIntegrationPage() {
       <ContactEditModal
         open={!!contactModal}
         state={contactModal}
+        templates={(templates.data?.items ?? []).map(t => ({ id: t.id, name: t.name }))}
         onClose={() => setContactModal(null)}
         onChange={(values) => {
           if (!contactModal) return;
@@ -568,6 +587,7 @@ function SensorEditModal({
 function ContactEditModal({
   open,
   state,
+  templates,
   onClose,
   onChange,
   onSubmit,
@@ -578,6 +598,7 @@ function ContactEditModal({
     | { mode: "create"; values: Omit<PlcAlarmContactDto, "id"> }
     | { mode: "edit"; values: PlcAlarmContactDto }
     | null;
+  templates: { id: string; name: string }[];
   onClose: () => void;
   onChange: (v: Omit<PlcAlarmContactDto, "id"> | PlcAlarmContactDto) => void;
   onSubmit: () => void;
@@ -611,6 +632,22 @@ function ContactEditModal({
             value={v.devicePrefix ?? ""}
             onChange={(e) => patch({ devicePrefix: e.target.value })}
           />
+          <div>
+            <label className="text-xs font-semibold text-ink mb-1 block">Alarm şablonu</label>
+            <select
+              className="w-full rounded border border-line/60 bg-bg-subtle px-3 py-2 text-sm"
+              value={v.alarmTemplateId ?? ""}
+              onChange={(e) => patch({ alarmTemplateId: e.target.value || undefined })}
+            >
+              <option value="">— Otomatik seç (varsayılan) —</option>
+              {templates.map((t) => (
+                <option key={t.id} value={t.id}>{t.name}</option>
+              ))}
+            </select>
+            <p className="text-[11px] text-ink-dim mt-1">
+              Boş bırakılırsa cihaz önekine göre otomatik şablon seçilir.
+            </p>
+          </div>
           <Input
             label="Telefon *"
             value={v.phone}

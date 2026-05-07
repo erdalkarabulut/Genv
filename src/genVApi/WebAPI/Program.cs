@@ -19,21 +19,10 @@ using Swashbuckle.AspNetCore.SwaggerUI;
 using WebAPI;
 using WebAPI.Hubs;
 using WebAPI.Services;
-using Licensing.Shared;
 using Infrastructure.Sms;
 using Microsoft.AspNetCore.HttpOverrides;
 
-// Müşteri makinesinden parmak izi almak için: WebAPI.exe --license-fingerprint
-if (args is { Length: > 0 } && args.Contains("--license-fingerprint", StringComparer.Ordinal))
-{
-    Console.WriteLine(MachineFingerprintProvider.GetFingerprintSha256Hex());
-    return;
-}
-
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-
-builder.Services.Configure<IndustrialIntegrationSettings>(
-    builder.Configuration.GetSection(IndustrialIntegrationSettings.SectionName));
 
 builder.Services.AddControllers().AddJsonOptions(opt =>
 {
@@ -117,11 +106,6 @@ builder.Services.AddSwaggerGen(opt =>
 WebApplication app = builder.Build();
 
 app.UseForwardedHeaders();
-
-OfflineLicenseOptions offlineLicense =
-    app.Configuration.GetSection(OfflineLicenseOptions.SectionName).Get<OfflineLicenseOptions>()
-    ?? new OfflineLicenseOptions();
-OfflineLicenseGuard.EnsureValidOrThrow(app.Environment.ContentRootPath, offlineLicense);
 
 // Configure the HTTP request pipeline.
 

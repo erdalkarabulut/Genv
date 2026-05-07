@@ -3,6 +3,7 @@ using Application.Features.PlcIntegration.Commands.DeleteAlarmContact;
 using Application.Features.PlcIntegration.Commands.UpdateAlarmContact;
 using Application.Features.PlcIntegration.Queries.GetListPlcAlarmContacts;
 using Microsoft.AspNetCore.Mvc;
+using NArchitecture.Core.Application.Requests;
 
 namespace WebAPI.Controllers;
 
@@ -12,9 +13,10 @@ namespace WebAPI.Controllers;
 public class PlcAlarmContactsController : BaseController
 {
     [HttpGet]
-    public async Task<IActionResult> GetList(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetList([FromQuery] PageRequest pageRequest, CancellationToken cancellationToken)
     {
-        List<GetListPlcAlarmContactListItemDto> result = await Mediator.Send(new GetListPlcAlarmContactsQuery(), cancellationToken);
+        var query = new GetListPlcAlarmContactsQuery { PageRequest = pageRequest };
+        var result = await Mediator.Send(query, cancellationToken);
         return Ok(result);
     }
 

@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Application.Services.Repositories;
 using Application.Services.SmsService;
 using Domain.Entities;
@@ -16,17 +17,20 @@ public class IngestPlcTelemetryCommand : IRequest<IngestPlcTelemetryResponse>, I
         private readonly IPlcSensorPointRepository _points;
         private readonly IPlcTelemetryReadingRepository _readings;
         private readonly IPlcAlarmContactRepository _contacts;
+        private readonly IPlcAlarmTemplateRepository _templates;
         private readonly ISmsSender _sms;
 
         public Handler(
             IPlcSensorPointRepository points,
             IPlcTelemetryReadingRepository readings,
             IPlcAlarmContactRepository contacts,
+            IPlcAlarmTemplateRepository templates,
             ISmsSender sms)
         {
             _points = points;
             _readings = readings;
             _contacts = contacts;
+            _templates = templates;
             _sms = sms;
         }
 
@@ -43,6 +47,16 @@ public class IngestPlcTelemetryCommand : IRequest<IngestPlcTelemetryResponse>, I
                 enableTracking: false,
                 cancellationToken: cancellationToken);
             List<PlcAlarmContact> allContacts = contactPage.Items.ToList();
+
+            IPaginate<PlcAlarmTemplate> templatePage = await _templates.GetListAsync(
+                predicate: t => t.IsActive,
+                orderBy: null,
+                include: null,
+                index: 0,
+                size: int.MaxValue,
+                enableTracking: false,
+                cancellationToken: cancellationToken);
+            List<PlcAlarmTemplate> templates = templatePage.Items.ToList();
 
             foreach (PlcTelemetryItemDto item in request.Items)
             {
@@ -86,12 +100,9 @@ public class IngestPlcTelemetryCommand : IRequest<IngestPlcTelemetryResponse>, I
                 IEnumerable<PlcAlarmContact> recipients = allContacts.Where(c =>
                     string.IsNullOrEmpty(c.DevicePrefix) || c.DevicePrefix == point.DevicePrefix);
 
-                string msg =
-                    $"ALARM {point.DeviceName} / {point.DataLabel} ({point.SensorCode}) değer={item.Value:0.###} " +
-                    $"eşik düşük={point.AlarmLow} yüksek={point.AlarmHigh}";
-
                 foreach (PlcAlarmContact c in recipients.Where(x => x.SmsEnabled))
                 {
+                    string msg = ResolveTemplate(templates, c.AlarmTemplateId, point, item.Value);
                     SmsSendResult smsResult = await _sms.SendAsync(c.Phone, msg, cancellationToken);
                     if (smsResult.Success)
                         response.AlarmSmsSent++;
@@ -99,6 +110,45 @@ public class IngestPlcTelemetryCommand : IRequest<IngestPlcTelemetryResponse>, I
             }
 
             return response;
+        }
+
+        private static string ResolveTemplate(List<PlcAlarmTemplate> templates, Guid? alarmTemplateId, PlcSensorPoint point, double value)
+        {
+            // 1) Kontakta özel template atanmışsa onu kullan
+            if (alarmTemplateId.HasValue)
+            {
+                PlcAlarmTemplate? byContact = templates.FirstOrDefault(t => t.Id == alarmTemplateId.Value);
+                if (byContact is not null)
+                    return ApplyTemplate(byContact, point, value);
+            }
+
+            // 2) Yoksa cihaz önekine özel template'i dene
+            PlcAlarmTemplate? byPrefix = templates
+                .FirstOrDefault(t => t.DevicePrefix == point.DevicePrefix);
+
+            // 3) Sonra varsayılan (boş prefix) template'i dene
+            byPrefix ??= templates.FirstOrDefault(t => string.IsNullOrEmpty(t.DevicePrefix));
+
+            if (byPrefix is null)
+            {
+                // Tamamen template yoksa eski hardcoded mesajı kullan
+                return $"ALARM {point.DeviceName} / {point.DataLabel} ({point.SensorCode}) değer={value:0.###} " +
+                       $"eşik düşük={point.AlarmLow} yüksek={point.AlarmHigh}";
+            }
+
+            return ApplyTemplate(byPrefix, point, value);
+        }
+
+        private static string ApplyTemplate(PlcAlarmTemplate template, PlcSensorPoint point, double value)
+        {
+            string msg = template.SmsTemplate;
+            msg = msg.Replace("{DeviceName}", point.DeviceName);
+            msg = msg.Replace("{DataLabel}", point.DataLabel);
+            msg = msg.Replace("{SensorCode}", point.SensorCode);
+            msg = msg.Replace("{Value}", value.ToString("0.###"));
+            msg = msg.Replace("{AlarmLow}", point.AlarmLow?.ToString() ?? "-");
+            msg = msg.Replace("{AlarmHigh}", point.AlarmHigh?.ToString() ?? "-");
+            return msg;
         }
 
         private static bool IsInAlarm(PlcSensorPoint p, double v)

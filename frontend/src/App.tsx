@@ -15,6 +15,7 @@ import InventoryPage from "./pages/InventoryPage";
 import LoginPage from "./pages/LoginPage";
 import AdminRoute from "./components/AdminRoute";
 import PlcIntegrationPage from "./pages/PlcIntegrationPage";
+import AlarmTemplatesPage from "./pages/AlarmTemplatesPage";
 import ClinicalSettingsPage from "./pages/ClinicalSettingsPage";
 import UsersPage from "./pages/UsersPage";
 
@@ -45,6 +46,14 @@ export default function App() {
           element={
             <AdminRoute>
               <PlcIntegrationPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/alarm-templates"
+          element={
+            <AdminRoute>
+              <AlarmTemplatesPage />
             </AdminRoute>
           }
         />

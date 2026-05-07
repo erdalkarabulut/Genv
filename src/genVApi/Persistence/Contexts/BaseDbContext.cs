@@ -30,12 +30,23 @@ public class BaseDbContext : DbContext
     public DbSet<PlcSensorPoint> PlcSensorPoints { get; set; }
     public DbSet<PlcTelemetryReading> PlcTelemetryReadings { get; set; }
     public DbSet<PlcAlarmContact> PlcAlarmContacts { get; set; }
+    public DbSet<PlcAlarmTemplate> PlcAlarmTemplates { get; set; }
+    public DbSet<PlcSystemAlarm> PlcSystemAlarms { get; set; }
     public DbSet<ClinicalSettings> ClinicalSettings { get; set; }
 
     public BaseDbContext(DbContextOptions dbContextOptions, IConfiguration configuration)
         : base(dbContextOptions)
     {
         Configuration = configuration;
+    }
+
+    /// <summary>
+    /// Design-time constructor for EF Core migrations.
+    /// </summary>
+    public BaseDbContext(DbContextOptions dbContextOptions, bool designTime)
+        : base(dbContextOptions)
+    {
+        // Configuration won't be used at design time
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -25,11 +25,6 @@ internal static class Program
         };
 
         WorkerConfig cfg = LoadConfig(args);
-        if (string.IsNullOrWhiteSpace(cfg.IndustrialApiKey))
-        {
-            Console.Error.WriteLine("IndustrialApiKey boş. appsettings.json veya --api-key ile verin.");
-            return 2;
-        }
 
         var handler = new HttpClientHandler();
         if (cfg.AcceptAnyTlsCertificate)
@@ -41,7 +36,6 @@ internal static class Program
             Timeout = TimeSpan.FromSeconds(60),
         };
         http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        http.DefaultRequestHeaders.Add("X-Industrial-ApiKey", cfg.IndustrialApiKey);
 
         Console.WriteLine($"API: {cfg.ApiBaseUrl} | yeniden senkron: her {cfg.ConfigRefreshSeconds}s");
 
@@ -134,45 +128,82 @@ internal static class Program
     private static async Task PollOnceAsync(HttpClient http, PlcSensorSyncDto point, CancellationToken ct)
     {
         if (!IPAddress.TryParse(point.ModbusHost, out IPAddress? ip))
-            ip = (await Dns.GetHostAddressesAsync(point.ModbusHost, ct).ConfigureAwait(false)).FirstOrDefault()
-                ?? throw new InvalidOperationException($"Çözülemeyen host: {point.ModbusHost}");
+        {
+            try
+            {
+                ip = (await Dns.GetHostAddressesAsync(point.ModbusHost, ct).ConfigureAwait(false)).FirstOrDefault();
+            }
+            catch
+            {
+                await ReportModbusFailureAsync(http, point, $"Host çözülemedi: {point.ModbusHost}", ct).ConfigureAwait(false);
+            }
+            if (ip == null)
+                return;
+        }
 
         var endpoint = new IPEndPoint(ip, point.ModbusPort);
 
-        using var client = new ModbusTcpClient();
-        await Task.Run(() => client.Connect(endpoint, ModbusEndianness.BigEndian), ct).ConfigureAwait(false);
-
-        Memory<ushort> buffer = await client
-            .ReadHoldingRegistersAsync<ushort>(point.SlaveId, point.RegisterAddress, point.RegisterLength, ct)
-            .ConfigureAwait(false);
-
-        ushort[] regs = buffer.ToArray();
-        int raw = CombineRegisters(regs);
-        double divisor = point.ScaleDivisor == 0 ? 1.0 : point.ScaleDivisor;
-        double value = raw / divisor;
-
-        var payload = new TelemetryPostBody
+        ModbusTcpClient? modbusClient = null;
+        try
         {
-            Items =
-            [
-                new TelemetryItem
-                {
-                    SensorCode = point.SensorCode,
-                    Value = value,
-                    ReadAtUtc = DateTime.UtcNow,
-                    RawRegisterValue = raw,
-                },
-            ],
-        };
+            using var client = new ModbusTcpClient();
+            await Task.Run(() => client.Connect(endpoint, ModbusEndianness.BigEndian), ct).ConfigureAwait(false);
 
-        using var resp = await http
-            .PostAsJsonAsync("api/plc-integration/telemetry", payload, JsonOpts, ct)
-            .ConfigureAwait(false);
+            Memory<ushort> buffer = await client
+                .ReadHoldingRegistersAsync<ushort>(point.SlaveId, point.RegisterAddress, point.RegisterLength, ct)
+                .ConfigureAwait(false);
 
-        if (!resp.IsSuccessStatusCode)
+            ushort[] regs = buffer.ToArray();
+            int raw = CombineRegisters(regs);
+            double divisor = point.ScaleDivisor == 0 ? 1.0 : point.ScaleDivisor;
+            double value = raw / divisor;
+
+            var payload = new TelemetryPostBody
+            {
+                Items =
+                [
+                    new TelemetryItem
+                    {
+                        SensorCode = point.SensorCode,
+                        Value = value,
+                        ReadAtUtc = DateTime.UtcNow,
+                        RawRegisterValue = raw,
+                    },
+                ],
+            };
+
+            using var resp = await http
+                .PostAsJsonAsync("api/plc-integration/telemetry", payload, JsonOpts, ct)
+                .ConfigureAwait(false);
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                string body = await resp.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
+                throw new InvalidOperationException($"telemetry HTTP {(int)resp.StatusCode}: {body}");
+            }
+        }
+        catch (OperationCanceledException) { throw; }
+        catch (Exception ex)
         {
-            string body = await resp.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
-            throw new InvalidOperationException($"telemetry HTTP {(int)resp.StatusCode}: {body}");
+            string msg = ex.Message.Length > 200 ? ex.Message[..200] : ex.Message;
+            await ReportModbusFailureAsync(http, point, $"[{point.SensorCode}] {msg}", ct).ConfigureAwait(false);
+        }
+        finally
+        {
+            modbusClient?.Dispose();
+        }
+    }
+
+    private static async Task ReportModbusFailureAsync(HttpClient http, PlcSensorSyncDto point, string message, CancellationToken ct)
+    {
+        try
+        {
+            var body = new { devicePrefix = point.DevicePrefix, address = point.ModbusHost, message };
+            await http.PostAsJsonAsync("api/PlcAlarms/report-modbus-failure", body, JsonOpts, ct).ConfigureAwait(false);
+        }
+        catch
+        {
+            // Alarm bildirimi başarısız olursa asıl hatayı görmezden gelme
         }
     }
 
@@ -213,8 +244,6 @@ internal static class Program
         {
             if (a.StartsWith("--api=", StringComparison.OrdinalIgnoreCase))
                 cfg.ApiBaseUrl = a["--api=".Length..];
-            else if (a.StartsWith("--key=", StringComparison.OrdinalIgnoreCase))
-                cfg.IndustrialApiKey = a["--key=".Length..];
             else if (a.StartsWith("--refresh-sec=", StringComparison.OrdinalIgnoreCase)
                 && int.TryParse(a["--refresh-sec=".Length..], out int r))
                 cfg.ConfigRefreshSeconds = Math.Max(30, r);
@@ -224,9 +253,6 @@ internal static class Program
 
         if (string.IsNullOrWhiteSpace(cfg.ApiBaseUrl))
             cfg.ApiBaseUrl = Environment.GetEnvironmentVariable("PLC_API_BASE_URL") ?? "http://localhost:5274";
-
-        if (string.IsNullOrWhiteSpace(cfg.IndustrialApiKey))
-            cfg.IndustrialApiKey = Environment.GetEnvironmentVariable("PLC_INDUSTRIAL_API_KEY") ?? "";
 
         string? refreshEnv = Environment.GetEnvironmentVariable("PLC_CONFIG_REFRESH_SEC");
         if (!string.IsNullOrEmpty(refreshEnv) && int.TryParse(refreshEnv, out int rs))
@@ -239,7 +265,6 @@ internal static class Program
 internal sealed class WorkerConfig
 {
     public string ApiBaseUrl { get; set; } = "";
-    public string IndustrialApiKey { get; set; } = "";
     public int ConfigRefreshSeconds { get; set; } = 300;
     public bool AcceptAnyTlsCertificate { get; set; }
 }

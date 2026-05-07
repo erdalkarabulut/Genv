@@ -12,6 +12,8 @@ public class CreatePlcAlarmContactCommand : IRequest<CreatedPlcAlarmContactRespo
     /// <summary>Boş veya null = tüm cihaz önekleri için geçerli.</summary>
     public string? DevicePrefix { get; set; }
 
+    public Guid? AlarmTemplateId { get; set; }
+
     public string DisplayName { get; set; } = "";
     public string Phone { get; set; } = "";
     public string? Email { get; set; }
@@ -34,6 +36,7 @@ public class CreatePlcAlarmContactCommand : IRequest<CreatedPlcAlarmContactRespo
             var entity = new PlcAlarmContact
             {
                 DevicePrefix = prefix,
+                AlarmTemplateId = request.AlarmTemplateId,
                 DisplayName = request.DisplayName.Trim(),
                 Phone = request.Phone.Trim(),
                 Email = string.IsNullOrWhiteSpace(request.Email) ? null : request.Email.Trim(),

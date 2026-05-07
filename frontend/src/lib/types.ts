@@ -331,11 +331,23 @@ export interface PlcSensorPointDto {
 export interface PlcAlarmContactDto {
   id: string;
   devicePrefix?: string | null;
+  alarmTemplateId?: string | null;
+  alarmTemplateName?: string | null;
   displayName: string;
   phone: string;
   email?: string | null;
   smsEnabled: boolean;
   emailEnabled: boolean;
+}
+
+export interface AlarmTemplateDto {
+  id: string;
+  name: string;
+  smsTemplate: string;
+  emailSubjectTemplate?: string | null;
+  emailBodyTemplate?: string | null;
+  devicePrefix?: string | null;
+  isActive: boolean;
 }
 
 export interface SplitResponse {

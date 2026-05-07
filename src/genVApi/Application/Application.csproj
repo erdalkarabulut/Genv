@@ -20,6 +20,7 @@
     <ProjectReference Include="../../corePackages/Core.Localization.Resource.Yaml.DependencyInjection/Core.Localization.Resource.Yaml.DependencyInjection.csproj" />
     <ProjectReference Include="../../corePackages/Core.ElasticSearch/Core.ElasticSearch.csproj" />
     <ProjectReference Include="../../corePackages/Core.Security.DependencyInjection/Core.Security.DependencyInjection.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Services\" />

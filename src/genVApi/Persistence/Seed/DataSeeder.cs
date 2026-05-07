@@ -26,6 +26,8 @@ public static class DataSeeder
         using var scope = services.CreateScope();
         var ctx = scope.ServiceProvider.GetRequiredService<BaseDbContext>();
         await SeedUsersAsync(ctx);
+        await SeedPlcAlarmTemplatesAsync(ctx);
+        await SeedPlcAlarmContactsAsync(ctx);
         await SeedAsync(ctx);
     }
 
@@ -58,6 +60,109 @@ public static class DataSeeder
             OperationClaimId = 1
         });
 
+        await ctx.SaveChangesAsync();
+    }
+
+    private static async Task SeedPlcAlarmTemplatesAsync(BaseDbContext ctx)
+    {
+        if (await ctx.PlcAlarmTemplates.AnyAsync()) return;
+
+        var templates = new[]
+        {
+            new PlcAlarmTemplate
+            {
+                Id = Guid.NewGuid(),
+                Name = "Kritik sıcaklık alarmı",
+                SmsTemplate = "⚠️ {DeviceName} {DataLabel} ({SensorCode}) alarm! Değer={Value} (eşik: {AlarmLow}-{AlarmHigh})",
+                EmailSubjectTemplate = "[Alarm] {DeviceName} - Kritik {DataLabel}",
+                EmailBodyTemplate = "{DeviceName} cihazında {DataLabel} kritik alarmı.\n\nSensör: {SensorCode}\nÖlçülen değer: {Value}\nEşik aralığı: {AlarmLow} - {AlarmHigh}\n\nLütfen ilgili personeli bilgilendirin.",
+                DevicePrefix = "BT01",
+                IsActive = true
+            },
+            new PlcAlarmTemplate
+            {
+                Id = Guid.NewGuid(),
+                Name = "Yüksek nem uyarısı",
+                SmsTemplate = "💧 {DeviceName} nem uyarısı! {SensorCode} = {Value}% (eşik: {AlarmLow}-{AlarmHigh})",
+                EmailSubjectTemplate = "[Uyarı] {DeviceName} - Nem yüksek",
+                EmailBodyTemplate = "{DeviceName} cihazında nem seviyesi yükseldi.\n\nSensör: {SensorCode}\nDeğer: {Value}%\nEşik: {AlarmLow}% - {AlarmHigh}%",
+                DevicePrefix = "HM01",
+                IsActive = true
+            },
+            new PlcAlarmTemplate
+            {
+                Id = Guid.NewGuid(),
+                Name = "Basınç alarmı",
+                SmsTemplate = "🔴 {DeviceName} basınç alarmı! {SensorCode} = {Value} bar (eşik: {AlarmLow}-{AlarmHigh})",
+                EmailSubjectTemplate = "[Alarm] {DeviceName} - Basınç",
+                EmailBodyTemplate = "{DeviceName} cihazında basınç alarmı.\n\nSensör: {SensorCode}\nDeğer: {Value} bar\nEşik: {AlarmLow} - {AlarmHigh} bar",
+                DevicePrefix = "PT01",
+                IsActive = true
+            },
+            new PlcAlarmTemplate
+            {
+                Id = Guid.NewGuid(),
+                Name = "Genel SMS alarm (tüm cihazlar)",
+                SmsTemplate = "⚠️ {DeviceName} {DataLabel} alarmı! Kod: {SensorCode} = {Value} (limit: {AlarmLow}-{AlarmHigh})",
+                EmailSubjectTemplate = "[Alarm] {DeviceName}",
+                EmailBodyTemplate = "Alarm detayı:\nCihaz: {DeviceName}\nÖlçüm: {DataLabel}\nKod: {SensorCode}\nDeğer: {Value}\nEşik: {AlarmLow} - {AlarmHigh}",
+                DevicePrefix = null,
+                IsActive = true
+            }
+        };
+
+        ctx.PlcAlarmTemplates.AddRange(templates);
+        await ctx.SaveChangesAsync();
+    }
+
+    private static async Task SeedPlcAlarmContactsAsync(BaseDbContext ctx)
+    {
+        if (await ctx.PlcAlarmContacts.AnyAsync()) return;
+
+        // Şablonları al (SeedPlcAlarmTemplatesAsync zaten çalışmış olmalı)
+        var generalTemplate = await ctx.PlcAlarmTemplates
+            .FirstOrDefaultAsync(t => t.DevicePrefix == null && t.IsActive);
+        var tempSensorTemplate = await ctx.PlcAlarmTemplates
+            .FirstOrDefaultAsync(t => t.DevicePrefix == "BT01" && t.IsActive);
+
+        var contacts = new[]
+        {
+            new PlcAlarmContact
+            {
+                Id = Guid.NewGuid(),
+                DisplayName = "Nöbetçi tekniker",
+                Phone = "+905551234567",
+                Email = "tekniker@genvapi.com",
+                DevicePrefix = null,
+                AlarmTemplateId = generalTemplate?.Id,
+                SmsEnabled = true,
+                EmailEnabled = true
+            },
+            new PlcAlarmContact
+            {
+                Id = Guid.NewGuid(),
+                DisplayName = "Sıcaklık alarm sorumlusu",
+                Phone = "+905551234568",
+                Email = "sicaklik@genvapi.com",
+                DevicePrefix = "BT01",
+                AlarmTemplateId = tempSensorTemplate?.Id,
+                SmsEnabled = true,
+                EmailEnabled = false
+            },
+            new PlcAlarmContact
+            {
+                Id = Guid.NewGuid(),
+                DisplayName = "Lab direktörü",
+                Phone = "+905551234569",
+                Email = "lab@genvapi.com",
+                DevicePrefix = null,
+                AlarmTemplateId = generalTemplate?.Id,
+                SmsEnabled = true,
+                EmailEnabled = true
+            }
+        };
+
+        ctx.PlcAlarmContacts.AddRange(contacts);
         await ctx.SaveChangesAsync();
     }
 

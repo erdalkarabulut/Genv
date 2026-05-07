@@ -10,6 +10,7 @@ interface AccessTokenDto {
   expirationDate: string;
 }
 import type {
+  AlarmTemplateDto,
   ApheresisPlanResponse,
   Bag,
   BagMovement,
@@ -478,12 +479,55 @@ export const PlcSensorPoints = {
 };
 
 export const PlcAlarmContacts = {
-  list: () => api.get<PlcAlarmContactDto[]>("/api/PlcAlarmContacts").then((r) => r.data),
+  list: (page = 0, size = 50) =>
+    api.get(`/api/PlcAlarmContacts?PageIndex=${page}&PageSize=${size}`).then((r) => {
+      const data = r.data as any;
+      return {
+        items: (data.items ?? data.Items ?? []).map((t: any) => ({
+          id: t.id ?? t.Id,
+          displayName: t.displayName ?? t.DisplayName,
+          devicePrefix: t.devicePrefix ?? t.DevicePrefix,
+          phone: t.phone ?? t.Phone,
+          email: t.email ?? t.Email,
+          smsEnabled: t.smsEnabled ?? t.SmsEnabled,
+          emailEnabled: t.emailEnabled ?? t.EmailEnabled,
+          alarmTemplateId: t.alarmTemplateId ?? t.AlarmTemplateId,
+          alarmTemplateName: t.alarmTemplateName ?? t.AlarmTemplateName,
+        })),
+        count: data.count ?? data.Count ?? 0,
+        pages: data.pages ?? data.Pages ?? 1,
+      };
+    }),
   create: (body: Omit<PlcAlarmContactDto, "id">) =>
     api.post<{ id: string }>("/api/PlcAlarmContacts", body).then((r) => r.data),
   update: (body: PlcAlarmContactDto) =>
     api.put<{ id: string }>("/api/PlcAlarmContacts", body).then((r) => r.data),
   remove: (id: string) => api.delete(`/api/PlcAlarmContacts/${id}`).then((r) => r.data),
+};
+
+export const AlarmTemplates = {
+  list: (page = 0, size = 50) =>
+    api.get(`/api/AlarmTemplates?PageIndex=${page}&PageSize=${size}`).then((r) => {
+      const data = r.data as any;
+      return {
+        items: (data.items ?? data.Items ?? []).map((t: any) => ({
+          id: t.id ?? t.Id,
+          name: t.name ?? t.Name,
+          smsTemplate: t.smsTemplate ?? t.SmsTemplate,
+          emailSubjectTemplate: t.emailSubjectTemplate ?? t.EmailSubjectTemplate,
+          emailBodyTemplate: t.emailBodyTemplate ?? t.EmailBodyTemplate,
+          devicePrefix: t.devicePrefix ?? t.DevicePrefix,
+          isActive: t.isActive ?? t.IsActive,
+        })),
+        count: data.count ?? data.Count ?? 0,
+        pages: data.pages ?? data.Pages ?? 1,
+      };
+    }),
+  create: (body: Omit<AlarmTemplateDto, "id">) =>
+    api.post(`/api/AlarmTemplates`, body).then((r) => r.data),
+  update: (body: AlarmTemplateDto) =>
+    api.put(`/api/AlarmTemplates`, body).then((r) => r.data),
+  remove: (id: string) => api.delete(`/api/AlarmTemplates/${id}`).then((r) => r.data),
 };
 
 /* --------------------------------------------------------------- */

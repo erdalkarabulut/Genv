@@ -8,7 +8,6 @@ COPY ["src/genVApi/Application/Application.csproj", "src/genVApi/Application/"]
 COPY ["src/genVApi/Domain/Domain.csproj", "src/genVApi/Domain/"]
 COPY ["src/genVApi/Infrastructure/Infrastructure.csproj", "src/genVApi/Infrastructure/"]
 COPY ["src/genVApi/Persistence/Persistence.csproj", "src/genVApi/Persistence/"]
-COPY ["src/genVApi/Licensing.Shared/Licensing.Shared.csproj", "src/genVApi/Licensing.Shared/"]
 COPY ["src/corePackages/", "src/corePackages/"]
 
 # Restore dependencies

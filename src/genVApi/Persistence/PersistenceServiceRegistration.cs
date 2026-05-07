@@ -37,6 +37,8 @@ public static class PersistenceServiceRegistration
         services.AddScoped<IPlcSensorPointRepository, PlcSensorPointRepository>();
         services.AddScoped<IPlcTelemetryReadingRepository, PlcTelemetryReadingRepository>();
         services.AddScoped<IPlcAlarmContactRepository, PlcAlarmContactRepository>();
+        services.AddScoped<IPlcAlarmTemplateRepository, PlcAlarmTemplateRepository>();
+        services.AddScoped<IPlcSystemAlarmRepository, Persistence.Repositories.PlcSystemAlarmRepository>();
         services.AddScoped<IClinicalSettingsRepository, ClinicalSettingsRepository>();
         return services;
     }
