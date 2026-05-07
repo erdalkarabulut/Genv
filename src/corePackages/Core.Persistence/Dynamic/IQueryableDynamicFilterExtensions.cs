@@ -172,7 +172,7 @@ public static class IQueryableDynamicFilterExtensions
 
     public static IList<Filter> GetAllFilters(Filter filter)
     {
-        List<Filter> filters = new List<Filter>();
+        List<Filter> filters = [];
         GetFilters(filter, filters);
         return filters;
     }
@@ -187,19 +187,8 @@ public static class IQueryableDynamicFilterExtensions
 
     public static string Transform(Filter filter, IList<Filter> filters)
     {
-        // A composite filter has child filters — it represents a logic group, not a leaf condition.
-        bool isComposite = filter.Filters is not null && filter.Filters.Any();
-
-        if (isComposite)
-        {
-            // Composite nodes don't have field/operator — only validate logic
-            if (string.IsNullOrEmpty(filter.Logic) || !_logics.Contains(filter.Logic))
-                throw new ArgumentException("Invalid Logic");
-
-            string childWhere = string.Join($" {filter.Logic} ", filter.Filters.Select(f => Transform(f, filters)));
-            return $"({childWhere})";
-        }
-
+        
+        
         // Leaf filter — validate field and operator
         if (string.IsNullOrEmpty(filter.Field))
             throw new ArgumentException("Invalid Field");
@@ -213,15 +202,25 @@ public static class IQueryableDynamicFilterExtensions
         if (!string.IsNullOrEmpty(filter.Value))
         {
             if (filter.Operator == "doesnotcontain")
-                where.Append($"(!EF.Functions.ILike({filter.Field}, @{index}))");
+                where.Append($"(!EF.Functions.ILike(np({filter.Field}), @{index.ToString()}))");
+              
             else if (comparison is "StartsWith" or "EndsWith" or "Contains")
-                where.Append($"(EF.Functions.ILike({filter.Field}, @{index}))");
+                where.Append($"(EF.Functions.ILike(np({filter.Field}), @{index.ToString()}))");
+                
             else
-                where.Append($"{filter.Field} {comparison} @{index}");
+                where.Append($"np({filter.Field}) {comparison} @{index.ToString()}");
+                
         }
-        else if (filter.Operator is "isnull" or "isnotnull")
+        
+              else if (filter.Operator is "isnull" or "isnotnull")
+                  where.Append($"np({filter.Field}) {comparison}");
+
+        if (filter.Logic is not null && filter.Filters is not null && filter.Filters.Any())
         {
-            where.Append($"{filter.Field} {comparison}");
+            if (!_logics.Contains(filter.Logic))
+                throw new ArgumentException("Invalid Logic");
+            return $"{where} {filter.Logic} ({string.Join(separator: $" {filter.Logic} ", value: filter.Filters.Select(f => Transform(f, filters)).ToArray())})";
+            
         }
 
         return where.ToString();

@@ -1,0 +1,9 @@
+diff a/src/corePackages/Core.Persistence/Dynamic/IQueryableDynamicFilterExtensions.cs b/src/corePackages/Core.Persistence/Dynamic/IQueryableDynamicFilterExtensions.cs	(rejected hunks)
+@@ -222,7 +222,6 @@
+                 where.Append($"{filter.Field} {comparison} @{index}");
+         }
+         else if (filter.Operator is "isnull" or "isnotnull")
+-        if (filter.Logic is not null && filter.Filters is not null && filter.Filters.Any())
+         {
+             where.Append($"{filter.Field} {comparison}");
+         }

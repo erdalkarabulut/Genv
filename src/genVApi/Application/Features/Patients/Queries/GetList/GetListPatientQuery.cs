@@ -8,6 +8,7 @@ using NArchitecture.Core.Application.Requests;
 using NArchitecture.Core.Application.Responses;
 using NArchitecture.Core.Persistence.Paging;
 using MediatR;
+using System.Linq;
 using static Application.Features.Patients.Constants.PatientsOperationClaims;
 
 namespace Application.Features.Patients.Queries.GetList;
@@ -37,8 +38,9 @@ public class GetListPatientQuery : IRequest<GetListResponse<GetListPatientListIt
         public async Task<GetListResponse<GetListPatientListItemDto>> Handle(GetListPatientQuery request, CancellationToken cancellationToken)
         {
             IPaginate<Patient> patients = await _patientRepository.GetListAsync(
+                orderBy: q => q.OrderByDescending(p => p.CreatedDate),
                 index: request.PageRequest.PageIndex,
-                size: request.PageRequest.PageSize, 
+                size: request.PageRequest.PageSize,
                 cancellationToken: cancellationToken
             );
 
