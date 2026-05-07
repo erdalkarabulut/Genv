@@ -6,13 +6,8 @@ services:
       dockerfile: Dockerfile.backend
     container_name: cryoflow-api
     restart: unless-stopped
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-      ASPNETCORE_URLS: http://+:5001
-      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=GenV;Username=admin;Password=wsx53ujm
-      ConnectionStrings__BaseDb: Host=postgres;Port=5432;Database=GenV;Username=admin;Password=wsx53ujm
-      Redis__InstanceName: cryoflow
-      Redis__ConnectionString: redis:6379,password=Edum?ndR24DS@fe
+    env_file:
+      - .env.production
     ports:
       - "5001:5001"
     networks:

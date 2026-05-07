@@ -8,6 +8,7 @@ COPY frontend/tsconfig*.json ./
 COPY frontend/vite.config.ts ./
 COPY frontend/postcss.config.js ./
 COPY frontend/tailwind.config.ts ./
+COPY frontend/.env.* ./
 
 # Install dependencies
 RUN npm ci

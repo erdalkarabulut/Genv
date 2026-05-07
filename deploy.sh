@@ -13,15 +13,23 @@ git pull origin main
 echo "[2/5] Eski container'lari temizle..."
 (docker stop cryoflow-api 2>/dev/null && docker rm cryoflow-api 2>/dev/null) || true
 (docker stop cryoflow-frontend 2>/dev/null && docker rm cryoflow-frontend 2>/dev/null) || true
+echo "[3/6] .env.production kontrol ediliyor..."
+if [ ! -f .env.production ]; then
+	echo "ERROR: .env.production bulunamadı. Lütfen .env.production oluşturun veya .env.example'den kopyalayın." >&2
+	exit 1
+fi
 
-echo "[3/5] Compose image'larini cache'siz build et..."
-docker compose -f docker-compose.prod.yml build --no-cache
+echo "[4/6] Registry'den image'ları çekmeye çalışılıyor (varsa)..."
+docker compose --env-file .env.production -f docker-compose.prod.yml pull --ignore-pull-failures || true
 
-echo "[4/5] Container'lari yeni imajlarla zorla yeniden olustur..."
-docker compose -f docker-compose.prod.yml up -d --force-recreate
+echo "[5/6] Compose image'larını cache'siz build et..."
+docker compose --env-file .env.production -f docker-compose.prod.yml build --no-cache
 
-echo "[5/5] Container durumlari..."
-docker compose -f docker-compose.prod.yml ps
+echo "[6/6] Container'ları yeni imajlarla zorla yeniden oluştur..."
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d --force-recreate --remove-orphans
+
+echo "Container durumları..."
+docker compose --env-file .env.production -f docker-compose.prod.yml ps
 
 echo ""
 echo "=== CryoFlow basariyla deploy edildi ==="
