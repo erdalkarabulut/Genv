@@ -64,6 +64,7 @@ public class CalculateSessionCommand : IRequest<CalculateSessionResponse>, ISecu
             return new CalculateSessionResponse
             {
                 SessionId = session.Id,
+                AbsoluteCellCount = session.AbsoluteCellCount,
                 Cd34PerKg = session.Cd34PerKg,
                 Cd3PerKg = session.Cd3PerKg,
                 PatientWeightKg = patient.WeightKg
@@ -75,6 +76,7 @@ public class CalculateSessionCommand : IRequest<CalculateSessionResponse>, ISecu
 public class CalculateSessionResponse
 {
     public Guid SessionId { get; set; }
+    public double AbsoluteCellCount { get; set; }
     public double Cd34PerKg { get; set; }
     public double Cd3PerKg { get; set; }
     public double PatientWeightKg { get; set; }

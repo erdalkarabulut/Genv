@@ -36,6 +36,7 @@ public class CollectionSessionConfiguration : IEntityTypeConfiguration<Collectio
         builder.Property(cs => cs.Cd3Percent).HasColumnName("Cd3Percent").IsRequired();
         builder.Property(cs => cs.LymphocytePercent).HasColumnName("LymphocytePercent");
         builder.Property(cs => cs.Mhs).HasColumnName("Mhs");
+        builder.Property(cs => cs.AbsoluteCellCount).HasColumnName("AbsoluteCellCount").IsRequired();
         builder.Property(cs => cs.Cd34PerKg).HasColumnName("Cd34PerKg").IsRequired();
         builder.Property(cs => cs.Cd3PerKg).HasColumnName("Cd3PerKg").IsRequired();
 

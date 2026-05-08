@@ -4,7 +4,7 @@ import { ApheresisPlans, BagCells, Bags, ClinicalSettingsApi, Dashboard, Donors,
 import { Card, CardHeader, Stat } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { formatDate, formatNumber, calculateCellDose } from "@/lib/utils";
+import { formatDate, formatNumber, calculateAbsoluteCellCount, calculateCellDose } from "@/lib/utils";
 import {
   ArrowLeft,
   Beaker,
@@ -824,6 +824,7 @@ function TimelineDay({
                       ["WBC", d.wbc],
                       ["%CD45", d.cd45Percent],
                       ["%CD34", d.cd34Percent],
+                      ["Mutlak hücre (kontrol)", d.absoluteCellCount],
                       ["MHS", d.mhs],
                     ]
                   : [
@@ -831,6 +832,7 @@ function TimelineDay({
                       ["WBC", d.wbc],
                       ["%CD45", d.cd45Percent],
                       ["%CD34", d.cd34Percent],
+                      ["Mutlak hücre (kontrol)", d.absoluteCellCount],
                       ["%CD3", d.cd3Percent],
                       ["%Lenfosit", d.lymphocytePercent],
                       ["MHS", d.mhs],
@@ -855,6 +857,8 @@ function TimelineDay({
             <ProductVsBagsPanel
               sessionId={d.sessionId}
               patientWeight={patientWeight}
+              productVolumeMl={d.volumeMl ?? 0}
+              absoluteCellCount={d.absoluteCellCount ?? 0}
               productCd34PerKg={d.cd34PerKg}
               productCd3PerKg={d.cd3PerKg}
               isAutologous={isAutologous}
@@ -957,6 +961,7 @@ function SessionInlineForm({
     cd3Percent: number;
     lymphocytePercent?: number | null;
     mhs?: number | null;
+    absoluteCellCount?: number | null;
     cd34PerKg: number;
     cd3PerKg: number;
   };
@@ -969,7 +974,7 @@ function SessionInlineForm({
   const qc = useQueryClient();
   const clinical = useQuery({ queryKey: ["clinical-settings"], queryFn: () => ClinicalSettingsApi.get(), staleTime: 0 });
   const sessionDivisor = clinical.data?.sessionCd34Cd3Divisor ?? 10000;
-  const { register, handleSubmit, watch, reset, formState: { isSubmitting } } = useForm<SessionForm>({
+  const { register, handleSubmit, watch, reset, setValue, formState: { isSubmitting } } = useForm<SessionForm>({
     defaultValues: {
       day: initial.day,
       date: initial.date.slice(0, 10),
@@ -1022,6 +1027,9 @@ function SessionInlineForm({
 
   const values = watch();
   const preview = usePreviewCalculation(values, weightKg ?? 0, sessionDivisor);
+  useEffect(() => {
+    setValue("preMhs", preview?.absoluteCellCount, { shouldDirty: false, shouldValidate: false });
+  }, [preview?.absoluteCellCount, setValue]);
 
   const onSubmit = async (d: SessionForm) => {
     const updated = await Sessions.update({
@@ -1035,7 +1043,7 @@ function SessionInlineForm({
       plt: numOrNull(d.plt),
       preCd45Percent: numOrNull(d.preCd45Percent),
       preCd34Percent: numOrNull(d.preCd34Percent),
-      preMhs: numOrNull(d.preMhs),
+      preMhs: preview?.absoluteCellCount ?? numOrNull(d.preMhs),
       wbcPost: numOrNull(d.wbcPost),
       hgbPost: numOrNull(d.hgbPost),
       hctPost: numOrNull(d.hctPost),
@@ -1047,6 +1055,7 @@ function SessionInlineForm({
       cd3Percent: isAutologous ? 0 : Number(d.cd3Percent),
       lymphocytePercent: isAutologous ? undefined : numOrNull(d.lymphocytePercent),
       mhs: numOrNull(d.mhs),
+      absoluteCellCount: initial.absoluteCellCount ?? 0,
       cd34PerKg: initial.cd34PerKg,
       cd3PerKg: isAutologous ? 0 : initial.cd3PerKg,
     });
@@ -1081,7 +1090,7 @@ function SessionInlineForm({
           <Input label="PLT" type="number" step="0.01" {...register("plt")} />
           <Input label="%CD45 (pre)" type="number" step="0.01" {...register("preCd45Percent")} />
           <Input label="%CD34 (pre)" type="number" step="0.01" {...register("preCd34Percent")} />
-          <Input label="MHS (pre)" type="number" step="0.01" {...register("preMhs")} />
+          <Input label="MHS (pre)" type="number" step="0.01" {...register("preMhs")} readOnly />
         </div>
       </section>
       <section>
@@ -1122,6 +1131,12 @@ function SessionInlineForm({
               </span>
             </div>
           )}
+          <div>
+            Mutlak hücre{" "}
+            <span className="font-semibold text-ink">
+              {preview ? formatNumber(preview.absoluteCellCount, 2) : "—"}
+            </span>
+          </div>
         </div>
       </div>
       <div className="sticky bottom-0 -mx-6 -mb-5 px-6 py-3 bg-bg-card/95 backdrop-blur border-t border-line/60 flex justify-end gap-2">
@@ -1135,12 +1150,16 @@ function SessionInlineForm({
 function ProductVsBagsPanel({
   sessionId,
   patientWeight,
+  productVolumeMl,
+  absoluteCellCount,
   productCd34PerKg,
   productCd3PerKg,
   isAutologous,
 }: {
   sessionId: string;
   patientWeight: number;
+  productVolumeMl: number;
+  absoluteCellCount: number;
   productCd34PerKg: number;
   productCd3PerKg: number;
   isAutologous?: boolean;
@@ -1160,6 +1179,9 @@ function ProductVsBagsPanel({
 
   const deltaCd34 = totalBagsCd34PerKg - productCd34PerKg;
   const deltaCd3 = totalBagsCd3PerKg - productCd3PerKg;
+  const productCd34FromAbsolute =
+    patientWeight > 0 ? (productVolumeMl * absoluteCellCount) / patientWeight : 0;
+  const deltaAbsoluteControl = totalBagsCd34PerKg - productCd34FromAbsolute;
 
   const tol = 0.05; // %5 tolerans
   const within = (actual: number, target: number) => {
@@ -1168,6 +1190,7 @@ function ProductVsBagsPanel({
   };
   const cd34Match = within(totalBagsCd34PerKg, productCd34PerKg);
   const cd3Match = within(totalBagsCd3PerKg, productCd3PerKg);
+  const absoluteControlMatch = within(totalBagsCd34PerKg, productCd34FromAbsolute);
 
   return (
     <div className="rounded-xl border border-line/60 bg-bg-elevated/40 p-3">
@@ -1177,7 +1200,7 @@ function ProductVsBagsPanel({
           Ürün vs Torbalar toplamı — {items.length} torba · {formatNumber(totalVolumeMl, 1)} ml
         </div>
       </div>
-      <div className={`grid ${isAutologous ? "grid-cols-2" : "grid-cols-4"} gap-2`}>
+      <div className={`grid ${isAutologous ? "grid-cols-3" : "grid-cols-5"} gap-2`}>
         <CompareCell
           label="Ürün CD34/kg"
           value={formatNumber(productCd34PerKg, 2)}
@@ -1188,6 +1211,12 @@ function ProductVsBagsPanel({
           value={formatNumber(totalBagsCd34PerKg, 2)}
           hint={`Δ ${deltaCd34 >= 0 ? "+" : ""}${formatNumber(deltaCd34, 2)}`}
           tone={cd34Match ? "ok" : "warn"}
+        />
+        <CompareCell
+          label="Kontrol: Hacim × Mutlak / kg"
+          value={formatNumber(productCd34FromAbsolute, 2)}
+          hint={`Δ ${deltaAbsoluteControl >= 0 ? "+" : ""}${formatNumber(deltaAbsoluteControl, 2)}`}
+          tone={absoluteControlMatch ? "ok" : "warn"}
         />
         {!isAutologous && (
           <>
@@ -1205,7 +1234,7 @@ function ProductVsBagsPanel({
           </>
         )}
       </div>
-      {(!cd34Match || (!isAutologous && !cd3Match)) && (
+      {(!cd34Match || !absoluteControlMatch || (!isAutologous && !cd3Match)) && (
         <div className="mt-2 flex items-center gap-1.5 text-[11px] text-accent-amber">
           <TriangleAlert className="size-3" />
           Torbaların toplamı ürün değeriyle %5+ fark veriyor — bölme notunu veya torba yüzdelerini
@@ -1361,6 +1390,7 @@ interface SessionForm {
   cd3Percent: number;
   lymphocytePercent?: number;
   mhs?: number;
+  absoluteCellCount?: number;
 }
 
 function CreateSessionForm({
@@ -1380,7 +1410,7 @@ function CreateSessionForm({
 }) {
   const clinical = useQuery({ queryKey: ["clinical-settings"], queryFn: () => ClinicalSettingsApi.get(), staleTime: 0 });
   const sessionDivisor = clinical.data?.sessionCd34Cd3Divisor ?? 10000;
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<SessionForm>({
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<SessionForm>({
     defaultValues: {
       day: defaultDay,
       date: new Date().toISOString().slice(0, 10),
@@ -1394,6 +1424,9 @@ function CreateSessionForm({
 
   const values = watch();
   const preview = usePreviewCalculation(values, weightKg ?? 0, sessionDivisor);
+  useEffect(() => {
+    setValue("preMhs", preview?.absoluteCellCount, { shouldDirty: false, shouldValidate: false });
+  }, [preview?.absoluteCellCount, setValue]);
 
   const create = useMutation({
     mutationFn: (data: SessionForm) =>
@@ -1408,7 +1441,7 @@ function CreateSessionForm({
         plt: numOrNull(data.plt),
         preCd45Percent: numOrNull(data.preCd45Percent),
         preCd34Percent: numOrNull(data.preCd34Percent),
-        preMhs: numOrNull(data.preMhs),
+        preMhs: preview?.absoluteCellCount ?? numOrNull(data.preMhs),
         wbcPost: numOrNull(data.wbcPost),
         hgbPost: numOrNull(data.hgbPost),
         hctPost: numOrNull(data.hctPost),
@@ -1421,6 +1454,7 @@ function CreateSessionForm({
         cd3Percent: isAutologous ? 0 : Number(data.cd3Percent),
         lymphocytePercent: isAutologous ? undefined : numOrNull(data.lymphocytePercent),
         mhs: numOrNull(data.mhs),
+        absoluteCellCount: preview?.absoluteCellCount ?? 0,
 
         cd34PerKg: 0,
         cd3PerKg: 0,
@@ -1462,7 +1496,7 @@ function CreateSessionForm({
           <Input label="PLT" type="number" step="0.01" {...register("plt")} />
           <Input label="%CD45 (pre)" type="number" step="0.01" {...register("preCd45Percent")} />
           <Input label="%CD34 (pre)" type="number" step="0.01" {...register("preCd34Percent")} />
-          <Input label="MHS (pre)" type="number" step="0.01" {...register("preMhs")} />
+          <Input label="MHS (pre)" type="number" step="0.01" {...register("preMhs")} readOnly />
         </div>
       </section>
 
@@ -1519,6 +1553,12 @@ function CreateSessionForm({
               </span>
             </div>
           )}
+          <div>
+            Mutlak hücre{" "}
+            <span className="font-semibold text-ink">
+              {preview ? formatNumber(preview.absoluteCellCount, 2) : "—"}
+            </span>
+          </div>
         </div>
         <p className="mt-1 text-[11px] text-ink-dim">
           Hesap: (Hacim × WBC × %CD45 × %CD34) / {formatNumber(sessionDivisor, 0)} / kilo · sunucu ile ayni bolen.
@@ -1577,7 +1617,13 @@ function numOrNull(v: unknown): number | undefined {
 }
 
 function usePreviewCalculation(v: Partial<SessionForm>, weight: number, divisor = 10000) {
-  if (!weight || !v.volumeMl || !v.wbc) return null;
+  if (!v.wbc) return null;
+  const absoluteCellCount = calculateAbsoluteCellCount(
+    Number(v.wbc),
+    Number(v.cd45Percent ?? 0),
+    Number(v.cd34Percent ?? 0),
+  );
+  if (!weight || !v.volumeMl) return { cd34: 0, cd3: 0, absoluteCellCount };
   const result = calculateCellDose(
     {
       volumeMl: Number(v.volumeMl),
@@ -1589,7 +1635,7 @@ function usePreviewCalculation(v: Partial<SessionForm>, weight: number, divisor 
     weight,
     divisor,
   );
-  return { cd34: result.cd34PerKg, cd3: result.cd3PerKg };
+  return { cd34: result.cd34PerKg, cd3: result.cd3PerKg, absoluteCellCount };
 }
 
 function SplitForm({

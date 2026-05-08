@@ -241,7 +241,7 @@ export const Sessions = {
     api.put<CollectionSession>("/api/CollectionSessions", body).then((r) => r.data),
   calculate: (id: string) =>
     api
-      .post<{ sessionId: string; cd34PerKg: number; cd3PerKg: number; patientWeightKg: number }>(
+      .post<{ sessionId: string; absoluteCellCount: number; cd34PerKg: number; cd3PerKg: number; patientWeightKg: number }>(
         `/api/CollectionSessions/${id}/calculate`,
         {},
       )

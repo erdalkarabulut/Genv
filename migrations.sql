@@ -959,234 +959,140 @@ COMMIT;
 
 START TRANSACTION;
 
-DELETE FROM "UserOperationClaims"
-WHERE "Id" = '11971417-bbba-4e30-b97b-f7262a3fd4c5';
-
-DELETE FROM "Users"
-WHERE "Id" = '1d883cf3-8187-47b3-8e8e-e3eb68daf4fe';
-
 ALTER TABLE "BagMovements" ADD "UsedAt" timestamp with time zone;
-
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (42, TIMESTAMPTZ '-infinity', NULL, 'Bags.Admin', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (43, TIMESTAMPTZ '-infinity', NULL, 'Bags.Read', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (44, TIMESTAMPTZ '-infinity', NULL, 'Bags.Write', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (45, TIMESTAMPTZ '-infinity', NULL, 'Bags.Create', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (46, TIMESTAMPTZ '-infinity', NULL, 'Bags.Update', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (47, TIMESTAMPTZ '-infinity', NULL, 'Bags.Delete', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (48, TIMESTAMPTZ '-infinity', NULL, 'Bags.CreateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (49, TIMESTAMPTZ '-infinity', NULL, 'Bags.UpdateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (50, TIMESTAMPTZ '-infinity', NULL, 'Bags.DeleteRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (51, TIMESTAMPTZ '-infinity', NULL, 'BagMovements.Admin', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (52, TIMESTAMPTZ '-infinity', NULL, 'BagMovements.Read', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (53, TIMESTAMPTZ '-infinity', NULL, 'BagMovements.Write', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (54, TIMESTAMPTZ '-infinity', NULL, 'BagMovements.Create', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (55, TIMESTAMPTZ '-infinity', NULL, 'BagMovements.Update', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (56, TIMESTAMPTZ '-infinity', NULL, 'BagMovements.Delete', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (57, TIMESTAMPTZ '-infinity', NULL, 'BagMovements.CreateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (58, TIMESTAMPTZ '-infinity', NULL, 'BagMovements.UpdateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (59, TIMESTAMPTZ '-infinity', NULL, 'BagMovements.DeleteRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (60, TIMESTAMPTZ '-infinity', NULL, 'Boxes.Admin', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (61, TIMESTAMPTZ '-infinity', NULL, 'Boxes.Read', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (62, TIMESTAMPTZ '-infinity', NULL, 'Boxes.Write', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (63, TIMESTAMPTZ '-infinity', NULL, 'Boxes.Create', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (64, TIMESTAMPTZ '-infinity', NULL, 'Boxes.Update', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (65, TIMESTAMPTZ '-infinity', NULL, 'Boxes.Delete', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (66, TIMESTAMPTZ '-infinity', NULL, 'Boxes.CreateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (67, TIMESTAMPTZ '-infinity', NULL, 'Boxes.UpdateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (68, TIMESTAMPTZ '-infinity', NULL, 'Boxes.DeleteRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (69, TIMESTAMPTZ '-infinity', NULL, 'CollectionSessions.Admin', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (70, TIMESTAMPTZ '-infinity', NULL, 'CollectionSessions.Read', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (71, TIMESTAMPTZ '-infinity', NULL, 'CollectionSessions.Write', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (72, TIMESTAMPTZ '-infinity', NULL, 'CollectionSessions.Create', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (73, TIMESTAMPTZ '-infinity', NULL, 'CollectionSessions.Update', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (74, TIMESTAMPTZ '-infinity', NULL, 'CollectionSessions.Delete', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (75, TIMESTAMPTZ '-infinity', NULL, 'CollectionSessions.CreateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (76, TIMESTAMPTZ '-infinity', NULL, 'CollectionSessions.UpdateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (77, TIMESTAMPTZ '-infinity', NULL, 'CollectionSessions.DeleteRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (78, TIMESTAMPTZ '-infinity', NULL, 'DliProducts.Admin', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (79, TIMESTAMPTZ '-infinity', NULL, 'DliProducts.Read', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (80, TIMESTAMPTZ '-infinity', NULL, 'DliProducts.Write', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (81, TIMESTAMPTZ '-infinity', NULL, 'DliProducts.Create', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (82, TIMESTAMPTZ '-infinity', NULL, 'DliProducts.Update', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (83, TIMESTAMPTZ '-infinity', NULL, 'DliProducts.Delete', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (84, TIMESTAMPTZ '-infinity', NULL, 'DliProducts.CreateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (85, TIMESTAMPTZ '-infinity', NULL, 'DliProducts.UpdateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (86, TIMESTAMPTZ '-infinity', NULL, 'DliProducts.DeleteRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (87, TIMESTAMPTZ '-infinity', NULL, 'Donors.Admin', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (88, TIMESTAMPTZ '-infinity', NULL, 'Donors.Read', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (89, TIMESTAMPTZ '-infinity', NULL, 'Donors.Write', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (90, TIMESTAMPTZ '-infinity', NULL, 'Donors.Create', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (91, TIMESTAMPTZ '-infinity', NULL, 'Donors.Update', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (92, TIMESTAMPTZ '-infinity', NULL, 'Donors.Delete', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (93, TIMESTAMPTZ '-infinity', NULL, 'Donors.CreateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (94, TIMESTAMPTZ '-infinity', NULL, 'Donors.UpdateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (95, TIMESTAMPTZ '-infinity', NULL, 'Donors.DeleteRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (96, TIMESTAMPTZ '-infinity', NULL, 'Patients.Admin', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (97, TIMESTAMPTZ '-infinity', NULL, 'Patients.Read', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (98, TIMESTAMPTZ '-infinity', NULL, 'Patients.Write', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (99, TIMESTAMPTZ '-infinity', NULL, 'Patients.Create', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (100, TIMESTAMPTZ '-infinity', NULL, 'Patients.Update', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (101, TIMESTAMPTZ '-infinity', NULL, 'Patients.Delete', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (102, TIMESTAMPTZ '-infinity', NULL, 'Patients.CreateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (103, TIMESTAMPTZ '-infinity', NULL, 'Patients.UpdateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (104, TIMESTAMPTZ '-infinity', NULL, 'Patients.DeleteRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (105, TIMESTAMPTZ '-infinity', NULL, 'Products.Admin', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (106, TIMESTAMPTZ '-infinity', NULL, 'Products.Read', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (107, TIMESTAMPTZ '-infinity', NULL, 'Products.Write', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (108, TIMESTAMPTZ '-infinity', NULL, 'Products.Create', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (109, TIMESTAMPTZ '-infinity', NULL, 'Products.Update', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (110, TIMESTAMPTZ '-infinity', NULL, 'Products.Delete', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (111, TIMESTAMPTZ '-infinity', NULL, 'Products.CreateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (112, TIMESTAMPTZ '-infinity', NULL, 'Products.UpdateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (113, TIMESTAMPTZ '-infinity', NULL, 'Products.DeleteRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (114, TIMESTAMPTZ '-infinity', NULL, 'Racks.Admin', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (115, TIMESTAMPTZ '-infinity', NULL, 'Racks.Read', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (116, TIMESTAMPTZ '-infinity', NULL, 'Racks.Write', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (117, TIMESTAMPTZ '-infinity', NULL, 'Racks.Create', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (118, TIMESTAMPTZ '-infinity', NULL, 'Racks.Update', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (119, TIMESTAMPTZ '-infinity', NULL, 'Racks.Delete', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (120, TIMESTAMPTZ '-infinity', NULL, 'Racks.CreateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (121, TIMESTAMPTZ '-infinity', NULL, 'Racks.UpdateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (122, TIMESTAMPTZ '-infinity', NULL, 'Racks.DeleteRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (123, TIMESTAMPTZ '-infinity', NULL, 'Slots.Admin', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (124, TIMESTAMPTZ '-infinity', NULL, 'Slots.Read', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (125, TIMESTAMPTZ '-infinity', NULL, 'Slots.Write', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (126, TIMESTAMPTZ '-infinity', NULL, 'Slots.Create', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (127, TIMESTAMPTZ '-infinity', NULL, 'Slots.Update', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (128, TIMESTAMPTZ '-infinity', NULL, 'Slots.Delete', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (129, TIMESTAMPTZ '-infinity', NULL, 'Slots.CreateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (130, TIMESTAMPTZ '-infinity', NULL, 'Slots.UpdateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (131, TIMESTAMPTZ '-infinity', NULL, 'Slots.DeleteRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (132, TIMESTAMPTZ '-infinity', NULL, 'Tanks.Admin', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (133, TIMESTAMPTZ '-infinity', NULL, 'Tanks.Read', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (134, TIMESTAMPTZ '-infinity', NULL, 'Tanks.Write', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (135, TIMESTAMPTZ '-infinity', NULL, 'Tanks.Create', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (136, TIMESTAMPTZ '-infinity', NULL, 'Tanks.Update', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (137, TIMESTAMPTZ '-infinity', NULL, 'Tanks.Delete', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (138, TIMESTAMPTZ '-infinity', NULL, 'Tanks.CreateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (139, TIMESTAMPTZ '-infinity', NULL, 'Tanks.UpdateRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (140, TIMESTAMPTZ '-infinity', NULL, 'Tanks.DeleteRange', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (141, TIMESTAMPTZ '-infinity', NULL, 'ClinicalSettings.Admin', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (142, TIMESTAMPTZ '-infinity', NULL, 'ClinicalSettings.Read', NULL);
-INSERT INTO "OperationClaims" ("Id", "CreatedDate", "DeletedDate", "Name", "UpdatedDate")
-VALUES (143, TIMESTAMPTZ '-infinity', NULL, 'ClinicalSettings.Write', NULL);
-
-INSERT INTO "Users" ("Id", "AuthenticatorType", "CreatedDate", "DeletedDate", "Email", "PasswordHash", "PasswordSalt", "UpdatedDate")
-VALUES ('5378d2a0-92d2-4ae2-9b88-69f4c0664782', 0, TIMESTAMPTZ '-infinity', NULL, 'narch@kodlama.io', BYTEA E'\\xFDD4D77CB031E3BC19E4780D8A91DCD7156C9ACC8B8998FA8871F5AA0A893F1E1963643320F050D4EE93EE60343A9577E83E9C343DE62DC15EA5BBAEE3ADE91F', BYTEA E'\\xD2882F4CB6D527FA74E8034083847CDA942D7B973CEFF1C265C514D07D8BA0E4046E6DB1A837C82D4B7CFD84F206324FBDD517AF83214F742E10333316451756EFCF03A2B8751A600FD0F62FAEB14BE78940CC823DA86D6C2E0D6CD444ECDDE841C68AE42D9ED61D0A90033AE377D16A89F02AAF6162FA03C49FCF0A35E256A4', NULL);
-
-INSERT INTO "UserOperationClaims" ("Id", "CreatedDate", "DeletedDate", "OperationClaimId", "UpdatedDate", "UserId")
-VALUES ('71aecea9-f407-4da1-9912-00f00fd0d879', TIMESTAMPTZ '-infinity', NULL, 1, NULL, '5378d2a0-92d2-4ae2-9b88-69f4c0664782');
-
-SELECT setval(
-    pg_get_serial_sequence('"OperationClaims"', 'Id'),
-    GREATEST(
-        (SELECT MAX("Id") FROM "OperationClaims") + 1,
-        nextval(pg_get_serial_sequence('"OperationClaims"', 'Id'))),
-    false);
 
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
 VALUES ('20260507121325_AddBagMovementUsedAt', '8.0.8');
+
+COMMIT;
+
+START TRANSACTION;
+
+DELETE FROM "UserOperationClaims"
+WHERE "Id" = '71aecea9-f407-4da1-9912-00f00fd0d879';
+
+DELETE FROM "Users"
+WHERE "Id" = '5378d2a0-92d2-4ae2-9b88-69f4c0664782';
+
+CREATE TABLE "PlcAlarmTemplates" (
+    "Id" uuid NOT NULL,
+    "Name" character varying(100) NOT NULL,
+    "SmsTemplate" character varying(1000) NOT NULL,
+    "EmailSubjectTemplate" character varying(200),
+    "EmailBodyTemplate" character varying(4000),
+    "DevicePrefix" character varying(32),
+    "IsActive" boolean NOT NULL,
+    "CreatedDate" timestamp with time zone NOT NULL,
+    "UpdatedDate" timestamp with time zone,
+    "DeletedDate" timestamp with time zone,
+    CONSTRAINT "PK_PlcAlarmTemplates" PRIMARY KEY ("Id")
+);
+
+INSERT INTO "Users" ("Id", "AuthenticatorType", "CreatedDate", "DeletedDate", "Email", "PasswordHash", "PasswordSalt", "UpdatedDate")
+VALUES ('7ba1293b-c129-44bd-9f44-dfb898958998', 0, TIMESTAMPTZ '-infinity', NULL, 'narch@kodlama.io', BYTEA E'\\xC9DFB5E81CEBC4102EFE1F2FD89EA6932702586D29C9ABD4F57648C09D721910EA83EE7511851429C340B9479B141F599A5170A045C6D0D9F3B11C9FDFDC65D9', BYTEA E'\\x287B22590B7A47A2A63B7BDBAABAD49184E02D68728D9E2E3D7286D4AABF2EC73074CFF22478E914DD627C4488E7E68A86D911D2FF736345BFCE1C17B1C155844A3F8C662FABD8ADE8C553EB744FF62BAAE88B8898AC8876B79F4DCBF8409E26D3A7CEA409B8AA4926ADDE2E7E89AC3392EAB3C1FC84AC1AD7F7E12A05EA3A92', NULL);
+
+INSERT INTO "UserOperationClaims" ("Id", "CreatedDate", "DeletedDate", "OperationClaimId", "UpdatedDate", "UserId")
+VALUES ('d683c9cc-e369-4654-843e-04d6cbc967ea', TIMESTAMPTZ '-infinity', NULL, 1, NULL, '7ba1293b-c129-44bd-9f44-dfb898958998');
+
+CREATE INDEX "IX_BagMovements_FromBagCellId" ON "BagMovements" ("FromBagCellId");
+
+CREATE INDEX "IX_BagMovements_ToBagCellId" ON "BagMovements" ("ToBagCellId");
+
+ALTER TABLE "BagMovements" ADD CONSTRAINT "FK_BagMovements_BagCells_FromBagCellId" FOREIGN KEY ("FromBagCellId") REFERENCES "BagCells" ("Id") ON DELETE SET NULL;
+
+ALTER TABLE "BagMovements" ADD CONSTRAINT "FK_BagMovements_BagCells_ToBagCellId" FOREIGN KEY ("ToBagCellId") REFERENCES "BagCells" ("Id") ON DELETE SET NULL;
+
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260507202647_AddPlcAlarmTemplate', '8.0.8');
+
+COMMIT;
+
+START TRANSACTION;
+
+DELETE FROM "UserOperationClaims"
+WHERE "Id" = 'd683c9cc-e369-4654-843e-04d6cbc967ea';
+
+DELETE FROM "Users"
+WHERE "Id" = '7ba1293b-c129-44bd-9f44-dfb898958998';
+
+ALTER TABLE "PlcAlarmContacts" ADD "AlarmTemplateId" uuid;
+
+INSERT INTO "Users" ("Id", "AuthenticatorType", "CreatedDate", "DeletedDate", "Email", "PasswordHash", "PasswordSalt", "UpdatedDate")
+VALUES ('94ba4b35-5044-42cb-98be-aae5e26deb96', 0, TIMESTAMPTZ '-infinity', NULL, 'narch@kodlama.io', BYTEA E'\\x12563FBD6D03F97C2A7A032FDFF2CEF7BEAA51410F8F80F6F96E4D0C7126127BD2F9B1E3BE1C04435515C1071CEFD738345EB15317F76FBD54B6D2C03609F7E4', BYTEA E'\\x26C63AC767F1F065A5EF19AA53313AD9D270AF7F5F681E4183C443C3E1B172096E5173AAC0DB1391A559B72B7D2B939F7987901AAC5E528DCDF6D2FB8874D53AD3D6D46FE0AE52B9015BD8CEF8B4DFF9FD281971CBCF343DDE4CB727F83281C12DE5BFF859D07DC24C1FEB1E0DF1688719B24B6E1D7E9EF4F66197E7D5A37334', NULL);
+
+INSERT INTO "UserOperationClaims" ("Id", "CreatedDate", "DeletedDate", "OperationClaimId", "UpdatedDate", "UserId")
+VALUES ('36f925cd-5158-4305-aaa3-32de64415df4', TIMESTAMPTZ '-infinity', NULL, 1, NULL, '94ba4b35-5044-42cb-98be-aae5e26deb96');
+
+CREATE INDEX "IX_PlcAlarmContacts_AlarmTemplateId" ON "PlcAlarmContacts" ("AlarmTemplateId");
+
+ALTER TABLE "PlcAlarmContacts" ADD CONSTRAINT "FK_PlcAlarmContacts_PlcAlarmTemplates_AlarmTemplateId" FOREIGN KEY ("AlarmTemplateId") REFERENCES "PlcAlarmTemplates" ("Id") ON DELETE SET NULL;
+
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260507210709_AddAlarmTemplateIdToPlcAlarmContacts', '8.0.8');
+
+COMMIT;
+
+START TRANSACTION;
+
+DELETE FROM "UserOperationClaims"
+WHERE "Id" = '36f925cd-5158-4305-aaa3-32de64415df4';
+
+DELETE FROM "Users"
+WHERE "Id" = '94ba4b35-5044-42cb-98be-aae5e26deb96';
+
+CREATE TABLE "PlcSystemAlarms" (
+    "Id" uuid NOT NULL,
+    "Type" integer NOT NULL,
+    "DevicePrefix" character varying(32) NOT NULL,
+    "SensorCode" character varying(100) NOT NULL,
+    "Message" character varying(500) NOT NULL,
+    "RelatedDeviceAddress" character varying(200),
+    "OccurredAtUtc" timestamp with time zone NOT NULL,
+    "IsResolved" boolean NOT NULL,
+    "ResolvedAtUtc" timestamp with time zone,
+    "CreatedDate" timestamp with time zone NOT NULL,
+    "UpdatedDate" timestamp with time zone,
+    "DeletedDate" timestamp with time zone,
+    CONSTRAINT "PK_PlcSystemAlarms" PRIMARY KEY ("Id")
+);
+
+INSERT INTO "Users" ("Id", "AuthenticatorType", "CreatedDate", "DeletedDate", "Email", "PasswordHash", "PasswordSalt", "UpdatedDate")
+VALUES ('e2c827a3-143f-4f0a-a099-3b954eb7d371', 0, TIMESTAMPTZ '-infinity', NULL, 'narch@kodlama.io', BYTEA E'\\x9D5B92EAF3B7E7D23016EC0A766B9FEBA0E673798A7EC641337DBE56A671694C22991F93BBFEBFE23ECB7D2D00A9991F1EA876A4731D15C82C170453D26888E2', BYTEA E'\\x5E39011E8ABD364F3E8CD322B1DA7B3F2E5B8533DCC968EC896FBEDF85051224C8491F6E83241B9F6EE9261F59F2569C8F3C0B5264AC08457CA7F827BFF45C3179FAFA2A0B1675EF417ED7206FE12E75DF86B3B186692F91EE371C6364B2B19F6369DABDDC9257C860708C087B054E4D07A57C28A38ADFD26A545E5F395235C9', NULL);
+
+INSERT INTO "UserOperationClaims" ("Id", "CreatedDate", "DeletedDate", "OperationClaimId", "UpdatedDate", "UserId")
+VALUES ('da4d132c-170b-4a16-b37f-6ff5200073c6', TIMESTAMPTZ '-infinity', NULL, 1, NULL, 'e2c827a3-143f-4f0a-a099-3b954eb7d371');
+
+CREATE INDEX "IX_PlcSystemAlarms_IsResolved_OccurredAtUtc" ON "PlcSystemAlarms" ("IsResolved", "OccurredAtUtc");
+
+CREATE INDEX "IX_PlcSystemAlarms_SensorCode" ON "PlcSystemAlarms" ("SensorCode");
+
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260507220510_AddPlcSystemAlarm', '8.0.8');
+
+COMMIT;
+
+START TRANSACTION;
+
+DELETE FROM "UserOperationClaims"
+WHERE "Id" = 'da4d132c-170b-4a16-b37f-6ff5200073c6';
+
+DELETE FROM "Users"
+WHERE "Id" = 'e2c827a3-143f-4f0a-a099-3b954eb7d371';
+
+ALTER TABLE "CollectionSessions" ADD "AbsoluteCellCount" double precision NOT NULL DEFAULT 0.0;
+
+UPDATE "CollectionSessions"
+SET "AbsoluteCellCount" = ("WBC" * "Cd45Percent" * "Cd34Percent") / 10000.0
+WHERE "WBC" > 0;
+
+INSERT INTO "Users" ("Id", "AuthenticatorType", "CreatedDate", "DeletedDate", "Email", "PasswordHash", "PasswordSalt", "UpdatedDate")
+VALUES ('64eb971c-44d8-42f5-b0e6-6876d559def1', 0, TIMESTAMPTZ '-infinity', NULL, 'narch@kodlama.io', BYTEA E'\\x1BDA4E6C03952D0737C2AC569B9F219E84C03255BEC9BE733509659738B3D0EC8F0663C650BD0BFDD7815711C13BBDBBEC3E67137513307A90BA09D9D0DB3686', BYTEA E'\\x55B671B09291B52920B8887C0CB09F0D0ECAEEA14B54EDA03C4D82DB0987DD110827D31AC51146CE3CF28719B79797171ADF5F58C45FC40CC79B082F010662AB3181137F1356B87DFC8C974823A8B4465B684EE3029EBBA7FAB85DF89037F77D55D94C4F18D509F95A97EA0519A423471B58B8F608F0B04880746ADFF8CA66D6', NULL);
+
+INSERT INTO "UserOperationClaims" ("Id", "CreatedDate", "DeletedDate", "OperationClaimId", "UpdatedDate", "UserId")
+VALUES ('a09af27c-2cc6-4deb-b31a-0ce34a5ab35f', TIMESTAMPTZ '-infinity', NULL, 1, NULL, '64eb971c-44d8-42f5-b0e6-6876d559def1');
+
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260508111942_AddCollectionSessionAbsoluteCellCount', '8.0.8');
 
 COMMIT;
 

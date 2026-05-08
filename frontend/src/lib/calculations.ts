@@ -24,6 +24,16 @@ export function calculateCellDose(input: DoseInput, weightKg: number, divisor: n
   };
 }
 
+/** Absolute cell count preview: WBC x %CD45 x %CD34 / 10000. */
+export function calculateAbsoluteCellCount(
+  wbc: number,
+  cd45Percent: number,
+  cd34Percent: number,
+): number {
+  if (!wbc) return 0;
+  return roundDose((wbc * cd45Percent * cd34Percent) / 10000, 0);
+}
+
 /**
  * Rounds a dose value for display.  Returns 0 for NaN/Infinity.
  * @param value Raw calculated value

@@ -36,6 +36,7 @@ public class UpdateCollectionSessionCommand : IRequest<UpdatedCollectionSessionR
     public double Cd3Percent { get; set; }
     public double? LymphocytePercent { get; set; }
     public double? Mhs { get; set; }
+    public double AbsoluteCellCount { get; set; }
     public double Cd34PerKg { get; set; }
     public double Cd3PerKg { get; set; }
 

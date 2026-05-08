@@ -35,7 +35,7 @@ export function shortId(id?: string | null) {
 }
 
 // Re-export dose calculation utilities for convenient imports
-export { calculateCellDose, roundDose } from "./calculations";
+export { calculateAbsoluteCellCount, calculateCellDose, roundDose } from "./calculations";
 export type { DoseInput } from "./calculations";
 
 /** ABO/Rh standart kan grubu seçenekleri (Patient/Donor formlarında ortak kullanılır). */

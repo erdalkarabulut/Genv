@@ -284,6 +284,7 @@ interface SessionFormVals {
   cd3Percent: number;
   lymphocytePercent?: number;
   mhs?: number;
+  absoluteCellCount: number;
   cd34PerKg: number;
   cd3PerKg: number;
 }
@@ -315,6 +316,7 @@ function SessionEditForm({
       cd3Percent: session.cd3Percent,
       lymphocytePercent: session.lymphocytePercent ?? undefined,
       mhs: session.mhs ?? undefined,
+      absoluteCellCount: session.absoluteCellCount,
       cd34PerKg: session.cd34PerKg,
       cd3PerKg: session.cd3PerKg,
     },
@@ -336,6 +338,7 @@ function SessionEditForm({
       cd3Percent: session.cd3Percent,
       lymphocytePercent: session.lymphocytePercent ?? undefined,
       mhs: session.mhs ?? undefined,
+      absoluteCellCount: session.absoluteCellCount,
       cd34PerKg: session.cd34PerKg,
       cd3PerKg: session.cd3PerKg,
     });
@@ -360,6 +363,7 @@ function SessionEditForm({
       cd3Percent: isAutologous ? 0 : Number(v.cd3Percent),
       lymphocytePercent: isAutologous ? undefined : numOrNull(v.lymphocytePercent),
       mhs: numOrNull(v.mhs),
+      absoluteCellCount: session.absoluteCellCount,
       // Keep persisted calculated values stable until backend calculate recomputes.
       cd34PerKg: session.cd34PerKg,
       cd3PerKg: isAutologous ? 0 : session.cd3PerKg,
@@ -446,8 +450,9 @@ function SessionEditForm({
       </section>
 
       <section>
-        <SectionTitle title="Hesaplanan değerler" hint="Manuel override edilebilir" />
+        <SectionTitle title="Hesaplanan değerler" hint="Mutlak hücre read-only, diğerleri manuel override edilebilir" />
         <div className="grid grid-cols-2 gap-3">
+          <Input label="Mutlak hücre" type="number" step="0.0001" value={session.absoluteCellCount} disabled />
           <Input label="CD34/kg" type="number" step="0.0001" {...register("cd34PerKg")} />
           {!isAutologous && (
             <Input label="CD3/kg" type="number" step="0.0001" {...register("cd3PerKg")} />

@@ -36,6 +36,7 @@ public class CollectionSession : Entity<Guid>
     public double? Mhs { get; set; }
 
     // Hesap sonucu
+    public double AbsoluteCellCount { get; set; }
     public double Cd34PerKg { get; set; }
     public double Cd3PerKg { get; set; }
 
@@ -51,7 +52,11 @@ public class CollectionSession : Entity<Guid>
 
     public void Calculate(double weight, double sessionCd34Cd3Divisor)
     {
-        if (weight <= 0 || sessionCd34Cd3Divisor <= 0)
+        if (sessionCd34Cd3Divisor <= 0)
+            return;
+        AbsoluteCellCount = (WBC * Cd45Percent * Cd34Percent) / 10000.0;
+        PreMhs = AbsoluteCellCount;
+        if (weight <= 0)
             return;
         double total = VolumeMl * WBC;
 

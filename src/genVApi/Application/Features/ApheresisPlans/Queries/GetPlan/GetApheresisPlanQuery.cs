@@ -87,7 +87,8 @@ public class GetApheresisPlanQuery : IRequest<ApheresisPlanResponse>, ICachableR
                     Cd45Percent = s.Cd45Percent,
                     Cd3Percent = s.Cd3Percent,
                     LymphocytePercent = s.LymphocytePercent,
-                    Mhs = s.Mhs
+                    Mhs = s.Mhs,
+                    AbsoluteCellCount = s.AbsoluteCellCount
                 });
             }
 
@@ -284,4 +285,5 @@ public class ApheresisDayDto
     public double? Cd3Percent { get; set; }
     public double? LymphocytePercent { get; set; }
     public double? Mhs { get; set; }
+    public double? AbsoluteCellCount { get; set; }
 }

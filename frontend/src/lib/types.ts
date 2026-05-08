@@ -61,6 +61,7 @@ export interface CollectionSession {
   cd3Percent: number;
   lymphocytePercent?: number | null;
   mhs?: number | null;
+  absoluteCellCount: number;
   cd34PerKg: number;
   cd3PerKg: number;
   createdDate: string;
@@ -192,6 +193,7 @@ export interface ApheresisDayDto {
   cd3Percent?: number | null;
   lymphocytePercent?: number | null;
   mhs?: number | null;
+  absoluteCellCount?: number | null;
 }
 
 export interface ApheresisPlanResponse {
