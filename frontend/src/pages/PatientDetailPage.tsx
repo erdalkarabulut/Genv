@@ -1966,20 +1966,6 @@ function CustomSplitForm({
                   onChange={(e) => updateRow(r.id, { cd34Percent: e.target.value })}
                 />
               </div>
-              {!isAutologous && (
-                <div className="col-span-4 md:col-span-1">
-                  <div className="label">CD3%</div>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    inputMode="decimal"
-                    className="text-right min-w-[88px]"
-                    value={r.cd3Percent}
-                    onChange={(e) => updateRow(r.id, { cd3Percent: e.target.value })}
-                    placeholder="opsiyonel"
-                  />
-                </div>
-              )}
               <div className="col-span-6 md:col-span-2">
                 <div className="label">Amaç</div>
                 <Select
@@ -2005,13 +1991,29 @@ function CustomSplitForm({
                   <Trash className="size-4" />
                 </button>
               </div>
-              <div className="col-span-12">
-                <div className="label">Bölünme notu (ör. "32+32=64 ml")</div>
-                <Input
-                  value={r.compositionNote}
-                  onChange={(e) => updateRow(r.id, { compositionNote: e.target.value })}
-                  placeholder="32+32=64 ml"
-                />
+              <div className="col-span-12 md:col-span-12 grid grid-cols-12 gap-2 items-end">
+                <div className="col-span-12 md:col-span-9">
+                  <div className="label">Bölünme notu (ör. "32+32=64 ml")</div>
+                  <Input
+                    value={r.compositionNote}
+                    onChange={(e) => updateRow(r.id, { compositionNote: e.target.value })}
+                    placeholder="32+32=64 ml"
+                  />
+                </div>
+                {!isAutologous && (
+                  <div className="col-span-12 md:col-span-3">
+                    <div className="label">CD3%</div>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      inputMode="decimal"
+                      className="text-right min-w-[88px]"
+                      value={r.cd3Percent}
+                      onChange={(e) => updateRow(r.id, { cd3Percent: e.target.value })}
+                      placeholder="opsiyonel"
+                    />
+                  </div>
+                )}
               </div>
               <div className="col-span-12 flex items-center gap-3 text-xs text-ink-dim pt-1">
                 <span className="inline-flex items-center gap-1">
