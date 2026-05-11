@@ -1921,52 +1921,52 @@ function CustomSplitForm({
               <div className="col-span-12 md:col-span-1 text-xs uppercase text-ink-dim tracking-wide pt-1">
                 #{idx + 1}
               </div>
-              <div className="col-span-6 md:col-span-2">
+              <div className="col-span-6 md:col-span-2 min-w-0">
                 <div className="label">Hacim (ml)</div>
                 <Input
                   type="number"
                   step="0.1"
                   inputMode="decimal"
-                  className="text-right min-w-[88px]"
+                  className="text-right w-full"
                   value={r.volumeMl}
                   onChange={(e) => updateRow(r.id, { volumeMl: e.target.value })}
                   placeholder="32"
                 />
               </div>
-              <div className="col-span-6 md:col-span-2">
+              <div className="col-span-6 md:col-span-2 min-w-0">
                 <div className="label">WBC (x10³/µL)</div>
                 <Input
                   type="number"
                   step="0.1"
                   inputMode="decimal"
-                  className="text-right min-w-[88px]"
+                  className="text-right w-full"
                   value={r.wbc}
                   onChange={(e) => updateRow(r.id, { wbc: e.target.value })}
                 />
               </div>
-              <div className="col-span-4 md:col-span-2">
+              <div className="col-span-4 md:col-span-2 min-w-0">
                 <div className="label">CD45%</div>
                 <Input
                   type="number"
                   step="0.01"
                   inputMode="decimal"
-                  className="text-right min-w-[88px]"
+                  className="text-right w-full"
                   value={r.cd45Percent}
                   onChange={(e) => updateRow(r.id, { cd45Percent: e.target.value })}
                 />
               </div>
-              <div className={isAutologous ? "col-span-4 md:col-span-2" : "col-span-4 md:col-span-1"}>
+              <div className="col-span-4 md:col-span-2 min-w-0">
                 <div className="label">CD34%</div>
                 <Input
                   type="number"
                   step="0.01"
                   inputMode="decimal"
-                  className="text-right min-w-[88px]"
+                  className="text-right w-full"
                   value={r.cd34Percent}
                   onChange={(e) => updateRow(r.id, { cd34Percent: e.target.value })}
                 />
               </div>
-              <div className="col-span-6 md:col-span-2">
+              <div className="col-span-6 md:col-span-2 min-w-0">
                 <div className="label">Amaç</div>
                 <Select
                   value={r.purpose}
@@ -1992,7 +1992,7 @@ function CustomSplitForm({
                 </button>
               </div>
               <div className="col-span-12 md:col-span-12 grid grid-cols-12 gap-2 items-end">
-                <div className="col-span-12 md:col-span-9">
+                <div className="col-span-12 md:col-span-9 min-w-0">
                   <div className="label">Bölünme notu (ör. "32+32=64 ml")</div>
                   <Input
                     value={r.compositionNote}
@@ -2001,13 +2001,13 @@ function CustomSplitForm({
                   />
                 </div>
                 {!isAutologous && (
-                  <div className="col-span-12 md:col-span-3">
+                  <div className="col-span-12 md:col-span-3 min-w-0">
                     <div className="label">CD3%</div>
                     <Input
                       type="number"
                       step="0.01"
                       inputMode="decimal"
-                      className="text-right min-w-[88px]"
+                      className="text-right w-full"
                       value={r.cd3Percent}
                       onChange={(e) => updateRow(r.id, { cd3Percent: e.target.value })}
                       placeholder="opsiyonel"
