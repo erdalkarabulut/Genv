@@ -98,3 +98,22 @@
       0 8px 32px -8px rgba(99, 102, 241, 0.22);
   }
 }
+
+.cryo3d-backdrop {
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(56, 189, 248, 0.10), transparent 60%),
+    radial-gradient(ellipse at 50% 90%, rgba(99, 102, 241, 0.08), transparent 70%),
+    linear-gradient(180deg, rgba(2, 6, 23, 0.4), rgba(2, 6, 23, 0.7));
+  background-color: rgba(2, 6, 23, 0.35);
+}
+.cryo3d-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(125, 211, 252, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(125, 211, 252, 0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+}

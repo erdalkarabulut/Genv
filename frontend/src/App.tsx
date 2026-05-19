@@ -7,6 +7,7 @@ import PatientDetailPage from "./pages/PatientDetailPage";
 import DonorsPage from "./pages/DonorsPage";
 import SessionsPage from "./pages/SessionsPage";
 import CryoGridPage from "./pages/CryoGridPage";
+import Cryo3DPage from "./pages/Cryo3DPage";
 import CryoSetupPage from "./pages/CryoSetupPage";
 import BagsPage from "./pages/BagsPage";
 import BagDetailPage from "./pages/BagDetailPage";
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="/donors" element={<DonorsPage />} />
         <Route path="/sessions" element={<SessionsPage />} />
         <Route path="/cryo" element={<CryoGridPage />} />
+        <Route path="/cryo-3d" element={<Cryo3DPage />} />
         <Route path="/cryo-setup" element={<CryoSetupPage />} />
         <Route path="/bags" element={<BagsPage />} />
         <Route path="/bags/:id" element={<BagDetailPage />} />

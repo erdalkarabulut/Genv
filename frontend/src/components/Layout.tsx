@@ -18,6 +18,7 @@ import {
   Menu,
   X,
   Bell,
+  Move3d,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -41,6 +42,7 @@ const nav: Array<{
   { to: "/sessions", label: "Aferez seansları", icon: Beaker, section: "Operasyon" },
   { to: "/bags", label: "Torbalar", icon: Boxes, section: "Cryo" },
   { to: "/cryo", label: "Cryo Grid", icon: Snowflake, section: "Cryo" },
+  { to: "/cryo-3d", label: "Cryo 3D", icon: Move3d, section: "Cryo" },
   { to: "/movements", label: "Hareket kayıtları", icon: History, section: "Cryo" },
   { to: "/inventory", label: "Envanter yönetimi", icon: Database, section: "Yönetim" },
   { to: "/plc", label: "PLC entegrasyonu", icon: Cpu, section: "Yönetim", adminOnly: true },
